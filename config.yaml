@@ -1,0 +1,15 @@
+data:
+  tickers: [AAPL, MSFT, AMZN, GOOG] # traded
+  benchmark: SPY # market benchmark, bought and held, not traded
+  start: "2000-01-01"
+  end: "2026-09-25" # included, a Friday
+  data_dir: data
+
+strategies:
+  sma: { window: 10 } # weeks
+  random: { seed: 42 }
+
+metrics:
+  type: open_to_open # execution at the next open, or close_to_close: at the close (see docs/metrics.md)
+  risk_free: 0.02 # annual, about the average 3-month US T-bill rate over the period
+  is_end: "2018-12-28" # last Friday of the In-Sample period
