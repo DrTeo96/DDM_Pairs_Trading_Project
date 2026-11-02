@@ -8,6 +8,10 @@ __pycache__/
 # Credentials and API keys
 .env
 
+# Local data (each member keeps their own copy, the folder itself is tracked)
+data/*
+!data/.gitkeep
+
 # Jupyter
 .ipynb_checkpoints/
 
