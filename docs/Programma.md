@@ -26,9 +26,9 @@ Le prime quattro decisioni bloccano il lavoro degli altri e vanno chiuse entro i
 
 | # | Decisione | Opzioni | Proposta di partenza | Entro |
 | --- | --- | --- | --- | --- |
-| 1 | Frequenza delle barre di prezzo | 1 minuto; 5 o 15 minuti; 1 ora | Test su Bloomberg: 15 minuti se la storia copre almeno 5-6 mesi, altrimenti 1 ora | 2 nov |
+| 1 | Frequenza delle barre di prezzo | 1 minuto; 5 o 15 minuti; 1 ora | **Deciso: 1 minuto come base**; file a 5, 15 e 60 minuti pronti per il confronto di robustezza (vedi Passaggio 2) | 2 nov |
 | 2 | Fonte delle notizie con orario | API di notizie finanziarie con storico; GDELT; archivio Bloomberg | Verificare lo storico con timestamp di 2 o 3 fonti e sceglierne una | 2 nov |
-| 3 | Periodo dei dati e divisione train/test | Dipende dai punti 1 e 2 | Primi due terzi per addestramento, ultimo terzo per test, usato una volta sola | 6 nov |
+| 3 | Periodo dei dati e divisione train/test | Dipende dai punti 1 e 2 | Primi due terzi per addestramento, ultimo terzo per test, usato una volta sola. Ora sappiamo che i giorni sono 96 (91 per 4 coppie): circa 64 e 32 | 6 nov |
 | 4 | Settori e coppie | Esempi: bevande (KO-PEP), pagamenti (V-MA), energia (XOM-CVX), retail (HD-LOW) | Partire da 4 settori candidati e tenere i 3 con più coppie che passano i test | 6 nov |
 | 5 | Come si calcola lo spread | Differenza di prezzi con hedge ratio; differenza di log-prezzi; rapporto A/B | Prezzi con hedge ratio stimato nel periodo di addestramento, scelta dichiarata nel report | 7 nov |
 | 6 | Parametri del segnale | Finestra EMA, soglia di ingresso, soglia di uscita, stop-loss, tempo massimo | Ingresso a z-score 2, uscita a 0.5, stop a 3.5, tempo massimo di 4 ore; da ottimizzare solo sul periodo di addestramento | 8 nov |
@@ -158,7 +158,11 @@ Riferimenti (da verificare prima di citarli): Gatev, Goetzmann e Rouwenhorst (20
 
 ### Passaggio 2. Dati di prezzo intraday
 
+Stato: **fatto** per la parte di pulizia; restano tre decisioni collegate (vedi "Decisioni ancora da prendere"). Il lavoro è nel notebook [src/intraday_pulizia.ipynb](../src/intraday_pulizia.ipynb), che contiene il codice, le motivazioni e i controlli. I risultati sono in `data/processed/pairs_intraday/` (cartella ignorata da git: chi li vuole rilancia il notebook).
+
 Perché: sono il materiale di base del segnale e della simulazione.
+
+#### Cosa prevedeva il programma
 
 - Scaricare da Bloomberg apertura, massimo, minimo, chiusura e volume di ogni barra per i titoli delle coppie scelte.
 - Usare un solo fuso orario (l'ora di New York) e tenere solo la seduta regolare, dalle 9:30 alle 16:00.
@@ -167,7 +171,71 @@ Perché: sono il materiale di base del segnale e della simulazione.
 - Usare prezzi aggiustati per split e dividendi.
 - Controllare i dati: un grafico per coppia, il numero di barre per giorno, i giorni a orario ridotto.
 
-Risultato: un file pulito per ogni coppia.
+Risultato atteso: un file pulito per ogni coppia.
+
+#### Cosa abbiamo fatto
+
+1. **Dati già presenti.** Abbiamo usato i file al minuto in `data/raw/intraday_1m/` per i 20 titoli delle 10 coppie, senza nuovo scaricamento. Orario di New York, seduta regolare 9:30-15:59 (390 barre al giorno).
+2. **Controllo degli split.** I prezzi intraday non sono aggiustati. Abbiamo cercato i gap notturni sopra il 15% e confrontato l'ultima chiusura di ogni giorno con `PX_LAST` giornaliero (che è aggiustato): nessuno split nei 20 titoli (differenza massima circa 2%). Resta un solo gap sopra il 15%, PYPL il 15 luglio 2026 (+15.8%): è un movimento vero, perché giornaliero e intraday restano allineati.
+3. **Giorni in comune.** Per ogni coppia si tengono solo i giorni in cui entrambi i titoli hanno dati. Mancano l'11, 14, 15, 16 e 17 settembre per CSX, GS, LOW e USB: le coppie CSX-UNP, BNY-GS, HD-LOW e TFC-USB hanno **91 giorni**, le altre sei **96**. Nessun giorno a orario ridotto.
+4. **Griglia completa e riempimento solo dentro la giornata.** Ogni giorno ha 390 minuti. Se un titolo non ha scambi in un minuto, prende l'ultimo prezzo dello stesso giorno (apertura = massimo = minimo = chiusura, volume 0) e la barra è segnata `filled = True`. Non si copia mai il prezzo del giorno prima: l'inizio di ogni giornata resta vuoto finché c'è il primo scambio vero.
+5. **Minuti iniziali senza prezzo.** Se un titolo fa il primo scambio dopo le 9:30, quei minuti sono tolti a entrambi i titoli della coppia, per non inventare prezzi. Totale: PYPL-XYZ 74 minuti, HD-LOW 24, MCD-YUM 13, BNY-GS 9, KO-PEP 4, BAC-PNC 1, le altre 0.
+6. **Quattro frequenze.** Per ogni coppia 1, 5, 15 e 60 minuti (40 file parquet) più `quality_summary.csv`. Le barre più lunghe sono costruite dal minuto (apertura della prima, massimo, minimo, chiusura dell'ultima, volume sommato) e hanno la colonna `filled_share`, la quota di minuti riempiti nella barra. La funzione `load_pair("KO-PEP", 15)` restituisce i prezzi di una coppia con una colonna per titolo.
+7. **Controlli di qualità.** Un grafico per coppia (prezzi normalizzati e spread a 15 minuti) e nessun salto sopra il 5% in un minuto dopo la pulizia.
+
+#### Cosa abbiamo fatto in modo diverso dal programma
+
+| Tema | Programma | Cosa abbiamo fatto | Perché |
+| --- | --- | --- | --- |
+| Prezzi aggiustati | Prezzi aggiustati per split e dividendi | Prezzi non aggiustati, con controllo degli split | Bloomberg intraday non li fornisce. Split assenti nei 20 titoli; i dividendi in 96 giorni sono pochi e piccoli, ma restano un limite |
+| Scaricamento | Scaricare i dati dei titoli scelti | Usati i file già presenti | I dati sono già in `data/raw/` |
+| Giorni disponibili | 140 giorni | 96 giorni (91 per 4 coppie) | È la lunghezza reale dei dati: dal 16 giugno al 30 ottobre 2026 |
+| Barre mancanti | Copiare il prezzo precedente | Copia solo dentro la giornata, con flag `filled` | Il flag permette di sapere quando il prezzo non è un prezzo di scambio vero (vedi decisione B) |
+| Giorni mancanti | Non previsto | Scartati i giorni in cui manca uno dei due titoli | Uno spread con una sola gamba non esiste; non si inventano 5 giorni di prezzi |
+| Frequenze | Una da scegliere | Salvate 1, 5, 15 e 60 minuti | Il programma stesso chiede di confrontare le frequenze (sezione "Come scegliere la frequenza") |
+
+#### Decisioni prese
+
+- **Frequenza di base: 1 minuto** (decisione 1 della tabella). Resta una nota: il programma suggeriva 5 o 15 minuti e avverte che al minuto parte dell'oscillazione è rimbalzo tra acquisto e vendita, non sfruttabile, e che i segnali sono molto più numerosi (più chiamate all'agente). I file a 5, 15 e 60 minuti sono già pronti come confronto di robustezza: se i risultati al minuto fossero molto migliori, il programma invita a diffidare.
+- **Trattamento dei dati** (punti 3, 4 e 5 sopra): giorni in comune, riempimento solo dentro la giornata, niente prezzi inventati ai minuti iniziali.
+
+#### Decisioni ancora da prendere
+
+**A. Periodo dei dati e divisione train/test (decisione 3 della tabella).** Ora sappiamo che i giorni sono 96, non 140. La proposta del programma (due terzi per l'addestramento, un terzo per il test) dà circa 64 e 32 giorni. Va deciso: la data di taglio (ordine cronologico, mai casuale), e se le quattro coppie con 91 giorni si dividono nello stesso punto delle altre. Regola già fissata: i parametri si scelgono solo sul primo periodo e il test si usa una volta sola. Con circa 3 mesi di dati il mercato è sempre dello stesso tipo, e va scritto nel report.
+
+**B. Come trattare le barre riempite nel segnale.** Una barra riempita è un minuto in cui quel titolo non ha avuto nessuno scambio: il suo prezzo è quello dell'ultimo scambio, quindi "vecchio". Il problema: se uno dei due titoli ha il prezzo vecchio e l'altro si muove, lo spread si allarga solo perché una gamba è ferma. Quando il titolo fermo scambia di nuovo, lo spread rientra da solo. Il segnale sembra un'occasione ma non lo è, e comprare o vendere il titolo fermo a quel prezzo non è nemmeno possibile.
+
+Quanto pesa: dipende dalla frequenza e dal titolo.
+
+| Titolo | Minuti riempiti a 1 min | Barre senza nessuno scambio a 5 min | a 15 min |
+| --- | --- | --- | --- |
+| UNP (in CSX-UNP) | 41.4% | 3.2% | 0% |
+| YUM (in MCD-YUM) | 40.3% | 2.6% | 0% |
+| PNC (in BAC-PNC) | 40.0% | 2.2% | 0% |
+| ITW (in ITW-OTIS) | 34.8% | non misurato | non misurato |
+| LOW (in HD-LOW) | 31.9% | non misurato | non misurato |
+| BNY (in BNY-GS) | 29.5% | 0.9% | 0% |
+| KO e PEP | sotto il 2% | 0% | 0% |
+
+Questo non rende le coppie inutilizzabili: sono state scelte con la liquidità giornaliera (almeno 50 milioni di dollari al giorno), che è alta; è solo che un titolo meno attivo non scambia ogni minuto. Il problema si concentra al minuto, ed è uno dei motivi per cui il programma propone 5 o 15 minuti. Le opzioni sono tre:
+
+1. **Usare i dati così come sono**, dichiarando il limite. È l'opzione più semplice ma rischia segnali falsi sulle coppie con titoli poco scambiati.
+2. **Non aprire un trade se una delle due gambe ha la barra riempita** (o se l'ultimo scambio vero è più vecchio di N minuti). Elimina i segnali falsi, e il costo è che si perdono alcune occasioni. Si può applicare solo ai segnali di ingresso.
+3. **Calcolare il segnale su barre più lunghe** (5 minuti) e usare il minuto solo per l'esecuzione.
+
+Proposta: partire dall'opzione 2, perché mantiene la scelta del minuto e vale solo dove serve, e confrontare con le barre a 5 minuti nella robustezza. Va decisa prima di costruire il segnale (Passaggio 4), e il numero di segnali scartati va riportato nel report.
+
+**C. Dividendi e prezzi non aggiustati.** Il giorno ex-dividendo il prezzo scende dell'importo del dividendo senza che sia una perdita vera. In 96 giorni sono pochi eventi e piccoli, ma sullo spread di una coppia un dividendo di un solo titolo può sembrare un'anomalia. Da decidere: accettare e dichiarare il limite (proposta), oppure controllare le date ex-dividendo dei 20 titoli ed escludere i segnali di quel giorno.
+
+#### Limiti da dichiarare nel report
+
+- Prezzi non aggiustati per dividendi.
+- Il volume intraday è solo una parte del volume totale (in quota diversa per borsa): va usato come indicatore, non come volume reale.
+- Per i titoli meno scambiati una quota alta dei minuti è riempita (fino al 41% al minuto).
+- Quattro coppie hanno 91 giorni invece di 96, perché per uno dei due titoli mancano cinque giorni di settembre.
+- Circa 3 mesi di dati: un solo tipo di mercato.
+
+Risultato: 40 file puliti (10 coppie × 4 frequenze) più una tabella di qualità.
 
 ### Passaggio 3. Archivio delle notizie
 
@@ -279,7 +347,7 @@ Il segnale matematico apre la verifica: l'agente cerca e legge i titoli, poi dec
 
 ## Come scegliere la frequenza dei dati
 
-Bloomberg dà dati intraday per gli ultimi 140 giorni di borsa. La frequenza non si sceglie a intuito: si prova la stessa pipeline sulla stessa coppia a frequenze diverse e si confrontano i risultati. Si scarica una sola volta il dato al minuto e si creano da soli le barre da 5, 15 e 60 minuti con `resample` in pandas.
+Bloomberg dà dati intraday per gli ultimi 140 giorni di borsa (nei nostri file sono 96, dal 16 giugno al 30 ottobre 2026; le tabelle seguenti sono indicative). La frequenza non si sceglie a intuito: si prova la stessa pipeline sulla stessa coppia a frequenze diverse e si confrontano i risultati. Si scarica una sola volta il dato al minuto e si creano da soli le barre da 5, 15 e 60 minuti con `resample` in pandas.
 
 | Frequenza | Barre al giorno | Barre in 140 giorni |
 | --- | --- | --- |
