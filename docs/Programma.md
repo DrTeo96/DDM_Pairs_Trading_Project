@@ -57,19 +57,104 @@ Risultato: una pagina con le due risposte, che chiude le decisioni 1 e 2.
 
 ### Passaggio 1. Selezione delle coppie
 
+Stato: **fatto in gran parte** (restano tre controlli, vedi più sotto). Il lavoro è nel notebook [src/coppie.ipynb](../src/coppie.ipynb), che contiene il codice, le motivazioni di ogni scelta e il testo dei risultati. La lista finale è salvata in `data/processed/selected_pairs.csv` (cartella ignorata da git: chi la vuole rilancia il notebook).
+
 Perché: una coppia scelta male è come due persone che camminano nella stessa direzione senza elastico. Lo spread non torna indietro e la strategia perde.
 
-L'imbuto completo e i test sono nella sezione "Selezione delle coppie nell'S&P 500", più sotto.
+#### Cosa prevedeva il programma
 
 - Per ogni settore elencare titoli USA grandi e molto scambiati (liquidi), così si può comprare e vendere senza muovere il prezzo.
 - Scaricare prezzi giornalieri aggiustati, solo del periodo di addestramento.
 - Calcolare la correlazione (i prezzi si muovono insieme) e poi il test di cointegrazione di Engle-Granger, in Python `statsmodels.tsa.stattools.coint`. Si tengono le coppie con p-value sotto 0.05: la distanza tra i due prezzi non si allarga all'infinito.
 - Stimare l'hedge ratio (quante azioni di B servono per bilanciare una di A) con una regressione.
-- Calcolare l'half-life: il tempo che lo spread impiega a tornare a metà strada verso la media. Per operazioni veloci serve un rientro rapido, in ore o pochi giorni. Si ricalcola sulle barre intraday appena sono disponibili.
+- Calcolare l'half-life: il tempo che lo spread impiega a tornare a metà strada verso la media.
 
-Risultato: tabella con correlazione, p-value, hedge ratio e half-life, e una lista finale di 6-9 coppie.
+Risultato atteso: tabella con correlazione, p-value, hedge ratio e half-life, e una lista finale di 6-9 coppie.
 
 Attenzione: la scelta usa solo il periodo di addestramento. Scegliere le coppie guardando anche il periodo di test è data snooping (Lezione 2) e invalida i risultati.
+
+#### Cosa abbiamo fatto
+
+1. **Periodo di selezione: dal 16 giugno 2021 al 15 giugno 2026** (5 anni, circa 1.255 giorni di borsa). Finisce il giorno prima dell'inizio dei dati intraday (16 giugno 2026): così la scelta non vede il periodo di test. Parte dopo lo shock del Covid di marzo 2020, che muove tutti i titoli insieme e falsa le distanze.
+2. **Titoli liquidi e con dati completi.** Si tengono i titoli con valore scambiato mediano (prezzo per volume) di almeno 50 milioni di dollari al giorno, e con prezzi in tutto il periodo: da 501 titoli restano **307**. Il prezzo usato è `PX_LAST`, già aggiustato per split e dividendi (senza aggiustamento un frazionamento sembrerebbe un crollo).
+3. **Solo coppie nello stesso gruppo industriale GICS.** Dal file Bloomberg `data/gics.csv` usiamo `industry_group` (25 gruppi). Aziende dello stesso gruppo hanno clienti, costi e normativa simili e sono esposte agli stessi fattori: è la ragione economica per cui il loro prezzo relativo dovrebbe tornare normale. Le coppie possibili passano da **46.971** a **2.390**.
+4. **Metodo della distanza** (Gatev, Goetzmann e Rouwenhorst, 2006). Ogni prezzo viene diviso per il suo primo valore (indice di 1 dollaro investito all'inizio) e per ogni coppia si somma, su tutti i giorni, il quadrato della differenza tra i due indici (SSD). Più è bassa, più i due titoli sono rimasti vicini. Equivale a investire lo stesso capitale sui due titoli, come abbiamo deciso per le posizioni (importo uguale sulle due gambe, senza leva).
+5. **Regole di selezione**, fissate prima di guardare i risultati:
+   - si toglie GOOG-GOOGL (correlazione dei rendimenti sopra 0.97, sono due classi di azioni della stessa società: lo spread è troppo piccolo e i costi lo cancellano) → 2.389 coppie;
+   - si tengono le coppie con correlazione dei rendimenti giornalieri di almeno 0.6 → **467** coppie;
+   - si ordina per SSD crescente e si prendono le prime **9**, con un solo titolo per coppia e al massimo 3 coppie per gruppo.
+6. **Una coppia aggiunta per scelta**: KO-PEP, fuori dalla regola (vedi sotto). In totale **10 coppie**.
+7. **Diagnostiche su ogni coppia**: p-value di cointegrazione (Engle-Granger sui log-prezzi, in entrambi i sensi, tenendo il peggiore), hedge ratio, half-life, attraversamenti della media all'anno, ampiezza dello spread e stabilità nelle due metà del periodo. Servono a conoscere le coppie e a segnalare le più rischiose, non a scartarle.
+8. **Confronti**: l'imbuto della cointegrazione sulle stesse coppie del gruppo (con correzione FDR di Benjamini-Hochberg), le 14 coppie "da manuale" indicate in anticipo (KO-PEP, V-MA, HD-LOW, XOM-CVX, BAC-WFC, GS-MS, UPS-FDX, LMT-NOC, PG-CL, MCD-YUM, DUK-SO, MRK-PFE, T-VZ, CME-ICE) e la stessa regola rifatta su 10, 15 e 20 anni.
+
+#### Cosa abbiamo fatto in modo diverso dal programma
+
+| Tema | Programma | Cosa abbiamo fatto | Perché |
+| --- | --- | --- | --- |
+| Metodo principale | Correlazione, poi cointegrazione con p-value sotto 0.01 come filtro | Metodo della distanza come metodo principale; la cointegrazione resta come confronto e diagnostica | Sul giornaliero e su 5 anni la cointegrazione è troppo severa: solo 11 coppie su 173 testate hanno p-value sotto 0.05 e nessuna supera l'intero imbuto (half-life, stabilità nelle due metà, FDR). Misura inoltre un orizzonte di mesi, mentre i nostri trade durano ore. La distanza è il metodo di riferimento della letteratura (Gatev et al., 2006) e non richiede di assumere un modello |
+| Periodo di selezione | Circa 2 anni prima dell'intraday | 5 anni, fino al 15 giugno 2026 | Con 2 anni la classifica è troppo sensibile al caso. Più anni vorrebbero dire più titoli esclusi e più regimi di mercato (vedi controllo di robustezza) |
+| Correlazione minima | 0.7-0.8 | 0.6, solo come pavimento | Con la distanza è la distanza a scegliere: la correlazione serve a evitare coppie che hanno solo fatto percorsi simili senza muoversi insieme giorno per giorno |
+| p-value di cointegrazione | Sotto 0.01 | Sotto 0.05, solo come diagnostica | Il test non è un filtro del metodo principale; la severità la dà la correzione FDR |
+| Half-life | Da 1 a circa 20 giorni | Da 1 a 30 giorni, solo come diagnostica | È il tempo in giorni, mentre i trade durano ore: va ricalcolata sulle barre intraday. Il programma stesso la considera "solo un filtro" |
+| Settori | Circa 3 settori, 2-3 coppie per settore | 7 gruppi industriali, al massimo 3 coppie per gruppo | La regola evita di forzare un settore senza coppie valide e di dipendere da uno solo; il numero di settori non è vincolante |
+| Numero di coppie | 6-9 | 10 (9 dalla regola, 1 aggiunta per scelta) | Il numero lo decidiamo noi: non è vincolante |
+| Un titolo per coppia | Non previsto | Ogni titolo compare in una sola coppia | Rende i trade delle coppie più indipendenti tra loro |
+
+Tutte le soglie "nostre" sono scelte ragionevoli e dichiarate prima dei risultati, ma non hanno una fonte accademica e non sono ottimizzate. Alcune regole (correlazione minima, tetto per gruppo) sono state definite dopo aver visto i primi risultati sul periodo giornaliero: il test intraday resta pulito perché non è stato usato per scegliere nulla.
+
+#### Le 10 coppie scelte
+
+| Coppia | Origine | Gruppo GICS | Posto SSD (su 2.390) | Correlazione | Ampiezza spread | p-value cointegrazione | Half-life (giorni) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| MA-V | regola | Servizi finanziari | 1 | 0.88 | 3.3% | 0.081 | 32 |
+| TFC-USB | regola | Banche | 3 | 0.83 | 6.6% | 0.370 | 49 |
+| BAC-PNC | regola | Banche | 4 | 0.79 | 5.9% | 0.066 | 40 |
+| CSX-UNP | regola | Trasporto | 5 | 0.72 | 6.3% | 0.505 | 56 |
+| PYPL-XYZ | regola | Servizi finanziari | 6 | 0.61 | 17.7% | 0.557 | 62 |
+| BNY-GS | regola | Servizi finanziari | 7 | 0.67 | 6.4% | 0.037 | 31 |
+| HD-LOW | regola | Beni discrezionali (distribuzione) | 8 | 0.87 | 5.2% | 0.144 | 52 |
+| ITW-OTIS | regola | Beni strumentali | 10 | 0.61 | 7.9% | 0.923 | 110 |
+| MCD-YUM | regola | Servizi al consumatore | 11 | 0.61 | 5.8% | 0.122 | 44 |
+| KO-PEP | aggiunta per scelta | Alimenti, bevande e tabacco | 240 | 0.68 | 15.4% | 0.946 | infinita |
+
+Il posto in classifica è quello tra tutte le 2.390 coppie dello stesso gruppo: i posti mancanti sono coppie scartate dalle regole (quasi identiche, correlazione bassa, titolo già usato in un'altra coppia).
+
+**Perché queste coppie** (le descrizioni dei business sono dalla conoscenza generale: da verificare prima di metterle nel report):
+
+- **MA-V**: le due grandi reti di pagamento con carta. Stesso modello di business, stessi clienti, ricavi legati ai volumi di spesa dei consumatori. È la più vicina in assoluto nel periodo.
+- **TFC-USB**: banche commerciali USA di dimensione simile, stessa esposizione ai tassi d'interesse e al credito retail.
+- **BAC-PNC**: banche commerciali USA (BAC più grande, PNC regionale): stessi fattori di tassi e credito, ma il mix di attività non è identico.
+- **CSX-UNP**: due ferrovie merci USA, con gli stessi volumi di carico, la stessa regolamentazione e gli stessi costi (carburante, lavoro).
+- **PYPL-XYZ**: pagamenti digitali per consumatori e commercianti (XYZ è Block). Settore comune, ma ampiezza dello spread molto alta (17.7%) e correlazione bassa: coppia più rischiosa.
+- **BNY-GS**: servizi finanziari, ma BNY fa custodia e gestione e GS investment banking. Legame economico più debole; è l'unica coppia con p-value di cointegrazione sotto 0.05.
+- **HD-LOW**: i due grandi distributori USA per la casa e il fai-da-te. Stessi clienti, stessa stagionalità, stessa sensibilità al mercato immobiliare.
+- **ITW-OTIS**: stesso gruppo GICS ("beni strumentali", molto ampio) ma business diversi, componenti industriali contro ascensori. Legame debole e half-life lunga (110 giorni): coppia più rischiosa.
+- **MCD-YUM**: ristorazione rapida in franchising, con la stessa struttura dei ricavi e la stessa sensibilità alla spesa dei consumatori.
+- **KO-PEP**: Coca-Cola e Pepsi, stesso mercato delle bevande analcoliche, stessi clienti e canali di vendita; è l'esempio classico di pair trading. **È un'eccezione**: l'abbiamo aggiunta per scelta del gruppo, fuori dalla regola. Nei dati non è tra le coppie più vicine (posto 240), non risulta cointegrata e l'half-life giornaliera è infinita. Nel report va presentata come scelta nostra e i risultati vanno mostrati anche senza di lei.
+
+**Cosa emerge dai controlli**
+
+- Delle 14 coppie "da manuale", la regola ne seleziona 3 (V-MA, HD-LOW, MCD-YUM). Le altre sono più in basso in classifica o hanno correlazione troppo bassa (per esempio KO-PEP è al posto 240).
+- Nessuna coppia passa tutti i test sul giornaliero. Il legame statistico su 5 anni è debole: i prezzi si sono mossi vicini, ma non c'è una forte prova di ritorno alla media. La lista è quindi un elenco di candidate: la prova che funzionano arriva solo dall'addestramento e dal test sui dati intraday, usato una sola volta.
+- **Robustezza al periodo.** Rifacendo la stessa regola su 10, 15 e 20 anni, solo TFC-USB, BAC-PNC e MCD-YUM restano tra le 9 scelte in almeno 2 finestre su 4. Con più anni i titoli con storia completa scendono da 307 a 226, 143 e 104 (più survivorship bias). Altre coppie più "pulite" dei periodi lunghi (per esempio HAL-SLB, in 3 finestre) non sono state aggiunte: farlo ora, dopo aver visto i risultati, sarebbe adattare la scelta ai dati.
+
+#### Non ancora fatto
+
+- Controllo della **copertura delle notizie** sui 20 titoli delle coppie (l'agente ne ha bisogno).
+- Controllo di **eventi strutturali** nel periodo (acquisizioni, indagini, scissioni) sui 20 titoli.
+- Confronto numerico tra **ampiezza dello spread e costi** di trading (4 operazioni per trade).
+
+#### Limiti da dichiarare nel report
+
+- **Survivorship bias**: l'universo sono i titoli dell'S&P 500 di oggi.
+- **GICS attuale**, non storico: la riclassificazione del 2018 ha spostato alcune aziende.
+- **Un solo periodo di selezione**: le coppie sono scelte sul passato e il legame può cambiare.
+- **Soglie nostre**, senza fonte accademica, e alcune fissate dopo aver visto i primi risultati giornalieri.
+- **Diagnostiche giornaliere** (half-life, cointegrazione): misurano giorni e mesi, mentre i trade durano ore; vanno ricalcolate sull'intraday.
+- **Test multipli**: la distanza classifica migliaia di coppie, quindi alcune sono "vicine per caso". Le coppie testate sono 2.390.
+- **KO-PEP** è una coppia aggiunta per scelta, non selezionata dai dati.
+
+Riferimenti (da verificare prima di citarli): Gatev, Goetzmann e Rouwenhorst (2006), Review of Financial Studies 19(3); Engle e Granger (1987), Econometrica 55(2); Benjamini e Hochberg (1995), Journal of the Royal Statistical Society B 57(1); Vidyamurthy (2004), Pairs Trading, Wiley.
 
 ### Passaggio 2. Dati di prezzo intraday
 
