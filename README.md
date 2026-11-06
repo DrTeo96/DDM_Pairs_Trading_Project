@@ -57,12 +57,20 @@ daily = load("daily")    # oppure "intraday_1m", "sentiment"
 |---|---|
 | [src/data.py](src/data.py) | Dai file grezzi ai dataset puliti, la funzione `load()` e i controlli di qualità |
 | [src/plots.ipynb](src/plots.ipynb) | Grafici: panoramica dei dati, confronto dei prezzi, esploratore di una coppia con lo z-score dello spread, correlazioni, notizie e movimenti di prezzo |
+| [src/coppie.ipynb](src/coppie.ipynb) | Passaggio 1: selezione delle coppie (crea `data/processed/selected_pairs.csv`) |
+| [src/intraday_pulizia.ipynb](src/intraday_pulizia.ipynb) | Passaggio 2: prezzi intraday puliti per coppia (crea `data/processed/pairs_intraday/`) |
+| [src/signals.py](src/signals.py) | Regole dei segnali di pairs trading (spread, z-score con EMA, ingresso e uscita) |
+| [src/segnale_mav.ipynb](src/segnale_mav.ipynb), [src/segnali_coppie.ipynb](src/segnali_coppie.ipynb) | Passaggio 4: segnali, prima su MA-V e poi sulle 10 coppie |
+| [src/news.py](src/news.py) | Passaggio 3: scarica e archivia le notizie di Alpaca (servono le chiavi nel file `.env`, vedi `.env.example`) |
+| [src/notizie_mav.ipynb](src/notizie_mav.ipynb), [src/notizie_coppie.ipynb](src/notizie_coppie.ipynb) | Passaggio 3: qualità e copertura delle notizie, tabella notizie-segnali |
+| `.env.example` | Modello del file `.env` con le chiavi di Alpaca (il file `.env` è privato e git lo ignora) |
 | `pyproject.toml`, `uv.lock`, `.python-version` | Librerie e versioni dell'ambiente: si modificano solo con uv (vedi [docs/setup.md](docs/setup.md)) |
 
 ## Documentazione
 
 | File | Contenuto |
 |---|---|
+| [docs/Programma.md](docs/Programma.md) | Piano del progetto, stato di ogni passaggio, **come rilanciare tutto sul proprio computer** (anche le chiavi di Alpaca) e chi ha fatto cosa |
 | [docs/setup.md](docs/setup.md) | Installare uv, eseguire il codice, aggiungere librerie, cosa fare se qualcosa non funziona |
 | [docs/metrics.md](docs/metrics.md) | Rendimenti della strategia senza lookahead bias, divisione In-Sample / Out-of-Sample, metriche di valutazione |
 | [docs/bloomberg-api.md](docs/bloomberg-api.md) | Bloomberg Desktop API: cosa scaricare e cosa verificare |

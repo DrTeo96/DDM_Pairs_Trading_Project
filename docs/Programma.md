@@ -27,11 +27,11 @@ Le prime quattro decisioni bloccano il lavoro degli altri e vanno chiuse entro i
 | # | Decisione | Opzioni | Proposta di partenza | Entro |
 | --- | --- | --- | --- | --- |
 | 1 | Frequenza delle barre di prezzo | 1 minuto; 5 o 15 minuti; 1 ora | **Deciso: 1 minuto come base**; file a 5, 15 e 60 minuti pronti per il confronto di robustezza (vedi Passaggio 2) | 2 nov |
-| 2 | Fonte delle notizie con orario | API di notizie finanziarie con storico; GDELT; archivio Bloomberg | Verificare lo storico con timestamp di 2 o 3 fonti e sceglierne una | 2 nov |
-| 3 | Periodo dei dati e divisione train/test | Dipende dai punti 1 e 2 | Primi due terzi per addestramento, ultimo terzo per test, usato una volta sola. Ora sappiamo che i giorni sono 96 (91 per 4 coppie): circa 64 e 32 | 6 nov |
+| 2 | Fonte delle notizie con orario | API di notizie finanziarie con storico; GDELT; archivio Bloomberg | Verificare lo storico con timestamp di 2 o 3 fonti e sceglierne una. **Provvisorio: Alpaca (Benzinga), provata sulle 10 coppie, vedi Passaggio 3, dove ci sono anche le altre fonti possibili** | 2 nov |
+| 3 | Periodo dei dati e divisione train/test | Dipende dai punti 1 e 2 | Primi due terzi per addestramento, ultimo terzo per test, usato una volta sola. Ora sappiamo che i giorni sono 96 (91 per 4 coppie): circa 64 e 32. **Applicato: train fino al 16 settembre, test dal 17 settembre, uguali per tutte le 10 coppie (60-64 giorni di train, 31-32 di test)** | 6 nov |
 | 4 | Settori e coppie | Esempi: bevande (KO-PEP), pagamenti (V-MA), energia (XOM-CVX), retail (HD-LOW) | Partire da 4 settori candidati e tenere i 3 con più coppie che passano i test | 6 nov |
-| 5 | Come si calcola lo spread | Differenza di prezzi con hedge ratio; differenza di log-prezzi; rapporto A/B | Prezzi con hedge ratio stimato nel periodo di addestramento, scelta dichiarata nel report | 7 nov |
-| 6 | Parametri del segnale | Finestra EMA, soglia di ingresso, soglia di uscita, stop-loss, tempo massimo | Ingresso a z-score 2, uscita a 0.5, stop a 3.5, tempo massimo di 4 ore; da ottimizzare solo sul periodo di addestramento | 8 nov |
+| 5 | Come si calcola lo spread | Differenza di prezzi con hedge ratio; differenza di log-prezzi; rapporto A/B | Prezzi con hedge ratio stimato nel periodo di addestramento, scelta dichiarata nel report. **Provvisorio sulle 10 coppie: log-prezzi con β = 1 (importi uguali), vedi Passaggio 4** | 7 nov |
+| 6 | Parametri del segnale | Finestra EMA, soglia di ingresso, soglia di uscita, stop-loss, tempo massimo | Ingresso a z-score 2, uscita a 0.5, stop a 3.5, tempo massimo di 4 ore; da ottimizzare solo sul periodo di addestramento. **Provvisorio sulle 10 coppie, uguali per tutte (solo train): emivita 60 minuti, ingresso 2.0, uscita 0, stop 3.5, tempo massimo 90 minuti. I parametri si possono scegliere anche coppia per coppia, vedi Passaggio 4** | 8 nov |
 | 7 | Orari di operatività | Tutta la seduta; senza primi e ultimi 15-30 minuti | Escludere i primi 30 minuti (prezzi molto instabili) e chiudere tutto 15 minuti prima della chiusura | 8 nov |
 | 8 | Costi di trading | Zero; costo fisso per gamba; costo variabile | Test con 0, 2, 5 e 10 basis points per gamba (1 basis point = 0.01%). Risultato principale: scenario realistico | 8 nov |
 | 9 | Dimensione delle posizioni | Importo fisso; proporzionale al segnale | Importo fisso per trade, uguale sulle due gambe, senza leva | 8 nov |
@@ -40,6 +40,78 @@ Le prime quattro decisioni bloccano il lavoro degli altri e vanno chiuse entro i
 | 12 | Versioni da confrontare | Solo agente completo; tre versioni | A: senza agente. B: l'agente può solo bloccare. C: l'agente decide | 9 nov |
 | 13 | Benchmark | Solo S&P 500; più confronti | SPY buy and hold, liquidità (T-bill), e la versione A come confronto più importante | 9 nov |
 | 14 | Cosa consegnare se l'agente non è pronto | Versione minima | Versione A completa più agente testato su un campione di segnali | 6 nov |
+
+## Come rilanciare il lavoro sul proprio computer
+
+Questa sezione dice, nell'ordine, cosa fare per ottenere sul proprio computer gli stessi file e gli stessi risultati descritti nei passaggi 1-4, senza dover chiedere a nessuno. I dati (cartella `data/`) **non sono su git**: ognuno li ricostruisce con i passi qui sotto, a partire dai file Bloomberg. Il codice nuovo (notizie e segnali) va condiviso con un commit; finché non è nel repository, chi non l'ha ricevuto non lo trova.
+
+Tutti i comandi si eseguono **dalla cartella del progetto** (`DDM_Luiss_Project`) nel terminale. Se compare `No module named 'src'`, il terminale è nella cartella sbagliata: entrare nella cartella del progetto con `cd` e riprovare. I notebook si aprono in VS Code scegliendo come kernel l'ambiente del progetto (*Select Kernel → Python Environments → .venv*) e si eseguono dall'alto in basso.
+
+| # | Cosa | Come | Cosa si ottiene | Serve prima |
+| --- | --- | --- | --- | --- |
+| 1 | Installare uv e l'ambiente | Seguire [setup.md](setup.md); poi `uv sync` | cartella `.venv/` | niente |
+| 2 | Dati Bloomberg | Copiare i file in `data/raw/` come descritto nel [README](../README.md) e mettere `data/gics.csv` (classificazione GICS, da Bloomberg) | dati grezzi | chi li ha scaricati da Bloomberg |
+| 3 | Dataset puliti | `uv run python -m src.data` | `data/processed/*_all.parquet` | 2 |
+| 4 | Selezione delle coppie (Passaggio 1) | Eseguire [coppie.ipynb](../src/coppie.ipynb) | `data/processed/selected_pairs.csv` | 3 |
+| 5 | Prezzi intraday per coppia (Passaggio 2) | Eseguire [intraday_pulizia.ipynb](../src/intraday_pulizia.ipynb) | `data/processed/pairs_intraday/` | 4 |
+| 6 | Segnali, prima prova su MA-V (Passaggio 4) | Eseguire [segnale_mav.ipynb](../src/segnale_mav.ipynb) | `signals_MA-V_train.csv` | 5 |
+| 7 | Segnali delle 10 coppie (Passaggio 4) | Eseguire [segnali_coppie.ipynb](../src/segnali_coppie.ipynb) | `signals_10pairs_train.csv` | 5 (il 6 è facoltativo: serve solo a un controllo di coerenza) |
+| 8 | Account e chiavi di Alpaca | Vedi sotto | file `.env` con le proprie chiavi | un account Alpaca |
+| 9 | Notizie (Passaggio 3) | Vedi sotto: `uv run python -m src.news --probe`, poi `uv run python -m src.news` e `uv run python -m src.news --pair ALL10` | `news_MA-V_train.parquet`, `news_ALL10_train.parquet` | 8 |
+| 10 | Notizie e segnali (Passaggio 3) | Eseguire [notizie_mav.ipynb](../src/notizie_mav.ipynb) (serve il 6 e il file MA-V del 9) e [notizie_coppie.ipynb](../src/notizie_coppie.ipynb) (serve il 7 e il file ALL10 del 9) | `news_for_signals_MA-V_train.csv`, `news_for_signals_10pairs_train.csv` | 6, 7, 9 |
+
+I passi 1-5 erano già stati fatti prima dei passaggi 3 e 4; si ripetono solo su un computer nuovo. Un passo si rifà solo quando cambiano i file da cui dipende.
+
+### Passo 8: account e chiavi di Alpaca
+
+Le notizie vengono dall'API gratuita di Alpaca, che chiede due chiavi personali. **Ognuno crea le proprie**: non si scambiano, non si mettono su git e non si incollano in chat, nei notebook o nei documenti. Se per sbaglio vengono condivise, si generano di nuove sul sito.
+
+1. Creare un account gratuito su [alpaca.markets](https://alpaca.markets). Basta il conto **Paper Trading** (simulato, senza soldi veri): serve solo per i dati.
+2. Nella dashboard passare a **Paper Trading** e, nel riquadro **API Keys**, premere **Generate New Keys**. Appaiono due valori: il **Key ID** (di solito inizia con `PK`) e il **Secret Key**, che viene mostrato **una sola volta**: va copiato subito (altrimenti se ne genera un altro). I nomi dei pulsanti potrebbero essere diversi, perché non abbiamo un riferimento aggiornato dell'interfaccia.
+3. Nella cartella del progetto, accanto a `README.md`, creare il file `.env`. Il modo più semplice è copiare il modello `.env.example`:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Aprire `.env` e scrivere i due valori subito dopo l'uguale, senza spazi e senza virgolette:
+
+   ```
+   ALPACA_API_KEY_ID=il_tuo_key_id
+   ALPACA_API_SECRET_KEY=il_tuo_secret_key
+   ```
+
+   Il nome deve essere esattamente `.env` (con il punto, senza `.example`). Su Mac i file che iniziano con il punto sono nascosti nel Finder (`Cmd+Shift+.` per vederli): meglio usare VS Code. Il file è già nel `.gitignore`: non finisce su GitHub.
+
+### Passo 9: scaricare le notizie
+
+```bash
+uv run python -m src.news --probe            # una sola chiamata di prova, non salva niente: dice se le chiavi funzionano e se lo storico è accessibile
+uv run python -m src.news                    # scarica MA e V (174 notizie) in data/raw/news/alpaca/ e crea news_MA-V_train.parquet
+uv run python -m src.news --pair ALL10       # scarica i 20 titoli delle 10 coppie (1250 notizie) e crea news_ALL10_train.parquet
+```
+
+Lo scaricamento usa i giorni dal 1 giugno al 16 settembre 2026 (train e due settimane prima). Il periodo di test non si scarica. Le risposte di Alpaca vengono salvate come arrivano in `data/raw/news/alpaca/`, così i risultati si possono riprodurre. Se le chiavi sono sbagliate il messaggio d'errore lo dice (`401`); se mancano, il programma si ferma e indica quale chiave manca. Il piano gratuito ha un limite di chiamate al minuto: il programma aspetta tra una chiamata e l'altra e riprova se lo supera.
+
+## Chi ha fatto cosa
+
+Registro del lavoro dei passaggi 3 e 4, scritto perché tutto il gruppo sappia cosa è stato fatto, da chi e come ripeterlo. Il codice e i notebook sono stati scritti con **Claude Code** (assistente AI di Anthropic) su richiesta e con le decisioni di Bea; Claude Code ha anche eseguito i notebook e scritto la documentazione di questo file. Le decisioni, le credenziali e i comandi lanciati da Bea sono segnati sotto.
+
+| Cosa | Chi | Note |
+| --- | --- | --- |
+| Scegliere di provare prima una sola coppia, **MA-V**, e di dividere i dati intraday in train e test | **Bea** | Il taglio (64 giorni di train, 32 di test) è stato proposto da Claude Code e accettato da Bea |
+| Scegliere la **EMA continua** per lo z-score (con confronto con quella azzerata ogni giorno) | **Bea** | |
+| Chiedere di documentare tutto in modo che il gruppo possa seguire e rilanciare | **Bea** | Notebook con spiegazioni e motivazioni; questo file |
+| Passaggio 4 su MA-V: codice, notebook, scelta dei parametri | Claude Code | Regola di scelta dei parametri scritta prima di guardare i risultati |
+| Creare l'account Alpaca e generare le chiavi API | **Bea** | Le chiavi sono solo sul suo computer, nel file `.env`: non sono nel repository e non vanno condivise |
+| Creare il file `.env` con le chiavi | **Bea** | Dal modello `.env.example` |
+| Chiamata di prova all'API (`--probe`) | **Bea** | Dal terminale. Esito: chiavi accettate, storico di giugno-settembre accessibile |
+| Scaricare le notizie di MA e V (`python -m src.news`) | **Bea** | Dal terminale: 174 notizie |
+| Scrivere il codice di scaricamento (`src/news.py`) e i notebook delle notizie | Claude Code | |
+| Estendere segnali e notizie alle altre 9 coppie, **con parametri uguali per tutte** | Decisione di **Bea** | Claude Code ha scritto il codice ed eseguito i notebook |
+| Scaricare le notizie dei 20 titoli (`--pair ALL10`) | Claude Code, con le chiavi di Bea | Su richiesta di Bea ("estendi alle altre coppie"): 1250 notizie |
+| Chiedere di segnare che i parametri possono essere scelti anche coppia per coppia, e di elencare altre fonti di notizie | **Bea** | Nei passaggi 3 e 4 |
+| Controllo a mano degli orari delle notizie | **Da fare** | Vedi Passaggio 3, decisione 1 |
 
 ## La pipeline passo per passo
 
@@ -239,7 +311,11 @@ Risultato: 40 file puliti (10 coppie × 4 frequenze) più una tabella di qualit�
 
 ### Passaggio 3. Archivio delle notizie
 
+Stato: **fatto in via sperimentale con Alpaca (fonte Benzinga), sul periodo di addestramento, per le 10 coppie**. Il lavoro è nel modulo [src/news.py](../src/news.py) (scaricamento e archivio locale) e in due notebook, con codice, motivazioni e controlli: [src/notizie_mav.ipynb](../src/notizie_mav.ipynb) (prima prova su MA-V) e [src/notizie_coppie.ipynb](../src/notizie_coppie.ipynb) (le 10 coppie). Le risposte grezze sono in `data/raw/news/alpaca/` e le tabelle in `data/processed/` (cartelle ignorate da git: chi le vuole rilancia `python -m src.news --pair ALL10` e i notebook). Servono le chiavi API di Alpaca nel file `.env`, che git ignora: **ognuno crea le sue** e non le condivide. I passi per crearle e per rilanciare tutto sono nella sezione [Come rilanciare il lavoro sul proprio computer](#come-rilanciare-il-lavoro-sul-proprio-computer); chi ha fatto cosa è nel [registro](#chi-ha-fatto-cosa).
+
 Perché: l'agente deve poter leggere solo le notizie uscite prima di ogni segnale, altrimenti vede il futuro.
+
+#### Cosa prevedeva il programma
 
 - Scaricare i titoli delle notizie per le aziende scelte, con data e ora esatte.
 - Salvare in una tabella: orario, titolo, fonte, azienda, link, nello stesso fuso orario dei prezzi.
@@ -249,9 +325,81 @@ Risultato: una tabella di notizie con orario.
 
 Attenzione: se per un segnale non si trova nessuna notizia, non significa che non ne siano uscite. Le fonti hanno copertura incompleta. Va scritto nel report.
 
+#### Cosa abbiamo fatto
+
+1. **Fonte: API delle notizie di Alpaca** (Benzinga). **Bea** ha creato l'account e le chiavi e ha lanciato una chiamata di prova, con la quale abbiamo verificato che le chiavi funzionano e che lo storico di giugno-settembre 2026 è accessibile col piano gratuito; ha orario di pubblicazione preciso, filtro per ticker e per data e ora, 50 notizie per pagina. Non abbiamo confrontato altre fonti.
+2. **Scaricamento dei 20 titoli delle 10 coppie, dal 1 giugno al 16 settembre 2026**: 1250 notizie uniche (di cui 174 su MA e V). Le notizie di MA e V le ha scaricate **Bea** dal terminale; quelle dei 20 titoli sono state scaricate da Claude Code con le chiavi di Bea, su sua richiesta. Si parte due settimane prima del train perché l'agente guarda indietro dal segnale. Il test (dal 17 settembre) **non è stato scaricato**. Ogni pagina grezza è salvata, così il risultato è riproducibile.
+3. **Tabella pulita**: una riga per notizia con orario di pubblicazione (`created_at`) in ora di New York senza indicazione del fuso, come i prezzi, titolo, sommario, fonte, link, tutti i ticker citati e una colonna per ogni titolo delle coppie.
+4. **Niente lookahead**: si usa `created_at` e non `updated_at` (l'ultimo aggiornamento può essere molto più tardi; in pratica solo l'1% delle notizie è aggiornato più di un'ora dopo). Per un segnale alla barra *t* si usano solo le notizie con orario fino a *t*.
+5. **Notizie "mirate"**: una notizia è mirata se cita al massimo 3 ticker; le altre sono elenchi generici (fino a 128 ticker), che restano nella tabella ma sono segnate.
+6. **Tabella notizie-segnali**: per ognuno dei 624 segnali del Passaggio 4 si salvano le notizie delle ultime 24 ore che citano uno dei due titoli della coppia, con quanti minuti prima sono uscite (`data/processed/news_for_signals_10pairs_train.csv`). Sarà l'input del Passaggio 5.
+
+#### Risultati sul train
+
+| | |
+|---|---|
+| Notizie uniche sui 20 titoli | **1250**, tutte Benzinga; 67% mirate; 48% a mercato aperto; 34 titoli duplicati |
+| Copertura per titolo | da 9 notizie (OTIS) e 11 (ITW) a 222 (GS); per coppia da **0.19 notizie al giorno (ITW-OTIS)** a 2.5 (BNY-GS) |
+| Segnali con almeno una notizia nelle ultime 24 ore | **347 su 624 (56%)** |
+| Segnali con una notizia **mirata** nelle ultime 2 / 6 / 24 ore | 13% / 24% / 42% (circa 84 / 150 / 261 segnali) |
+| Orari casuali alla stessa ora del giorno, per confronto | 15% / 25% / 43% |
+| Guadagno lordo dei trade con una notizia mirata nelle ultime 6 ore | 13.6 bps (150 trade, errore 5.9) contro 4.6 bps (474 trade, errore 2.0) senza |
+
+#### Cosa abbiamo fatto in modo diverso dal programma
+
+| Tema | Programma | Cosa abbiamo fatto | Perché |
+| --- | --- | --- | --- |
+| Fonti | Verificare 2 o 3 fonti e sceglierne una (Passaggio 0) | Provata solo Alpaca | È gratuita, ha orario preciso e l'accesso è immediato; le altre sono elencate sotto, da provare se la copertura non basta |
+| Contenuto | Titolo | Titolo e sommario, senza il testo completo | Il programma parte dal titolo; il testo completo è molto più pesante |
+| Periodo | Notizie fino a ogni segnale | Dal 1 giugno al 16 settembre | Le due settimane prima del train servono alla finestra all'indietro |
+
+#### Cosa ci dicono i risultati
+
+- **Le notizie sono poche e distribuite male.** Una sola fonte, in media circa 1.2 notizie al giorno per coppia (1.6 per MA-V). ITW-OTIS ha 20 notizie in tre mesi e mezzo: per quella coppia l'agente non avrà quasi mai niente da leggere.
+- **I segnali non coincidono con le notizie.** La quota di segnali con una notizia è uguale a quella di orari casuali alla stessa ora del giorno (per esempio 24% contro 25% a 6 ore con notizie mirate). Non si vede una relazione tra una notizia e un movimento anomalo dello spread. Attenzione: confrontare con orari di tutta la giornata, e non della stessa ora, fa sembrare i segnali poveri di notizie solo perché il 43% dei segnali è subito dopo l'apertura, quando le ultime ore includono la notte.
+- **Le notizie vere sono rare.** Quelle che l'agente leggerebbe sono per lo più cambi di target price e giudizi degli analisti, annunci di prodotto ed elenchi di titoli; i fatti strutturali su una sola azienda sono pochi (un esempio: la vendita di Pizza Hut da parte di Yum!, 171 minuti prima di un segnale su MCD-YUM).
+- **Con le 10 coppie il Passaggio 5 diventa fattibile**: circa 150 segnali con notizie mirate nelle ultime 6 ore (circa 15 su MA-V da sola), 260-350 con 24 ore, cioè poche centinaia di chiamate al modello. Il confronto tra le versioni A, B e C resta comunque incerto (errori standard di 6-10 bps).
+- **Descrittivo, non una prova**: i trade con una notizia mirata guadagnano di più (13.6 contro 4.6 bps a 6 ore), cioè il contrario di quello che direbbe l'ipotesi del progetto, ma la differenza è di 1.3-1.8 errori standard, e una notizia qualsiasi non è un fatto strutturale. Per saperlo serve la classificazione del Passaggio 5.
+
+#### Decisioni ancora da prendere
+
+1. **Orario vero di pubblicazione.** Non si può controllare dai dati: il gruppo apre a mano i link di 10 notizie (tabella nel notebook, parte 4), confronta l'orario con la pagina originale e scrive l'esito.
+2. **Aggiungere altre fonti?** Vedi sotto. Conviene decidere dopo aver visto, nel Passaggio 5, se la copertura basta; la seconda fonte serve soprattutto alle coppie con poche notizie.
+3. **Finestra di ricerca**: 2, 6 o 24 ore. Il programma lascia da decidere la lunghezza; si può partire da 6 ore e confrontare.
+4. **Duplicati e notizie con molti ticker**: raggruppare i titoli simili e decidere se l'agente vede anche gli elenchi generici.
+5. **Classificazione a mano** di 30-50 segnali con notizia (programma, Passaggio 5), per misurare l'accordo con l'agente.
+
+#### Altre fonti che possiamo aggiungere
+
+Le informazioni vengono da guide e confronti di terzi che spesso si contraddicono su limiti e piani gratuiti: **nessuna è stata provata**. Per ognuna va fatta la stessa verifica fatta su Alpaca, con una chiamata di prova: storico di giugno-settembre 2026, orario di pubblicazione, filtro per ticker e per data e ora, limiti del piano gratuito, condizioni d'uso.
+
+| Fonte | Cosa offre | Dubbi da verificare |
+| --- | --- | --- |
+| **Marketaux** | Notizie per ticker con sentiment; piano gratuito indicato a 100 richieste al giorno | Profondità dello storico e numero di articoli per richiesta |
+| **Finnhub** | Notizie per azienda; 60 chiamate al minuto nel piano gratuito | Le fonti discordano su cosa sia gratuito; licenza per uso personale |
+| **Alpha Vantage** | Notizie con sentiment e filtro per ticker | Limiti gratuiti discordanti (5 o 25 richieste al giorno) |
+| **GDELT** | Gratuita, senza chiave, ricerca dal 2017 | Non è finanziaria: la ricerca per nome è ambigua (con "Visa" si trovano anche i visti di viaggio); l'orario è quello in cui GDELT vede l'articolo, non quello di pubblicazione; massimo 250 articoli per richiesta |
+| **Bloomberg** | Già nel progetto: sentiment e numero di notizie *giornalieri* (`sentiment_all.parquet`, vedi [bloomberg-api.md](bloomberg-api.md)) | Senza orario: per un segnale di giornata rischia di includere notizie successive; si può usare solo il valore del giorno prima |
+
+Ordine consigliato: **Marketaux e Finnhub** per prime (notizie per ticker con orario); GDELT come fonte generale, ma richiede filtri per non raccogliere rumore; Bloomberg è un tipo di dato diverso (un indicatore giornaliero, non titoli con orario). Una seconda fonte di titoli porta duplicati con Benzinga, da raggruppare.
+
+#### Limiti da dichiarare nel report
+
+- Una sola fonte (Benzinga via Alpaca) e copertura incompleta: "nessuna notizia trovata" non vuol dire "non è successo niente".
+- I ticker sono assegnati da Benzinga: una notizia associata a un titolo non è per forza su quell'azienda.
+- Orari non ancora verificati a mano.
+- Solo titolo e sommario, non il testo completo.
+- Segnali non indipendenti tra coppie: il 25% dei trade ha un segnale di un'altra coppia nello stesso minuto, quindi gli errori standard sono sottostimati.
+
+Risultato: una tabella di 1250 notizie con orario (`news_ALL10_train.parquet`) e una tabella notizie-segnali per i 624 segnali del train.
+
 ### Passaggio 4. Spread e segnale
 
+Stato: **fatto in via sperimentale, solo sul periodo di addestramento**, su richiesta e con le scelte di Bea (vedi il [registro](#chi-ha-fatto-cosa)): prima su MA-V ([src/segnale_mav.ipynb](../src/segnale_mav.ipynb), con codice, motivazioni e controlli), poi esteso alle 10 coppie con parametri uguali per tutte ([src/segnali_coppie.ipynb](../src/segnali_coppie.ipynb); le regole sono nel modulo [src/signals.py](../src/signals.py)). I segnali sono in `data/processed/signals_MA-V_train.csv` e `data/processed/signals_10pairs_train.csv` (cartella ignorata da git: chi li vuole rilancia i notebook). Il periodo di test non è stato calcolato.
+
 Perché: è il cuore matematico della strategia, indipendente dall'agente.
+
+#### Cosa prevedeva il programma
 
 Prima si costruisce lo spread, cioè la distanza tra i due prezzi, dove A e B sono i due titoli della coppia e β è l'hedge ratio:
 
@@ -277,6 +425,101 @@ Regole proposte, tutte da testare:
 Risultato: per ogni coppia, una serie di segnali con orario e direzione.
 
 Attenzione: il segnale si calcola con i dati fino alla chiusura della barra t e l'ordine si esegue alla barra t+1. Eseguire alla stessa barra è lookahead bias (Lezione 2).
+
+#### Cosa abbiamo fatto (prima prova su MA-V)
+
+1. **Coppia e divisione dei dati.** MA-V, la prima per distanza (Passaggio 1). Taglio cronologico per giorni interi: **train = primi 64 giorni (16 giugno - 16 settembre), test = ultimi 32 (17 settembre - 30 ottobre)**. Il test non è stato calcolato.
+2. **Spread in logaritmi con β = 1**: $S_t = \ln P^{MA}_t - \ln P^{V}_t$. Con importi uguali sulle due gambe (decisione 9) il guadagno della posizione è la differenza dei due rendimenti, che è esattamente la variazione di questo spread. Confronto con β stimato dalla regressione sul train: β = 1.37, ma significherebbe importi diversi sulle due gambe.
+3. **Z-score con EMA continua** sull'intera serie, giorno dopo giorno (la notte conta come una barra). Nel notebook c'è il confronto con l'EMA azzerata ogni mattina. Verificato che lo z-score di una barra non usa dati futuri.
+4. **Regole.** Ingresso a $|z| \ge$ soglia alla chiusura della barra t, esecuzione all'apertura della barra t+1. Una posizione alla volta. Uscita al primo tra: rientro, stop-loss, tempo massimo, fine giornata (all'ultima barra). Niente ingressi nei primi 15 e negli ultimi 30 minuti. **Decisione B del Passaggio 2 applicata (opzione 2):** non si apre se una delle due gambe ha la barra del segnale riempita.
+5. **Parametri provati solo sul train**: emivita 30, 60, 120, 240 minuti; ingresso 1.5, 2.0, 2.5, 3.0; uscita 0 o 0.5 (32 combinazioni per tipo di EMA). Regola di scelta scritta prima di guardare i risultati: tra le combinazioni con almeno 30 trade, quella con il guadagno lordo medio più alto, poi controllo che le combinazioni vicine siano positive.
+6. **Parametri scelti:** emivita 120 minuti, ingresso 2.0, uscita 0, stop a 3.5 (ingresso + 1.5), tempo massimo 90 minuti.
+
+#### Risultati sul train (MA-V)
+
+| | |
+|---|---|
+| Trade | **56** (0.9 al giorno, in 46 giorni su 64) |
+| Guadagno **lordo** medio per trade | **10.3 bps** (mediano 9.3; errore standard 3.2; 68% in positivo) |
+| Combinazioni vicine con guadagno positivo | 8 su 8 |
+| Uscite | rientro 20 (+28.2 bps), tempo 31 (-1.9), fine giornata 4 (+21.3), stop 1 (-12.9) |
+| Barre candidate scartate per gamba riempita | 2 |
+
+Con la EMA azzerata ogni giorno il risultato è peggiore: migliore combinazione 5.7 bps (39 trade).
+
+#### Cosa abbiamo fatto in modo diverso dal programma
+
+| Tema | Programma | Cosa abbiamo fatto | Perché |
+| --- | --- | --- | --- |
+| Spread | Prezzi con hedge ratio stimato (decisione 5) | Log-prezzi con β = 1 | Coerente con importi uguali sulle gambe (decisione 9) |
+| Uscita | z = 0.5 | z = 0 (0.5 dà risultati simili, vedi notebook) | Scelta con la regola sul train |
+| Tempo massimo | 4 ore | 90 minuti | Assunzione nostra, non ottimizzata. Solo 36% dei trade rientra entro 90 minuti: da rivedere |
+| Orari | Escludere i primi 30 minuti (decisione 7) | Primi 15 minuti esclusi | Con l'EMA continua metà dei segnali nasce subito dopo, sul gap della notte (vedi sotto) |
+| Trigger secondario | Da decidere | Non implementato | Si salva solo `leg_piu_mosso`, descrittivo |
+
+#### Cosa ci dicono i risultati su MA-V
+
+- **Lo spread di MA-V rientra lentamente**: emivita di circa 5 giorni di seduta, il livello cambia da un giorno all'altro di circa 190 punti base contro circa 18 dentro la giornata. Sullo spread con β = 1 il test ADF non rifiuta la camminata casuale (p = 0.44); Engle-Granger dà p = 0.03. La cointegrazione del Passaggio 1 (dati giornalieri) non è confermata con forza sull'intraday.
+- **Il segnale c'è ma è piccolo**: 10 bps lordi, circa 3 errori standard. I costi (4 operazioni per trade) non sono inclusi: non sappiamo ancora se il guadagno netto resta positivo.
+- **Gap della notte**: 29 trade su 56 entrano tra i minuti 15 e 30. È in parte una strategia di rientro del gap della notte, diversa dall'anomalia dentro la giornata. Il guadagno medio di questi trade è simile al totale, ma va dichiarato.
+- **Il massimo della griglia inganna**: la combinazione col guadagno più alto (38.7 bps) ha 4 trade, per questo la regola chiede almeno 30 trade.
+
+#### Estensione alle 10 coppie (parametri uguali per tutte, scelta di Bea)
+
+Notebook: [src/segnali_coppie.ipynb](../src/segnali_coppie.ipynb). Segnali: `data/processed/signals_10pairs_train.csv`.
+
+**Cosa abbiamo fatto**
+
+1. **Stesse regole di MA-V**, spostate in funzioni ([src/signals.py](../src/signals.py)). Controllo: su MA-V il nuovo codice riproduce esattamente i 56 trade della prima prova (stessi orari, stessi guadagni). Controllo anche che lo z-score non usi dati futuri, su ogni coppia.
+2. **Stesso taglio per tutte le coppie**, in date di calendario: train fino al 16 settembre (64 giorni; 60 per CSX-UNP, BNY-GS, HD-LOW, TFC-USB, a cui mancano 4 giorni di settembre), test dal 17 settembre, non calcolato.
+3. **Prova della griglia** (4 emivite × 4 soglie di ingresso × 2 di uscita) su **tutte le coppie insieme**, solo sul train. Regola di scelta scritta prima di guardare i risultati: tra le combinazioni con almeno 300 trade (in media 30 per coppia), il guadagno lordo medio più alto; poi si controlla che le combinazioni vicine siano positive e in quante coppie su 10 il guadagno è positivo.
+4. **Parametri scelti, uguali per tutte:** emivita 60 minuti, ingresso 2.0, uscita 0, stop 3.5, tempo massimo 90 minuti, nessun ingresso nei primi 15 e negli ultimi 30 minuti. (Per MA-V da sola era 120; con 60 MA-V fa 7.5 bps su 75 trade, contro 10.3 su 56.)
+5. **Confronti nel notebook**: EMA azzerata ogni giorno; parametri scelti coppia per coppia (solo informativo).
+
+**Parametri uguali o scelti coppia per coppia.** **[SCELTA provvisoria]** Per ora **uguali per tutte le coppie**, scelti sui trade di tutte insieme. **Si possono scegliere anche coppia per coppia**: si ripete la griglia per ogni coppia con una regola di scelta (nel notebook, parte 6: almeno 20 trade, guadagno medio più alto). Il codice è già pronto e il risultato è nella tabella del notebook. Pro: ogni coppia ha la sua velocità di rientro. Contro: con circa 60 giorni di train per coppia, 32 combinazioni per coppia moltiplicano il rischio di test multipli, e il guadagno "migliore" è misurato sugli stessi dati su cui è scelto, quindi è ottimistico. Nel train i parametri migliori cambiano da coppia a coppia senza un andamento chiaro (emivita 30-120, ingresso 1.5-2.5), con guadagni molto più alti ma su 20-30 trade (per esempio MCD-YUM da 9.7 a 31.2 bps). **Per ora non conviene**; da riconsiderare con più dati, oppure valutando la scelta per coppia sul test con i parametri bloccati.
+
+#### Risultati sul train (10 coppie)
+
+| | |
+|---|---|
+| Trade | **624** (circa 1 al giorno per coppia, 10 al giorno in tutto) |
+| Guadagno **lordo** medio per trade | **6.8 bps** (errore standard 2.1; mediano 10.4; 59% in positivo) |
+| Senza PYPL-XYZ (la coppia col guadagno più alto, 29.6 bps) | 564 trade, **4.3 bps** (errore 1.8), 7 coppie su 9 positive |
+| Coppie con guadagno medio positivo | 8 su 10 (MA-V 7.5, TFC-USB -1.6, BAC-PNC -3.8, CSX-UNP 6.8, PYPL-XYZ 29.6, BNY-GS 9.6, HD-LOW 4.4, ITW-OTIS 3.2, MCD-YUM 9.7, KO-PEP 3.5) |
+| Combinazioni vicine con guadagno positivo | 8 su 8 |
+| Uscite | rientro 301 trade (+37.1 bps), tempo 267 (-21.5), fine giornata 42 (-16.1), stop 14 (-38.1) |
+| Entrate nei minuti 15-30 dall'apertura | 271 trade (43%), **80% del guadagno lordo totale** (12.4 bps in media); dopo i 30 minuti 2.4 bps (errore 2.1) |
+| Con EMA azzerata ogni giorno | 1.5 bps (792 trade) |
+| Barre candidate scartate per gamba ferma | 183; 111 trade (18%) eseguiti a un prezzo vecchio |
+
+#### Cosa ci dicono i risultati sulle 10 coppie
+
+- **Il segnale c'è anche sulle altre coppie ma è piccolo e fragile.** Circa 7 bps lordi per trade, 4 senza la coppia migliore, con errori standard di 4-8 bps su quasi tutte le coppie prese da sole. I costi (4 operazioni per trade) non sono ancora inclusi: il margine è stretto.
+- **Il guadagno viene quasi tutto dalle entrate subito dopo l'apertura**, cioè dal rientro del gap della notte reso visibile dalla EMA continua. Con la EMA azzerata il guadagno è vicino a zero.
+- **Rientra solo la metà dei trade** (48%); chi non rientra entro 90 minuti perde in media 21 bps. Il tempo massimo non è ottimizzato.
+- **La cointegrazione intraday non si conferma** nel train: il test di Engle-Granger è sotto 0.05 solo per MA-V, il test ADF per nessuna coppia. L'emivita dello spread va da 3 a 10 giorni. La selezione del Passaggio 1 era fatta sui dati giornalieri di 20 anni; questo controllo è su 3 mesi, quindi non c'è contraddizione, ma la relazione non è abbastanza forte sull'orizzonte di una giornata.
+- **Il minuto è troppo corto per 5 coppie**: nel 42-49% dei minuti uno dei due titoli non scambia (BAC-PNC, CSX-UNP, BNY-GS, ITW-OTIS, MCD-YUM; HD-LOW 36%). KO-PEP è la più pulita (3%).
+- **Segnali non indipendenti**: il 25% dei trade ha un segnale di un'altra coppia nello stesso minuto (spesso movimenti di tutto il mercato), quindi gli errori standard sono sottostimati.
+
+#### Decisioni ancora da prendere
+
+1. **Parametri uguali o scelti coppia per coppia** (vedi sopra): per ora uguali.
+2. **Gap della notte**: tenere i trade del mattino (sono la fonte quasi unica del guadagno) o alzare l'esclusione dei primi minuti (decisione 7). Se si tengono, vanno descritti come strategia di rientro del gap della notte.
+3. **Coppie con la gamba ferma** (decisione B del Passaggio 2): segnale su barre da 5 minuti per quelle coppie, oppure tenerle al minuto dichiarando il limite.
+4. **Parametri non ottimizzati**: tempo massimo (90 minuti), stop, orari di esclusione.
+5. **Trigger secondario** (un solo titolo che si muove in modo anomalo): non implementato.
+6. **Cointegrazione intraday debole**: rivedere la selezione delle coppie o accettare il limite.
+7. **Costi** (Passaggio 6): sono la prova decisiva per sapere se 4-7 bps lordi sopravvivono. Uso del test (dal 17 settembre) una sola volta, con i parametri bloccati.
+
+#### Limiti da dichiarare nel report
+
+- Circa 3 mesi di dati, un solo tipo di mercato; 10 coppie.
+- 32 combinazioni provate: rischio di test multipli, mitigato da minimo di trade, controllo dei vicini e test finale.
+- Gli errori standard assumono trade indipendenti: i trade non lo sono (stessi giorni, coppie dello stesso settore).
+- Guadagni lordi: niente costi, impatto sul prezzo, costo di prestito dei titoli.
+- Prezzi di esecuzione vecchi nel 18% dei trade; prezzi non aggiustati per i dividendi (Passaggio 2).
+
+Risultato: una tabella di 624 segnali del train per le 10 coppie con orario, direzione, z, prezzi, motivo di uscita e guadagno lordo (e una di 56 segnali per MA-V con i parametri della prima prova).
 
 ### Passaggio 5. Agente di notizie
 
@@ -496,7 +739,7 @@ Dichiarare i limiti in modo esplicito è un punto di forza, come nel report dell
 - Costi: commissioni, spread tra prezzo di acquisto e di vendita e slippage (differenza tra prezzo atteso e ottenuto) sono stimati, non misurati.
 - Short selling: si assume che sia sempre possibile, senza costi di prestito.
 - Esecuzione ideale: gli ordini si eseguono al prezzo della barra successiva, senza effetto sul mercato.
-- Notizie: la copertura delle fonti è incompleta, l'agente legge solo il titolo, e nessuna notizia trovata non vuol dire nessuna notizia uscita.
+- Notizie: la copertura delle fonti è incompleta (finora una sola, Benzinga via Alpaca, circa 1 notizia al giorno per coppia), l'agente legge solo il titolo e il sommario, e nessuna notizia trovata non vuol dire nessuna notizia uscita.
 - LLM: il modello può già conoscere gli eventi del periodo testato, e questo falsa il test.
 - Coppie: scelte sul passato. Il legame tra due aziende può rompersi in futuro, ed è proprio il rischio che l'agente deve intercettare.
 - Win rate: da solo non basta a dire che la strategia guadagna. Contano anche l'importo medio di vincite e perdite (profit factor).
