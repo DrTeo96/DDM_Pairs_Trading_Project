@@ -1,0 +1,504 @@
+ticker,symbol,nome
+A UN Equity,A,Agilent Technologies
+AAPL UW Equity,AAPL,Apple
+ABBV UN Equity,ABBV,AbbVie
+ABNB UW Equity,ABNB,Airbnb
+ABT UN Equity,ABT,Abbott Laboratories
+ACGL UW Equity,ACGL,Arch Capital Group
+ACN UN Equity,ACN,Accenture
+ADBE UW Equity,ADBE,Adobe
+ADI UW Equity,ADI,Analog Devices
+ADM UN Equity,ADM,Archer-Daniels-Midland
+ADP UW Equity,ADP,Automatic Data Processing
+ADSK UW Equity,ADSK,Autodesk
+AEE UN Equity,AEE,Ameren
+AEP UW Equity,AEP,American Electric Power
+AES UN Equity,AES,AES Corporation
+AFL UN Equity,AFL,Aflac
+AIG UN Equity,AIG,American International Group
+AIZ UN Equity,AIZ,Assurant
+AJG UN Equity,AJG,Arthur J. Gallagher
+AKAM UW Equity,AKAM,Akamai Technologies
+ALB UN Equity,ALB,Albemarle
+ALGN UW Equity,ALGN,Align Technology
+ALL UN Equity,ALL,Allstate
+ALLE UN Equity,ALLE,Allegion
+AMAT UW Equity,AMAT,Applied Materials
+AMCR UN Equity,AMCR,Amcor
+AMD UW Equity,AMD,Advanced Micro Devices
+AME UN Equity,AME,Ametek
+AMGN UW Equity,AMGN,Amgen
+AMP UN Equity,AMP,Ameriprise Financial
+AMT UN Equity,AMT,American Tower
+AMZN UW Equity,AMZN,Amazon
+ANET UN Equity,ANET,Arista Networks
+AON UN Equity,AON,Aon
+AOS UN Equity,AOS,A. O. Smith
+APA UW Equity,APA,APA Corporation
+APD UN Equity,APD,Air Products
+APH UN Equity,APH,Amphenol
+APO UN Equity,APO,Apollo Global Management
+APP UW Equity,APP,AppLovin
+APTV UN Equity,APTV,Aptiv
+ARE UN Equity,ARE,Alexandria Real Estate Equities
+ARES UN Equity,ARES,Ares Management
+ATO UN Equity,ATO,Atmos Energy
+AVGO UW Equity,AVGO,Broadcom
+AVY UN Equity,AVY,Avery Dennison
+AWK UN Equity,AWK,American Water Works
+AXON UW Equity,AXON,Axon Enterprise
+AXP UN Equity,AXP,American Express
+AZO UN Equity,AZO,AutoZone
+BA UN Equity,BA,Boeing
+BAC UN Equity,BAC,Bank of America
+BALL UN Equity,BALL,Ball Corporation
+BAX UN Equity,BAX,Baxter International
+BBY UN Equity,BBY,Best Buy
+BDX UN Equity,BDX,Becton Dickinson
+BE UN Equity,BE,Bloom Energy
+BEN UN Equity,BEN,Franklin Resources
+BF-B UN Equity,BF-B,Brown-Forman (classe B)
+BG UN Equity,BG,Bunge
+BIIB UW Equity,BIIB,Biogen
+BKNG UW Equity,BKNG,Booking Holdings
+BKR UW Equity,BKR,Baker Hughes
+BLK UN Equity,BLK,BlackRock
+BMY UN Equity,BMY,Bristol-Myers Squibb
+BNY UN Equity,BNY,BNY (Bank of New York Mellon)
+BR UN Equity,BR,Broadridge Financial Solutions
+BRK-B UN Equity,BRK-B,Berkshire Hathaway (classe B)
+BRO UN Equity,BRO,Brown & Brown
+BSX UN Equity,BSX,Boston Scientific
+BX UN Equity,BX,Blackstone
+BXP UN Equity,BXP,BXP (Boston Properties)
+C UN Equity,C,Citigroup
+CAH UN Equity,CAH,Cardinal Health
+CARR UN Equity,CARR,Carrier Global
+CASY UW Equity,CASY,Casey's General Stores
+CAT UN Equity,CAT,Caterpillar
+CB UN Equity,CB,Chubb
+CBOE UF Equity,CBOE,Cboe Global Markets
+CBRE UN Equity,CBRE,CBRE Group
+CCI UN Equity,CCI,Crown Castle
+CCL UN Equity,CCL,Carnival
+CDNS UW Equity,CDNS,Cadence Design Systems
+CDW UW Equity,CDW,CDW
+CEG UW Equity,CEG,Constellation Energy
+CF UN Equity,CF,CF Industries
+CFG UN Equity,CFG,Citizens Financial Group
+CHD UN Equity,CHD,Church & Dwight
+CHRW UW Equity,CHRW,C.H. Robinson
+CHTR UW Equity,CHTR,Charter Communications
+CI UN Equity,CI,Cigna
+CIEN UN Equity,CIEN,Ciena
+CINF UW Equity,CINF,Cincinnati Financial
+CL UN Equity,CL,Colgate-Palmolive
+CLX UN Equity,CLX,Clorox
+CMCSA UW Equity,CMCSA,Comcast
+CME UW Equity,CME,CME Group
+CMG UN Equity,CMG,Chipotle Mexican Grill
+CMI UN Equity,CMI,Cummins
+CMS UN Equity,CMS,CMS Energy
+CNC UN Equity,CNC,Centene
+CNP UN Equity,CNP,CenterPoint Energy
+COF UN Equity,COF,Capital One
+COHR UN Equity,COHR,Coherent
+COIN UW Equity,COIN,Coinbase
+COO UW Equity,COO,Cooper Companies
+COP UN Equity,COP,ConocoPhillips
+COR UN Equity,COR,Cencora
+COST UW Equity,COST,Costco
+CPAY UN Equity,CPAY,Corpay
+CPRT UW Equity,CPRT,Copart
+CPT UN Equity,CPT,Camden Property Trust
+CRH UN Equity,CRH,CRH
+CRL UN Equity,CRL,Charles River Laboratories
+CRM UN Equity,CRM,Salesforce
+CRWD UW Equity,CRWD,CrowdStrike
+CSCO UW Equity,CSCO,Cisco Systems
+CSGP UW Equity,CSGP,CoStar Group
+CSX UW Equity,CSX,CSX
+CTAS UW Equity,CTAS,Cintas
+CTSH UW Equity,CTSH,Cognizant
+CVNA UN Equity,CVNA,Carvana
+CVS UN Equity,CVS,CVS Health
+CVX UN Equity,CVX,Chevron
+D UN Equity,D,Dominion Energy
+DAL UN Equity,DAL,Delta Air Lines
+DASH UW Equity,DASH,DoorDash
+DD UN Equity,DD,DuPont
+DDOG UW Equity,DDOG,Datadog
+DE UN Equity,DE,Deere & Company
+DECK UN Equity,DECK,Deckers Outdoor
+DELL UN Equity,DELL,Dell Technologies
+DG UN Equity,DG,Dollar General
+DGX UN Equity,DGX,Quest Diagnostics
+DHI UN Equity,DHI,D.R. Horton
+DHR UN Equity,DHR,Danaher
+DIS UN Equity,DIS,Walt Disney
+DLR UN Equity,DLR,Digital Realty
+DLTR UW Equity,DLTR,Dollar Tree
+DOC UN Equity,DOC,Healthpeak Properties
+DOV UN Equity,DOV,Dover
+DOW UN Equity,DOW,Dow
+DPZ UW Equity,DPZ,Domino's Pizza
+DRI UN Equity,DRI,Darden Restaurants
+DTE UN Equity,DTE,DTE Energy
+DUK UN Equity,DUK,Duke Energy
+DVA UN Equity,DVA,DaVita
+DVN UN Equity,DVN,Devon Energy
+DXCM UW Equity,DXCM,DexCom
+EBAY UW Equity,EBAY,eBay
+ECHO UW Equity,ECHO,DA VERIFICARE
+ECL UN Equity,ECL,Ecolab
+ED UN Equity,ED,Consolidated Edison
+EFX UN Equity,EFX,Equifax
+EG UN Equity,EG,Everest Group
+EIX UN Equity,EIX,Edison International
+EL UN Equity,EL,Estee Lauder
+ELV UN Equity,ELV,Elevance Health
+EME UN Equity,EME,EMCOR Group
+EMR UN Equity,EMR,Emerson Electric
+EOG UN Equity,EOG,EOG Resources
+EQIX UW Equity,EQIX,Equinix
+EQT UN Equity,EQT,EQT Corporation
+ERIE UW Equity,ERIE,Erie Indemnity
+ES UN Equity,ES,Eversource Energy
+ESS UN Equity,ESS,Essex Property Trust
+ETN UN Equity,ETN,Eaton
+ETR UN Equity,ETR,Entergy
+EVRG UW Equity,EVRG,Evergy
+EW UN Equity,EW,Edwards Lifesciences
+EXC UW Equity,EXC,Exelon
+EXE UW Equity,EXE,Expand Energy
+EXPD UN Equity,EXPD,Expeditors International
+EXPE UW Equity,EXPE,Expedia Group
+EXR UN Equity,EXR,Extra Space Storage
+F UN Equity,F,Ford Motor
+FANG UW Equity,FANG,Diamondback Energy
+FAST UW Equity,FAST,Fastenal
+FCX UN Equity,FCX,Freeport-McMoRan
+FDS UN Equity,FDS,FactSet
+FDX UN Equity,FDX,FedEx
+FDXF UN Equity,FDXF,FedEx Freight
+FE UN Equity,FE,FirstEnergy
+FERG UN Equity,FERG,Ferguson
+FFIV UW Equity,FFIV,F5
+FICO UN Equity,FICO,Fair Isaac
+FIS UN Equity,FIS,Fidelity National Information Services
+FISV UW Equity,FISV,Fiserv
+FITB UN Equity,FITB,Fifth Third Bancorp
+FIX UN Equity,FIX,Comfort Systems USA
+FLEX UW Equity,FLEX,Flex
+FOX UW Equity,FOX,Fox Corporation (classe B)
+FOXA UW Equity,FOXA,Fox Corporation (classe A)
+FRT UN Equity,FRT,Federal Realty Investment Trust
+FSLR UW Equity,FSLR,First Solar
+FTNT UW Equity,FTNT,Fortinet
+FTV UN Equity,FTV,Fortive
+GD UN Equity,GD,General Dynamics
+GDDY UN Equity,GDDY,GoDaddy
+GE UN Equity,GE,GE Aerospace
+GEHC UW Equity,GEHC,GE HealthCare
+GEN UW Equity,GEN,Gen Digital
+GEV UN Equity,GEV,GE Vernova
+GILD UW Equity,GILD,Gilead Sciences
+GIS UN Equity,GIS,General Mills
+GL UN Equity,GL,Globe Life
+GLW UN Equity,GLW,Corning
+GM UN Equity,GM,General Motors
+GNRC UN Equity,GNRC,Generac
+GOOG UW Equity,GOOG,Alphabet (classe C)
+GOOGL UW Equity,GOOGL,Alphabet (classe A)
+GPC UN Equity,GPC,Genuine Parts
+GPN UN Equity,GPN,Global Payments
+GRMN UN Equity,GRMN,Garmin
+GS UN Equity,GS,Goldman Sachs
+GWW UN Equity,GWW,W. W. Grainger
+HAL UN Equity,HAL,Halliburton
+HAS UW Equity,HAS,Hasbro
+HBAN UW Equity,HBAN,Huntington Bancshares
+HCA UN Equity,HCA,HCA Healthcare
+HD UN Equity,HD,Home Depot
+HIG UN Equity,HIG,Hartford Financial Services
+HII UN Equity,HII,Huntington Ingalls Industries
+HLT UN Equity,HLT,Hilton
+HON UW Equity,HON,Honeywell
+HONA UW Equity,HONA,Honeywell Aerospace
+HOOD UW Equity,HOOD,Robinhood
+HPE UN Equity,HPE,Hewlett Packard Enterprise
+HPQ UN Equity,HPQ,HP Inc.
+HRL UN Equity,HRL,Hormel Foods
+HSIC UW Equity,HSIC,Henry Schein
+HST UW Equity,HST,Host Hotels & Resorts
+HSY UN Equity,HSY,Hershey
+HUBB UN Equity,HUBB,Hubbell
+HUM UN Equity,HUM,Humana
+HWM UN Equity,HWM,Howmet Aerospace
+IBKR UW Equity,IBKR,Interactive Brokers
+IBM UN Equity,IBM,IBM
+ICE UN Equity,ICE,Intercontinental Exchange
+IDXX UW Equity,IDXX,Idexx Laboratories
+IEX UN Equity,IEX,IDEX Corporation
+IFF UN Equity,IFF,International Flavors & Fragrances
+ILMN UW Equity,ILMN,Illumina
+INCY UW Equity,INCY,Incyte
+INTC UW Equity,INTC,Intel
+INTU UW Equity,INTU,Intuit
+INVH UN Equity,INVH,Invitation Homes
+IP UN Equity,IP,International Paper
+IQV UN Equity,IQV,IQVIA
+IR UN Equity,IR,Ingersoll Rand
+IRM UN Equity,IRM,Iron Mountain
+ISRG UW Equity,ISRG,Intuitive Surgical
+IT UN Equity,IT,Gartner
+ITW UN Equity,ITW,Illinois Tool Works
+IVZ UN Equity,IVZ,Invesco
+J UN Equity,J,Jacobs Solutions
+JBHT UW Equity,JBHT,J.B. Hunt
+JBL UN Equity,JBL,Jabil
+JCI UN Equity,JCI,Johnson Controls
+JKHY UW Equity,JKHY,Jack Henry & Associates
+JNJ UN Equity,JNJ,Johnson & Johnson
+JPM UN Equity,JPM,JPMorgan Chase
+KDP UW Equity,KDP,Keurig Dr Pepper
+KEY UN Equity,KEY,KeyCorp
+KEYS UN Equity,KEYS,Keysight Technologies
+KHC UN Equity,KHC,Kraft Heinz
+KIM UN Equity,KIM,Kimco Realty
+KKR UN Equity,KKR,KKR
+KLAC UW Equity,KLAC,KLA Corporation
+KMB UW Equity,KMB,Kimberly-Clark
+KMI UN Equity,KMI,Kinder Morgan
+KO UN Equity,KO,Coca-Cola
+KR UN Equity,KR,Kroger
+KVUE UN Equity,KVUE,Kenvue
+L UN Equity,L,Loews Corporation
+LDOS UN Equity,LDOS,Leidos
+LEN UN Equity,LEN,Lennar
+LH UN Equity,LH,Labcorp
+LHX UN Equity,LHX,L3Harris Technologies
+LII UN Equity,LII,Lennox International
+LIN UW Equity,LIN,Linde
+LITE UW Equity,LITE,Lumentum
+LLY UN Equity,LLY,Eli Lilly
+LMT UN Equity,LMT,Lockheed Martin
+LNT UW Equity,LNT,Alliant Energy
+LOW UN Equity,LOW,Lowe's
+LRCX UW Equity,LRCX,Lam Research
+LULU UW Equity,LULU,Lululemon Athletica
+LUV UN Equity,LUV,Southwest Airlines
+LVS UN Equity,LVS,Las Vegas Sands
+LYB UN Equity,LYB,LyondellBasell
+LYV UN Equity,LYV,Live Nation Entertainment
+MA UN Equity,MA,Mastercard
+MAA UN Equity,MAA,Mid-America Apartment Communities
+MAR UW Equity,MAR,Marriott International
+MAS UN Equity,MAS,Masco
+MCD UN Equity,MCD,McDonald's
+MCHP UW Equity,MCHP,Microchip Technology
+MCK UN Equity,MCK,McKesson
+MCO UN Equity,MCO,Moody's
+MDLZ UW Equity,MDLZ,Mondelez International
+MDT UN Equity,MDT,Medtronic
+MET UN Equity,MET,MetLife
+META UW Equity,META,Meta Platforms
+MGM UN Equity,MGM,MGM Resorts
+MKC UN Equity,MKC,McCormick
+MLM UN Equity,MLM,Martin Marietta Materials
+MMM UN Equity,MMM,3M
+MNST UW Equity,MNST,Monster Beverage
+MO UN Equity,MO,Altria
+MOS UN Equity,MOS,Mosaic
+MPC UN Equity,MPC,Marathon Petroleum
+MPWR UW Equity,MPWR,Monolithic Power Systems
+MRK UN Equity,MRK,Merck & Co.
+MRNA UW Equity,MRNA,Moderna
+MRSH UN Equity,MRSH,Marsh McLennan
+MRVL UW Equity,MRVL,Marvell Technology
+MS UN Equity,MS,Morgan Stanley
+MSCI UN Equity,MSCI,MSCI
+MSFT UW Equity,MSFT,Microsoft
+MSI UN Equity,MSI,Motorola Solutions
+MTB UN Equity,MTB,M&T Bank
+MTD UN Equity,MTD,Mettler-Toledo
+MU UW Equity,MU,Micron Technology
+NCLH UN Equity,NCLH,Norwegian Cruise Line Holdings
+NDAQ UW Equity,NDAQ,Nasdaq
+NDSN UW Equity,NDSN,Nordson
+NEE UN Equity,NEE,NextEra Energy
+NEM UN Equity,NEM,Newmont
+NFLX UW Equity,NFLX,Netflix
+NI UN Equity,NI,NiSource
+NKE UN Equity,NKE,Nike
+NOC UN Equity,NOC,Northrop Grumman
+NOW UN Equity,NOW,ServiceNow
+NRG UN Equity,NRG,NRG Energy
+NSC UN Equity,NSC,Norfolk Southern
+NTAP UW Equity,NTAP,NetApp
+NTRS UW Equity,NTRS,Northern Trust
+NUE UN Equity,NUE,Nucor
+NVDA UW Equity,NVDA,Nvidia
+NVR UN Equity,NVR,NVR
+NWS UW Equity,NWS,News Corp (classe B)
+NWSA UW Equity,NWSA,News Corp (classe A)
+NXPI UW Equity,NXPI,NXP Semiconductors
+O UN Equity,O,Realty Income
+ODFL UW Equity,ODFL,Old Dominion Freight Line
+OKE UN Equity,OKE,Oneok
+OMC UN Equity,OMC,Omnicom Group
+ON UW Equity,ON,ON Semiconductor
+ORCL UN Equity,ORCL,Oracle
+ORLY UW Equity,ORLY,O'Reilly Automotive
+OTIS UN Equity,OTIS,Otis Worldwide
+OXY UN Equity,OXY,Occidental Petroleum
+P UN Equity,P,"Pure Storage (probabile, da verificare)"
+PANW UW Equity,PANW,Palo Alto Networks
+PAYX UW Equity,PAYX,Paychex
+PCAR UW Equity,PCAR,Paccar
+PCG UN Equity,PCG,PG&E
+PEG UN Equity,PEG,Public Service Enterprise Group
+PEP UW Equity,PEP,PepsiCo
+PFE UN Equity,PFE,Pfizer
+PFG UW Equity,PFG,Principal Financial Group
+PG UN Equity,PG,Procter & Gamble
+PGR UN Equity,PGR,Progressive
+PH UN Equity,PH,Parker Hannifin
+PHM UN Equity,PHM,PulteGroup
+PKG UN Equity,PKG,Packaging Corporation of America
+PLD UN Equity,PLD,Prologis
+PLTR UW Equity,PLTR,Palantir Technologies
+PM UN Equity,PM,Philip Morris International
+PNC UN Equity,PNC,PNC Financial Services
+PNR UN Equity,PNR,Pentair
+PNW UN Equity,PNW,Pinnacle West Capital
+PODD UW Equity,PODD,Insulet
+PPG UN Equity,PPG,PPG Industries
+PPL UN Equity,PPL,PPL Corporation
+PRU UN Equity,PRU,Prudential Financial
+PSA UN Equity,PSA,Public Storage
+PSX UN Equity,PSX,Phillips 66
+PTC UW Equity,PTC,PTC
+PWR UN Equity,PWR,Quanta Services
+PYPL UW Equity,PYPL,PayPal
+Q UN Equity,Q,Qnity Electronics
+QCOM UW Equity,QCOM,Qualcomm
+RCL UN Equity,RCL,Royal Caribbean Group
+RDDT UN Equity,RDDT,Reddit
+REG UW Equity,REG,Regency Centers
+REGN UW Equity,REGN,Regeneron Pharmaceuticals
+RF UN Equity,RF,Regions Financial
+RJF UN Equity,RJF,Raymond James Financial
+RL UN Equity,RL,Ralph Lauren
+RMD UN Equity,RMD,ResMed
+ROK UN Equity,ROK,Rockwell Automation
+ROL UN Equity,ROL,Rollins
+ROP UW Equity,ROP,Roper Technologies
+ROST UW Equity,ROST,Ross Stores
+RSG UN Equity,RSG,Republic Services
+RTX UN Equity,RTX,RTX
+RVTY UN Equity,RVTY,Revvity
+SBAC UW Equity,SBAC,SBA Communications
+SBUX UW Equity,SBUX,Starbucks
+SCHW UN Equity,SCHW,Charles Schwab
+SHW UN Equity,SHW,Sherwin-Williams
+SJM UN Equity,SJM,J.M. Smucker
+SKYD UN Equity,SKYD,DA VERIFICARE
+SLB UN Equity,SLB,Schlumberger (SLB)
+SMCI UW Equity,SMCI,Super Micro Computer
+SNA UN Equity,SNA,Snap-on
+SNDK UW Equity,SNDK,Sandisk
+SNPS UW Equity,SNPS,Synopsys
+SO UN Equity,SO,Southern Company
+SOLV UN Equity,SOLV,Solventum
+SPG UN Equity,SPG,Simon Property Group
+SPGI UN Equity,SPGI,S&P Global
+SRE UN Equity,SRE,Sempra
+STE UN Equity,STE,Steris
+STLD UW Equity,STLD,Steel Dynamics
+STT UN Equity,STT,State Street
+STX UW Equity,STX,Seagate Technology
+STZ UN Equity,STZ,Constellation Brands
+SW UN Equity,SW,Smurfit Westrock
+SWK UN Equity,SWK,Stanley Black & Decker
+SWKS UW Equity,SWKS,Skyworks Solutions
+SYF UN Equity,SYF,Synchrony Financial
+SYK UN Equity,SYK,Stryker
+SYY UN Equity,SYY,Sysco
+T UN Equity,T,AT&T
+TDG UN Equity,TDG,TransDigm Group
+TDY UN Equity,TDY,Teledyne Technologies
+TECH UW Equity,TECH,Bio-Techne
+TEL UN Equity,TEL,TE Connectivity
+TER UW Equity,TER,Teradyne
+TFC UN Equity,TFC,Truist Financial
+TGT UN Equity,TGT,Target
+TJX UN Equity,TJX,TJX Companies
+TKO UN Equity,TKO,TKO Group Holdings
+TMO UN Equity,TMO,Thermo Fisher Scientific
+TMUS UW Equity,TMUS,T-Mobile US
+TPL UN Equity,TPL,Texas Pacific Land
+TPR UN Equity,TPR,Tapestry
+TRGP UN Equity,TRGP,Targa Resources
+TRMB UW Equity,TRMB,Trimble
+TROW UW Equity,TROW,T. Rowe Price
+TRV UN Equity,TRV,Travelers
+TSCO UW Equity,TSCO,Tractor Supply
+TSLA UW Equity,TSLA,Tesla
+TSN UN Equity,TSN,Tyson Foods
+TT UN Equity,TT,Trane Technologies
+TTWO UW Equity,TTWO,Take-Two Interactive
+TWLO UN Equity,TWLO,Twilio
+TXN UW Equity,TXN,Texas Instruments
+TXT UN Equity,TXT,Textron
+TYL UN Equity,TYL,Tyler Technologies
+UAL UW Equity,UAL,United Airlines Holdings
+UBER UN Equity,UBER,Uber
+UDR UN Equity,UDR,UDR
+UHS UN Equity,UHS,Universal Health Services
+ULTA UW Equity,ULTA,Ulta Beauty
+UNH UN Equity,UNH,UnitedHealth Group
+UNP UN Equity,UNP,Union Pacific
+UPS UN Equity,UPS,United Parcel Service
+URI UN Equity,URI,United Rentals
+USB UN Equity,USB,U.S. Bancorp
+V UN Equity,V,Visa
+VEEV UN Equity,VEEV,Veeva Systems
+VICI UN Equity,VICI,VICI Properties
+VLO UN Equity,VLO,Valero Energy
+VLTO UN Equity,VLTO,Veralto
+VMC UN Equity,VMC,Vulcan Materials
+VMRK UN Equity,VMRK,DA VERIFICARE
+VRSK UW Equity,VRSK,Verisk Analytics
+VRSN UW Equity,VRSN,VeriSign
+VRT UN Equity,VRT,Vertiv
+VRTX UW Equity,VRTX,Vertex Pharmaceuticals
+VST UN Equity,VST,Vistra
+VTR UN Equity,VTR,Ventas
+VTRS UW Equity,VTRS,Viatris
+VYLR UN Equity,VYLR,DA VERIFICARE
+VZ UN Equity,VZ,Verizon
+WAB UN Equity,WAB,Wabtec
+WAT UN Equity,WAT,Waters Corporation
+WDAY UW Equity,WDAY,Workday
+WDC UW Equity,WDC,Western Digital
+WEC UN Equity,WEC,WEC Energy Group
+WELL UN Equity,WELL,Welltower
+WFC UN Equity,WFC,Wells Fargo
+WM UN Equity,WM,Waste Management
+WMB UN Equity,WMB,Williams Companies
+WMT UW Equity,WMT,Walmart
+WRB UN Equity,WRB,W. R. Berkley
+WSM UN Equity,WSM,Williams-Sonoma
+WST UN Equity,WST,West Pharmaceutical Services
+WTW UW Equity,WTW,Willis Towers Watson
+WY UN Equity,WY,Weyerhaeuser
+WYNN UW Equity,WYNN,Wynn Resorts
+XEL UW Equity,XEL,Xcel Energy
+XOM UN Equity,XOM,Exxon Mobil
+XYL UN Equity,XYL,Xylem
+XYZ UN Equity,XYZ,Block
+YUM UN Equity,YUM,Yum! Brands
+ZBH UN Equity,ZBH,Zimmer Biomet
+ZBRA UW Equity,ZBRA,Zebra Technologies
+ZTS UN Equity,ZTS,Zoetis
