@@ -7,6 +7,7 @@ Dal terminale, nella cartella del progetto:
     python -m src.news              scarica MA-V dal 1 giugno al 16 settembre 2026 in data/raw/news/alpaca/ e crea data/processed/news_MA-V_train.parquet
     python -m src.news --pair ALL10     scarica i 20 titoli delle 10 coppie insieme e crea data/processed/news_ALL10_train.parquet
                                         (una colonna mentions_<ticker> per ogni titolo; una notizia con più ticker compare una volta sola)
+    python -m src.news --pair ALL15_V2  come ALL10, per i 30 titoli delle 15 coppie della versione 2 (news_ALL15_V2_train.parquet)
 In un notebook dentro src/:
     from news import load_news
     news = load_news("MA-V")
@@ -53,6 +54,13 @@ def _add_selected_pairs() -> None:
     for _, r in sel.iterrows():
         PAIRS[r["pair"]] = [r["A"].split()[0], r["B"].split()[0]]
     PAIRS["ALL10"] = sorted({t for ts in PAIRS.values() for t in ts})
+    # versione 2 (15 coppie, selected_pairs_2.csv): ALL15_V2 sono i 30 titoli insieme, `python -m src.news --pair ALL15_V2`.
+    # ALL10 resta calcolato sopra, quindi la versione 1 non cambia.
+    f2 = PROCESSED / "selected_pairs_2.csv"
+    if f2.exists():
+        v2 = {r["pair"]: [r["A"].split()[0], r["B"].split()[0]] for _, r in pd.read_csv(f2).iterrows()}
+        PAIRS.update(v2)
+        PAIRS["ALL15_V2"] = sorted({t for ts in v2.values() for t in ts})
 
 
 _add_selected_pairs()

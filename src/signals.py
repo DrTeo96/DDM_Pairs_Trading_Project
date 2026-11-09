@@ -25,7 +25,9 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 PAIRS_DIR = ROOT / "data/processed/pairs_intraday"     # file puliti del Passaggio 2
-SELECTED = ROOT / "data/processed/selected_pairs.csv"  # le 10 coppie del Passaggio 1
+SELECTED = ROOT / "data/processed/selected_pairs.csv"  # le 10 coppie del Passaggio 1 (versione 1)
+PAIRS_DIR_V2 = ROOT / "data/processed/pairs_intraday_v2"   # versione 2: file puliti del Passaggio 2 per le 15 coppie
+SELECTED_V2 = ROOT / "data/processed/selected_pairs_2.csv"  # versione 2: le 15 coppie del Passaggio 1
 
 TRAIN_END = "2026-09-16"   # ultimo giorno del train, uguale per tutte le coppie (date di calendario); il test è dal 17 settembre
 N_MINUTES = 390            # barre da 1 minuto nella seduta: 09:30-15:59
@@ -37,9 +39,9 @@ STOP_EXTRA = 1.5           # stop-loss: ingresso + 1.5 in unità di z
 LOOKBACK = 30              # minuti usati solo per la colonna descrittiva "titolo più mosso"
 
 
-def list_pairs() -> pd.DataFrame:
-    """Le 10 coppie con i ticker Bloomberg (colonne pair, A, B) e i ticker brevi (sym_A, sym_B)."""
-    sel = pd.read_csv(SELECTED)[["pair", "A", "B"]]
+def list_pairs(version: int = 1) -> pd.DataFrame:
+    """Le coppie con i ticker Bloomberg (colonne pair, A, B) e i ticker brevi (sym_A, sym_B). version=1: le 10 coppie; version=2: le 15 coppie della versione 2."""
+    sel = pd.read_csv(SELECTED if version == 1 else SELECTED_V2)[["pair", "A", "B"]]
     sel["sym_A"] = sel["A"].str.split().str[0]
     sel["sym_B"] = sel["B"].str.split().str[0]
     return sel
@@ -66,10 +68,11 @@ class PairData:
     is_train: np.ndarray      # True per le barre dei giorni fino a TRAIN_END
 
 
-def load_pair(pair: str) -> PairData:
-    """Legge il file pulito a 1 minuto di una coppia (Passaggio 2) e prepara gli array usati dal motore."""
-    row = list_pairs().set_index("pair").loc[pair]
-    raw = duckdb.sql(f"SELECT * FROM '{(PAIRS_DIR / f'{pair}_1min.parquet').as_posix()}'").df()
+def load_pair(pair: str, version: int = 1) -> PairData:
+    """Legge il file pulito a 1 minuto di una coppia (Passaggio 2) e prepara gli array usati dal motore. version=2: coppie della versione 2."""
+    row = list_pairs(version).set_index("pair").loc[pair]
+    folder = PAIRS_DIR if version == 1 else PAIRS_DIR_V2
+    raw = duckdb.sql(f"SELECT * FROM '{(folder / f'{pair}_1min.parquet').as_posix()}'").df()
     wide = lambda col: raw.pivot(index="ts", columns="ticker", values=col).sort_index()
     close, open_, filled = wide("close"), wide("open"), wide("filled")
     assert close.isna().sum().sum() == 0, f"{pair}: ci sono prezzi mancanti"

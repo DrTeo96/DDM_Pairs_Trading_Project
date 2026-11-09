@@ -52,13 +52,15 @@ Tutti i comandi si eseguono **dalla cartella del progetto** (`DDM_Luiss_Project`
 | 1 | Installare uv e l'ambiente | Seguire [setup.md](setup.md); poi `uv sync` | cartella `.venv/` | niente |
 | 2 | Dati Bloomberg | Copiare i file in `data/raw/` come descritto nel [README](../README.md) e mettere `data/gics.csv` (classificazione GICS, da Bloomberg) | dati grezzi | chi li ha scaricati da Bloomberg |
 | 3 | Dataset puliti | `uv run python -m src.data` | `data/processed/*_all.parquet` | 2 |
-| 4 | Selezione delle coppie (Passaggio 1) | Eseguire [coppie.ipynb](../src/coppie.ipynb) | `data/processed/selected_pairs.csv` | 3 |
-| 5 | Prezzi intraday per coppia (Passaggio 2) | Eseguire [intraday_pulizia.ipynb](../src/intraday_pulizia.ipynb) | `data/processed/pairs_intraday/` | 4 |
-| 6 | Segnali, prima prova su MA-V (Passaggio 4) | Eseguire [segnale_mav.ipynb](../src/segnale_mav.ipynb) | `signals_MA-V_train.csv` | 5 |
-| 7 | Segnali delle 10 coppie (Passaggio 4) | Eseguire [segnali_coppie.ipynb](../src/segnali_coppie.ipynb) | `signals_10pairs_train.csv` | 5 (il 6 è facoltativo: serve solo a un controllo di coerenza) |
+| 4 | Selezione delle coppie (Passaggio 1) | Eseguire [coppie.ipynb](../src/01_selezione_coppie/coppie.ipynb) | `data/processed/selected_pairs.csv` | 3 |
+| 5 | Prezzi intraday per coppia (Passaggio 2) | Eseguire [intraday_pulizia.ipynb](../src/02_dati_intraday/intraday_pulizia.ipynb) | `data/processed/pairs_intraday/` | 4 |
+| 6 | Segnali, prima prova su MA-V (Passaggio 4) | Eseguire [segnale_mav.ipynb](../src/04_segnali/segnale_mav.ipynb) | `signals_MA-V_train.csv` | 5 |
+| 7 | Segnali delle 10 coppie (Passaggio 4) | Eseguire [segnali_coppie.ipynb](../src/04_segnali/segnali_coppie.ipynb) | `signals_10pairs_train.csv` | 5 (il 6 è facoltativo: serve solo a un controllo di coerenza) |
 | 8 | Account e chiavi di Alpaca | Vedi sotto | file `.env` con le proprie chiavi | un account Alpaca |
 | 9 | Notizie (Passaggio 3) | Vedi sotto: `uv run python -m src.news --probe`, poi `uv run python -m src.news` e `uv run python -m src.news --pair ALL10` | `news_MA-V_train.parquet`, `news_ALL10_train.parquet` | 8 |
-| 10 | Notizie e segnali (Passaggio 3) | Eseguire [notizie_mav.ipynb](../src/notizie_mav.ipynb) (serve il 6 e il file MA-V del 9) e [notizie_coppie.ipynb](../src/notizie_coppie.ipynb) (serve il 7 e il file ALL10 del 9) | `news_for_signals_MA-V_train.csv`, `news_for_signals_10pairs_train.csv` | 6, 7, 9 |
+| 10 | Notizie e segnali (Passaggio 3) | Eseguire [notizie_mav.ipynb](../src/03_notizie/notizie_mav.ipynb) (serve il 6 e il file MA-V del 9) e [notizie_coppie.ipynb](../src/03_notizie/notizie_coppie.ipynb) (serve il 7 e il file ALL10 del 9) | `news_for_signals_MA-V_train.csv`, `news_for_signals_10pairs_train.csv` | 6, 7, 9 |
+| 11 | Backtest della versione A con costi (Passaggio 6) | Eseguire [backtest_A.ipynb](../src/06_backtest/backtest_A.ipynb) | tabelle e grafici nel notebook | 7 |
+| 12 | Versione 2 del segnale, scartata (Passaggio 4) | Eseguire [segnali_v2.ipynb](../src/04_segnali/segnali_v2.ipynb) | `signals_v2_train.csv` | 5, 7 |
 
 I passi 1-5 erano già stati fatti prima dei passaggi 3 e 4; si ripetono solo su un computer nuovo. Un passo si rifà solo quando cambiano i file da cui dipende.
 
@@ -115,6 +117,8 @@ Registro del lavoro dei passaggi 3 e 4, scritto perché tutto il gruppo sappia c
 
 ## La pipeline passo per passo
 
+**Versioni delle coppie.** Il lavoro ha ora due versioni separate. La **versione 1** sono le prime 10 coppie (selezione, dati intraday, notizie e segnali sono descritti nei passaggi 1-4). La **versione 2** è una nuova selezione di 15 coppie, fatta ripartendo dall'inizio con criteri diversi, e ha i suoi file e le sue sezioni ("Passaggio 1, versione 2" e "Passaggio 2, versione 2"). Quando si dice "versione 2" si intendono sempre queste coppie. Le due versioni non si mescolano: i file della versione 2 hanno suffisso `_2` o `_v2`.
+
 La pipeline ha nove passaggi, dal passaggio 0 al passaggio 8. Ognuno produce un risultato concreto che il passaggio successivo usa. È la stessa struttura in cinque fasi del tutorial della Lezione 5 (prezzi, notizie, segnali, metriche, report), allargata con la selezione delle coppie e l'agente.
 
 ### Passaggio 0. Verifiche preliminari (1-2 novembre)
@@ -129,7 +133,9 @@ Risultato: una pagina con le due risposte, che chiude le decisioni 1 e 2.
 
 ### Passaggio 1. Selezione delle coppie
 
-Stato: **fatto in gran parte** (restano tre controlli, vedi più sotto). Il lavoro è nel notebook [src/coppie.ipynb](../src/coppie.ipynb), che contiene il codice, le motivazioni di ogni scelta e il testo dei risultati. La lista finale è salvata in `data/processed/selected_pairs.csv` (cartella ignorata da git: chi la vuole rilancia il notebook).
+> Questa sezione descrive la **versione 1** (10 coppie). La **versione 2** (selezione separata, 15 coppie) è descritta in "Passaggio 1, versione 2", subito prima del Passaggio 2.
+
+Stato: **fatto in gran parte** (restano tre controlli, vedi più sotto). Il lavoro è nel notebook [src/01_selezione_coppie/coppie.ipynb](../src/01_selezione_coppie/coppie.ipynb), che contiene il codice, le motivazioni di ogni scelta e il testo dei risultati. La lista finale è salvata in `data/processed/selected_pairs.csv` (cartella ignorata da git: chi la vuole rilancia il notebook).
 
 Perché: una coppia scelta male è come due persone che camminano nella stessa direzione senza elastico. Lo spread non torna indietro e la strategia perde.
 
@@ -228,9 +234,92 @@ Il posto in classifica è quello tra tutte le 2.390 coppie dello stesso gruppo: 
 
 Riferimenti (da verificare prima di citarli): Gatev, Goetzmann e Rouwenhorst (2006), Review of Financial Studies 19(3); Engle e Granger (1987), Econometrica 55(2); Benjamini e Hochberg (1995), Journal of the Royal Statistical Society B 57(1); Vidyamurthy (2004), Pairs Trading, Wiley.
 
+### Passaggio 1, versione 2. Selezione separata delle coppie
+
+Stato: **fatto**. Le coppie sono 15 e il gruppo ha deciso di **tenerle tutte** (il programma ne prevede 6-9). Il lavoro è nel notebook [src/01_selezione_coppie/coppie_2.ipynb](../src/01_selezione_coppie/coppie_2.ipynb), che contiene il codice, le motivazioni di ogni scelta e il testo dei risultati generato dai dati. La lista è salvata in `data/processed/selected_pairs_2.csv` (cartella ignorata da git: chi la vuole rilancia il notebook). La versione 1 (`coppie.ipynb`, `selected_pairs.csv`) non è stata toccata.
+
+Perché una seconda versione: la versione 1 sceglieva per distanza dei prezzi dentro gruppi industriali ampi, e alcune coppie hanno un legame economico debole (per esempio BNY-GS, ITW-OTIS). Abbiamo deciso di ripartire dall'inizio con criteri più vicini all'obiettivo del progetto: **stesso settore e legame forte**, con titoli davvero scambiati.
+
+#### Criteri scelti dal gruppo e come diventano regole
+
+| Criterio | Regola nel notebook |
+| --- | --- |
+| Stesso settore, legame economico riconoscibile | Stessa **sotto-industria GICS** (più stretta del gruppo industriale usato nella versione 1) |
+| Legame forte | Correlazione dei rendimenti giornalieri tra 0.6 e 0.95, poi classifica per distanza dei prezzi (SSD, Gatev et al., 2006) |
+| Titoli realmente scambiati | Valore scambiato giornaliero mediano (prezzo per volume) di almeno 100 milioni di dollari per entrambi i titoli |
+| Non sono filtri | **Costi** (il professore ha detto di non considerarli), **notizie** (sono il Passaggio 3), **eventi strutturali** noti (le coppie che li hanno restano e vanno segnalate nel report) |
+
+Non si usano i dati intraday in questa parte: la selezione usa solo dati giornalieri fino al 15 giugno 2026, il giorno prima dell'inizio dei dati intraday, come nella versione 1.
+
+#### Cosa abbiamo fatto
+
+1. **Periodo di selezione**: dal 16 giugno 2021 al 15 giugno 2026 (5 anni, 1.255 giorni di borsa), come nella versione 1, per poter confrontare le due.
+2. **Titoli**: da 501 titoli, **166** hanno valore scambiato giornaliero mediano di almeno 100 milioni di dollari e **154** hanno anche dati quasi completi (al massimo l'1% di giorni mancanti). I 20 titoli della versione 1 non sono esclusi: se la regola li sceglie di nuovo, restano.
+3. **Stessa sotto-industria**: i 154 titoli sono in 64 sotto-industrie, di cui 38 con almeno 2 titoli. Le coppie possibili sono **249**.
+4. **Filtro di correlazione**: si toglie GOOG-GOOGL (correlazione 0.996, sono due classi di azioni della stessa società), si scartano 176 coppie con correlazione sotto 0.6 e restano **72** coppie.
+5. **Metodo della distanza**: le 72 si ordinano per SSD crescente. Dall'alto si prende una coppia se nessuno dei due titoli è già usato e se il gruppo industriale non ha già 3 coppie, fino a 15. Nessuna coppia è stata aggiunta, tolta o sostituita a mano.
+6. **Diagnostiche** (cointegrazione, hedge ratio, half-life, attraversamenti, stabilità nelle due metà): servono a descrivere le coppie, **non** a sceglierle né a scartarle.
+
+#### Cosa abbiamo fatto in modo diverso dalla versione 1
+
+| Tema | Versione 1 | Versione 2 | Perché |
+| --- | --- | --- | --- |
+| Settore | Gruppo industriale GICS (25 gruppi) | Sotto-industria GICS (più stretta) | Legame economico più riconoscibile |
+| Liquidità | Almeno 50 milioni di dollari al giorno | Almeno 100 milioni di dollari al giorno | Si vogliono titoli davvero scambiati; soglia nostra, senza fonte |
+| Correlazione | Almeno 0.6 | Tra 0.6 e 0.95 | Sopra 0.95 i due titoli sono quasi la stessa azione |
+| Titoli della versione 1 | Non applicabile | Non esclusi | Se sono coppie valide per l'obiettivo, restano |
+| Coppie aggiunte per scelta | KO-PEP | Nessuna | Tutte le coppie sono scelte dalla regola |
+| Numero di coppie | 10 | 15, tutte tenute | Decisione del gruppo; supera le 6-9 del programma, da dichiarare nel report |
+| Costi, notizie, eventi | Non filtri (costi in parte) | Non filtri, per scelta del gruppo | Vedi tabella dei criteri |
+
+#### Le 15 coppie scelte
+
+| Coppia | Sotto-industria | Posto SSD (su 249) | Correlazione | Ampiezza spread | p-value cointegrazione | Half-life (giorni) | Evento noto (da verificare) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| MA-V | Servizi di elaborazione transazioni | 1 | 0.88 | 3.3% | 0.081 | 32 | nessuno |
+| CSX-UNP | Trasporto ferroviario | 3 | 0.72 | 6.3% | 0.505 | 56 | UNP ha annunciato la fusione con Norfolk Southern (2025) |
+| PYPL-XYZ | Servizi di elaborazione transazioni | 4 | 0.61 | 17.7% | 0.557 | 62 | nessuno |
+| HD-LOW | Vendita al dettaglio per la casa | 5 | 0.87 | 5.2% | 0.144 | 52 | HD ha acquisito SRS (2024), LOW FBM (2025) |
+| DHR-TMO | Strumenti e servizi per le scienze della vita | 6 | 0.81 | 7.1% | 0.286 | 62 | DHR ha scorporato Veralto (2023) |
+| CRM-WDAY | Software applicativi | 7 | 0.65 | 13.6% | 0.401 | 68 | CRM ha acquisito Informatica (2025) |
+| JPM-WFC | Altre banche | 8 | 0.76 | 10.6% | 0.172 | 110 | WFC: tetto agli attivi tolto (2025) |
+| NXPI-TXN | Semiconduttori | 9 | 0.76 | 11.3% | 0.790 | 66 | nessuno |
+| ELV-UNH | Cure mediche | 10 | 0.63 | 11.3% | 0.114 | 60 | nessuno |
+| CL-PG | Prodotti per la casa | 17 | 0.72 | 6.1% | 0.065 | 62 | nessuno |
+| GS-MS | Banche d'investimento e broker | 24 | 0.84 | 10.2% | 0.048 | 157 | nessuno |
+| ISRG-SYK | Attrezzatura sanitaria | 25 | 0.63 | 14.2% | 0.084 | 110 | nessuno |
+| KO-PEP | Bibite analcoliche | 27 | 0.68 | 15.4% | 0.946 | infinita | nessuno |
+| BAC-C | Altre banche | 29 | 0.81 | 16.5% | 0.587 | infinita | C: vendita di Banamex in corso |
+| COP-EOG | Esplorazione e produzione di petrolio | 40 | 0.87 | 7.0% | 0.218 | 55 | COP ha acquisito Marathon Oil (2024) |
+
+Gli eventi noti sono scritti a memoria e **vanno verificati** prima di metterli nel report. Il notebook riporta per ogni coppia anche una descrizione economica breve.
+
+#### Cosa emerge
+
+- **Sovrapposizione con la versione 1**: 5 coppie su 15 sono le stesse (MA-V, CSX-UNP, PYPL-XYZ, HD-LOW, KO-PEP); 10 sono nuove. Cinque coppie della versione 1 non ci sono più (BAC-PNC, BNY-GS, ITW-OTIS, MCD-YUM, TFC-USB), per la soglia di liquidità più alta, per la sotto-industria più stretta o per il tetto per gruppo (per esempio GS è ora con MS e BAC con C). Il motivo esatto per ogni singola coppia non è stato verificato. KO-PEP, che nella versione 1 era stata aggiunta a mano, qui è scelta dalla regola (posto 27 su 249).
+- **Il legame statistico sul giornaliero è debole**: una sola coppia ha p-value di cointegrazione sotto 0.05 (GS-MS, 0.048), quattro sotto 0.10 (con MA-V, ISRG-SYK e CL-PG). KO-PEP e BAC-C hanno half-life non definita nel periodo. Come per la versione 1, la lista è un elenco di candidate: la prova che funzionano arriva dall'intraday.
+- **Stabilità**: molte coppie hanno una distanza molto diversa nelle due metà del periodo (per esempio GS-MS, NXPI-TXN, CRM-WDAY): il legame non è costante.
+- **Coppie esaminate**: 249 (test multipli: alcune sono vicine per caso).
+
+#### Non ancora fatto
+
+- Nessuna rifinitura della lista: si lavora su tutte le 15 coppie (decisione del gruppo). Più coppie vuol dire più chiamate all'agente di notizie e più test multipli.
+- Verifica degli eventi strutturali e delle descrizioni economiche.
+
+#### Limiti da dichiarare nel report
+
+- **Survivorship bias** e **GICS attuale**, come nella versione 1.
+- **Soglie nostre** (100 milioni di dollari, correlazione 0.6-0.95, tetto 3 per gruppo, 15 coppie), senza fonte accademica. Prima di scrivere il notebook abbiamo guardato una volta la distribuzione di liquidità dei titoli e una lista provvisoria; il gruppo ha poi tolto i filtri su notizie, costi, eventi e sui titoli già usati dopo aver visto le prime esecuzioni. Le soglie non sono ottimizzate sulla lista finale, ma non sono indipendenti dai dati.
+- **Eventi strutturali non esclusi**: alcune coppie hanno fusioni, acquisizioni o scorpori nel periodo; per quelle il legame può essere cambiato.
+- **Costi non considerati** (indicazione del docente).
+- **Test multipli**: 249 coppie esaminate.
+- **Legame statistico debole** sul giornaliero (una sola coppia con p-value sotto 0.05).
+
 ### Passaggio 2. Dati di prezzo intraday
 
-Stato: **fatto** per la parte di pulizia; restano tre decisioni collegate (vedi "Decisioni ancora da prendere"). Il lavoro è nel notebook [src/intraday_pulizia.ipynb](../src/intraday_pulizia.ipynb), che contiene il codice, le motivazioni e i controlli. I risultati sono in `data/processed/pairs_intraday/` (cartella ignorata da git: chi li vuole rilancia il notebook).
+> Questa sezione descrive la **versione 1** (10 coppie). La **versione 2** (15 coppie) è descritta in "Passaggio 2, versione 2", subito prima del Passaggio 3.
+
+Stato: **fatto** per la parte di pulizia; restano tre decisioni collegate (vedi "Decisioni ancora da prendere"). Il lavoro è nel notebook [src/02_dati_intraday/intraday_pulizia.ipynb](../src/02_dati_intraday/intraday_pulizia.ipynb), che contiene il codice, le motivazioni e i controlli. I risultati sono in `data/processed/pairs_intraday/` (cartella ignorata da git: chi li vuole rilancia il notebook).
 
 Perché: sono il materiale di base del segnale e della simulazione.
 
@@ -309,9 +398,46 @@ Proposta: partire dall'opzione 2, perché mantiene la scelta del minuto e vale s
 
 Risultato: 40 file puliti (10 coppie × 4 frequenze) più una tabella di qualità.
 
+### Passaggio 2, versione 2. Dati di prezzo intraday delle coppie della versione 2
+
+Stato: **fatto** per la pulizia, con lo stesso metodo della versione 1. Il lavoro è nel notebook [src/02_dati_intraday/intraday_pulizia_v2.ipynb](../src/02_dati_intraday/intraday_pulizia_v2.ipynb), che legge `selected_pairs_2.csv` e scrive in una cartella **separata**, `data/processed/pairs_intraday_v2/` (cartella ignorata da git: chi la vuole rilancia il notebook). I file della versione 1 in `data/processed/pairs_intraday/` non sono stati toccati.
+
+Perché: sono il materiale di base del segnale e della simulazione sulle coppie della versione 2.
+
+#### Cosa abbiamo fatto
+
+Gli stessi passi della versione 1 (vedi "Passaggio 2" sopra), applicati ai **30 titoli** delle 15 coppie:
+
+1. **Dati già presenti**: file al minuto in `data/raw/intraday_1m/`, orario di New York, seduta regolare 9:30-15:59 (390 barre al giorno). Periodo: dal 16 giugno al 30 ottobre 2026, 96 giorni di borsa, nessun giorno a orario ridotto.
+2. **Controllo degli split**: nessuno split. La chiusura intraday di ogni giorno differisce dal `PX_LAST` giornaliero (aggiustato) al massimo dell'1.5%. Due gap notturni sopra il 15% sono movimenti veri, perché giornaliero e intraday restano allineati: DHR il 21 luglio (-16.5%) e PYPL il 15 luglio (+15.8%).
+3. **Giorni in comune**: si tengono solo i giorni in cui entrambi i titoli hanno dati. A COP, CSX, GS, LOW, SYK e TMO mancano gli stessi cinque giorni (11, 14, 15, 16 e 17 settembre 2026): le coppie COP-EOG, CSX-UNP, GS-MS, HD-LOW, ISRG-SYK e DHR-TMO hanno **91 giorni**, le altre nove **96**.
+4. **Riempimento solo dentro la giornata**: un minuto senza scambi prende l'ultimo prezzo dello stesso giorno (barra segnata `filled = True`); mai prezzi del giorno prima, mai prezzi futuri.
+5. **Minuti iniziali senza prezzo**: se un titolo fa il primo scambio dopo le 9:30, quei minuti sono tolti a entrambi i titoli. Totale in tutto il periodo: BAC-C 124 minuti, JPM-WFC 109, PYPL-XYZ 74, GS-MS 59, CL-PG 56, ISRG-SYK 35, HD-LOW 24, DHR-TMO 11, KO-PEP 4, CRM-WDAY 3, ELV-UNH 1; le altre 0.
+6. **Quattro frequenze**: 1, 5, 15 e 60 minuti per ognuna delle 15 coppie (60 file parquet) più `quality_summary.csv`. La funzione `load_pair("KO-PEP", 15)` restituisce i prezzi di una coppia con una colonna per titolo.
+7. **Controlli di qualità**: un grafico per coppia e il conteggio dei salti sopra il 5% in un minuto dopo la pulizia.
+
+#### Risultati e cosa vuol dire
+
+- **Barre riempite al minuto**: la quota è alta per alcuni titoli, cioè hanno molti minuti senza scambi. Titoli più colpiti: UNP 41%, ELV 36%, LOW 32%, DHR 25%, EOG 24%; anche NXPI 23% e TMO 22%. Per KO, PEP, MA, JPM, WFC, BAC e C è sotto il 10%. Questo è il problema descritto nella **decisione B** della versione 1 (barre riempite nel segnale): resta da decidere prima del Passaggio 4 e vale per entrambe le versioni.
+- **Salti sopra il 5% in un minuto**: 3, tutti di WDAY il 13 agosto 2026 tra le 14:32 e le 14:44 (da +5% a +10% al minuto, circa +25% in 12 minuti). È un movimento di prezzo molto grande sul titolo di una sola coppia (CRM-WDAY): da guardare prima del Passaggio 4 (probabile notizia o risultati, da verificare), perché sposterebbe lo spread di quel giorno.
+- **Giorni per coppia**: 91 per sei coppie, 96 per nove. Meno giorni = meno dati per addestramento e test.
+- Le **decisioni A** (divisione train/test) e **C** (dividendi) sono le stesse della versione 1 e non sono ancora prese; la frequenza di base resta 1 minuto (decisione 1), con i file a 5, 15 e 60 minuti come confronto.
+
+#### Limiti da dichiarare nel report
+
+- Prezzi non aggiustati per dividendi.
+- Il volume intraday è solo una parte del volume totale (in quota diversa per borsa).
+- Per i titoli meno scambiati una quota alta dei minuti è riempita (fino al 41% al minuto).
+- Sei coppie hanno 91 giorni invece di 96, perché per uno dei due titoli mancano cinque giorni di settembre.
+- Circa 3 mesi di dati: un solo tipo di mercato.
+
+Risultato: 60 file puliti (15 coppie × 4 frequenze) più una tabella di qualità, in `data/processed/pairs_intraday_v2/`.
+
 ### Passaggio 3. Archivio delle notizie
 
-Stato: **fatto in via sperimentale con Alpaca (fonte Benzinga), sul periodo di addestramento, per le 10 coppie**. Il lavoro è nel modulo [src/news.py](../src/news.py) (scaricamento e archivio locale) e in due notebook, con codice, motivazioni e controlli: [src/notizie_mav.ipynb](../src/notizie_mav.ipynb) (prima prova su MA-V) e [src/notizie_coppie.ipynb](../src/notizie_coppie.ipynb) (le 10 coppie). Le risposte grezze sono in `data/raw/news/alpaca/` e le tabelle in `data/processed/` (cartelle ignorate da git: chi le vuole rilancia `python -m src.news --pair ALL10` e i notebook). Servono le chiavi API di Alpaca nel file `.env`, che git ignora: **ognuno crea le sue** e non le condivide. I passi per crearle e per rilanciare tutto sono nella sezione [Come rilanciare il lavoro sul proprio computer](#come-rilanciare-il-lavoro-sul-proprio-computer); chi ha fatto cosa è nel [registro](#chi-ha-fatto-cosa).
+> Questa sezione descrive la **versione 1** (10 coppie). La **versione 2** (15 coppie) è descritta in "Passaggio 3, versione 2", subito prima del Passaggio 4.
+
+Stato: **fatto in via sperimentale con Alpaca (fonte Benzinga), sul periodo di addestramento, per le 10 coppie**. Il lavoro è nel modulo [src/news.py](../src/news.py) (scaricamento e archivio locale) e in due notebook, con codice, motivazioni e controlli: [src/03_notizie/notizie_mav.ipynb](../src/03_notizie/notizie_mav.ipynb) (prima prova su MA-V) e [src/03_notizie/notizie_coppie.ipynb](../src/03_notizie/notizie_coppie.ipynb) (le 10 coppie). Le risposte grezze sono in `data/raw/news/alpaca/` e le tabelle in `data/processed/` (cartelle ignorate da git: chi le vuole rilancia `python -m src.news --pair ALL10` e i notebook). Servono le chiavi API di Alpaca nel file `.env`, che git ignora: **ognuno crea le sue** e non le condivide. I passi per crearle e per rilanciare tutto sono nella sezione [Come rilanciare il lavoro sul proprio computer](#come-rilanciare-il-lavoro-sul-proprio-computer); chi ha fatto cosa è nel [registro](#chi-ha-fatto-cosa).
 
 Perché: l'agente deve poter leggere solo le notizie uscite prima di ogni segnale, altrimenti vede il futuro.
 
@@ -393,9 +519,59 @@ Ordine consigliato: **Marketaux e Finnhub** per prime (notizie per ticker con or
 
 Risultato: una tabella di 1250 notizie con orario (`news_ALL10_train.parquet`) e una tabella notizie-segnali per i 624 segnali del train.
 
+### Passaggio 3, versione 2. Archivio delle notizie per le 15 coppie
+
+Stato: **fatto** per l'archivio e la copertura, sul periodo di addestramento. Il lavoro è nel modulo [src/news.py](../src/news.py) (esteso con `--pair ALL15_V2`; la versione 1 non cambia) e nel notebook [src/03_notizie/notizie_v2.ipynb](../src/03_notizie/notizie_v2.ipynb), con codice, motivazioni e testo dei risultati generato dai dati. Le risposte grezze sono in `data/raw/news/alpaca/ALL15_V2_2026-06-01_2026-09-16/` e la tabella in `data/processed/news_ALL15_V2_train.parquet` (cartelle ignorate da git: chi le vuole rilancia `python -m src.news --pair ALL15_V2` e il notebook). Servono le chiavi API di Alpaca nel file `.env`, come per la versione 1.
+
+Perché: l'agente deve poter leggere solo le notizie uscite prima di ogni segnale, altrimenti vede il futuro.
+
+#### Cosa abbiamo fatto
+
+Lo stesso metodo della versione 1, sui **30 titoli** delle 15 coppie:
+
+1. **Fonte**: API delle notizie di Alpaca (fonte Benzinga). Lo scaricamento è stato lanciato da Claude Code con le chiavi nel `.env` del progetto, su richiesta del gruppo.
+2. **Periodo**: dal 1 giugno al 16 settembre 2026 (si parte due settimane prima del train perché l'agente guarda indietro dal segnale). Il test (dal 17 settembre) **non è stato scaricato**.
+3. **Tabella pulita**: una riga per notizia con orario di pubblicazione (`created_at`) in ora di New York, titolo, sommario, fonte, link, tutti i ticker citati e una colonna `mentions_<ticker>` per ogni titolo. Una notizia con più ticker compare una volta sola.
+4. **Niente lookahead**: si usa `created_at` e non `updated_at`; per un segnale alla barra *t* si useranno solo le notizie con orario fino a *t*.
+5. **Notizie "mirate"**: al massimo 3 ticker citati; le altre sono elenchi generici e restano segnate.
+6. **Cosa non è stato fatto**: la tabella notizie-segnali, perché i segnali della versione 2 (Passaggio 4) non esistono ancora.
+
+#### Risultati sul train
+
+| | |
+|---|---|
+| Notizie uniche sui 30 titoli | **2.106**, tutte Benzinga; 68% mirate; 49% a mercato aperto; 4.4% nel weekend; 66 titoli duplicati |
+| Copertura per titolo | da 20 notizie (CL) e 26 (EOG, SYK) a 268 (JPM) e 222 (GS) |
+| Copertura per coppia (notizie al giorno) | da **0.48 (CL-PG)** a **3.06 (GS-MS)**; meno coperte: CL-PG 0.48, DHR-TMO 0.63, COP-EOG 0.75, CSX-UNP 0.80; più coperte: GS-MS 3.06, JPM-WFC 2.86, CRM-WDAY 2.51 |
+| Coppie sotto 0.3 notizie al giorno | 0 su 15 (nella versione 1 ITW-OTIS aveva 0.19) |
+| Orari | solo l'1% delle notizie è aggiornato più di un'ora dopo la pubblicazione: si tiene `created_at` |
+| Coerenza con la versione 1 | per i 12 titoli in comune (BAC, CSX, GS, HD, KO, LOW, MA, PEP, PYPL, UNP, V, XYZ) le notizie sono esattamente le stesse (981) |
+
+#### Cosa ci dicono i risultati
+
+- **Copertura più omogenea della versione 1**: nessuna coppia ha così poche notizie da lasciare l'agente senza niente da leggere (il minimo è 0.48 al giorno, circa una notizia ogni due giorni). Le coppie più coperte sono quelle di banche e software; le meno coperte, beni di consumo (CL-PG), strumenti scientifici (DHR-TMO) e petrolio (COP-EOG).
+- **Una sola fonte**: "nessuna notizia trovata" non vuol dire che non sia successo niente.
+- Il numero di **segnali con una notizia nelle ultime ore** e il confronto con orari casuali si potranno misurare solo dopo il Passaggio 4 per la versione 2.
+
+#### Decisioni ancora da prendere
+
+Le stesse della versione 1 (orario vero di pubblicazione da verificare a mano su 10 notizie, altre fonti, finestra di ricerca di 2, 6 o 24 ore, trattamento di duplicati ed elenchi, classificazione a mano), che restano aperte anche per la versione 2. Il notebook estrae le 10 notizie a caso con il link per il controllo a mano.
+
+#### Limiti da dichiarare nel report
+
+- Una sola fonte (Benzinga via Alpaca) e copertura incompleta.
+- I ticker sono assegnati da Benzinga: una notizia associata a un titolo non è per forza su quell'azienda.
+- Orari non ancora verificati a mano.
+- Solo titolo e sommario, non il testo completo.
+- Notizie solo fino al 16 settembre 2026 (test non scaricato).
+
+Risultato: una tabella di 2.106 notizie con orario (`news_ALL15_V2_train.parquet`).
+
 ### Passaggio 4. Spread e segnale
 
-Stato: **fatto in via sperimentale, solo sul periodo di addestramento**, su richiesta e con le scelte di Bea (vedi il [registro](#chi-ha-fatto-cosa)): prima su MA-V ([src/segnale_mav.ipynb](../src/segnale_mav.ipynb), con codice, motivazioni e controlli), poi esteso alle 10 coppie con parametri uguali per tutte ([src/segnali_coppie.ipynb](../src/segnali_coppie.ipynb); le regole sono nel modulo [src/signals.py](../src/signals.py)). I segnali sono in `data/processed/signals_MA-V_train.csv` e `data/processed/signals_10pairs_train.csv` (cartella ignorata da git: chi li vuole rilancia i notebook). Il periodo di test non è stato calcolato.
+> Questa sezione descrive la **versione 1** (10 coppie). La **versione 2** (15 coppie) è descritta in "Passaggio 4, versione 2", subito prima del Passaggio 5.
+
+Stato: **fatto in via sperimentale, solo sul periodo di addestramento**, su richiesta e con le scelte di Bea (vedi il [registro](#chi-ha-fatto-cosa)): prima su MA-V ([src/04_segnali/segnale_mav.ipynb](../src/04_segnali/segnale_mav.ipynb), con codice, motivazioni e controlli), poi esteso alle 10 coppie con parametri uguali per tutte ([src/04_segnali/segnali_coppie.ipynb](../src/04_segnali/segnali_coppie.ipynb); le regole sono nel modulo [src/signals.py](../src/signals.py)). I segnali sono in `data/processed/signals_MA-V_train.csv` e `data/processed/signals_10pairs_train.csv` (cartella ignorata da git: chi li vuole rilancia i notebook). Il periodo di test non è stato calcolato.
 
 Perché: è il cuore matematico della strategia, indipendente dall'agente.
 
@@ -466,7 +642,7 @@ Con la EMA azzerata ogni giorno il risultato è peggiore: migliore combinazione 
 
 #### Estensione alle 10 coppie (parametri uguali per tutte, scelta di Bea)
 
-Notebook: [src/segnali_coppie.ipynb](../src/segnali_coppie.ipynb). Segnali: `data/processed/signals_10pairs_train.csv`.
+Notebook: [src/04_segnali/segnali_coppie.ipynb](../src/04_segnali/segnali_coppie.ipynb). Segnali: `data/processed/signals_10pairs_train.csv`.
 
 **Cosa abbiamo fatto**
 
@@ -521,6 +697,137 @@ Notebook: [src/segnali_coppie.ipynb](../src/segnali_coppie.ipynb). Segnali: `dat
 
 Risultato: una tabella di 624 segnali del train per le 10 coppie con orario, direzione, z, prezzi, motivo di uscita e guadagno lordo (e una di 56 segnali per MA-V con i parametri della prima prova).
 
+#### Versione 2 del segnale: provata e scartata
+
+Stato: **fatta sul train, scartata**. Codice in [src/signals_v2.py](../src/signals_v2.py), notebook con regole, risultati e conclusioni in [src/04_segnali/segnali_v2.ipynb](../src/04_segnali/segnali_v2.ipynb). I file della versione 1 (`signals.py`, `segnali_coppie.ipynb`, `backtest.py`) non sono stati modificati. Il file `data/processed/signals_v2_train.csv` contiene la combinazione scelta dalla regola, ma non ha superato il controllo e **non va usato come input del Passaggio 5** senza dichiararlo.
+
+**Perché.** Il backtest con costi (Passaggio 6) ha mostrato che con le regole sopra il guadagno lordo, 6.77 bps per trade, non copre i costi: costo di pareggio 1.69 bps per operazione, mentre lo scenario realistico è 5. Prima di costruire l'agente abbiamo provato se qualche modifica semplice delle regole potesse portare il segnale in guadagno netto, **solo sul train**.
+
+**Cosa abbiamo provato** (griglia di 18 combinazioni, scritta prima di guardare i risultati):
+
+| Leva | Valori | Idea |
+| --- | --- | --- |
+| Scostamento minimo in punti base, oltre a z ≥ 2 | 0, 8, 20 | Scartare i trade in cui lo spread si è mosso troppo poco per coprire i costi. 0 = regole di prima; 8 e 20 bps sono il costo di un trade a 2 e a 5 bps per operazione |
+| Tempo massimo | 90, 180 minuti, solo fine giornata | Le uscite per tempo perdono: forse si chiude prima del rientro |
+| Barre del segnale | 1 e 5 minuti | Meno rumore e meno prezzi vecchi. Con 5 minuti lo z-score è calcolato sulle barre da 5 (emivita 60 minuti = 12 barre), si decide alla chiusura della barra e si esegue all'apertura del minuto dopo |
+
+Rimasti uguali: emivita 60 minuti, ingresso z 2.0, uscita 0, stop 3.5, niente ingressi nei primi 15 e negli ultimi 30 minuti, EMA continua, non si apre con una gamba ferma.
+
+**Regola di scelta, scritta prima.** Controllo di coerenza: la combinazione di prima deve riprodurre i 624 trade (fatto: stessi trade, stessi orari, stessi guadagni). Il train si divide in due metà di 32 giorni (fino al 31 luglio e dal 3 agosto). Si sceglie sulla prima metà la combinazione con il guadagno netto più alto a 2 bps per operazione, con almeno 150 trade; è valida solo se il netto a 2 bps è positivo anche nella seconda metà, e se non lo è non se ne sceglie un'altra a posteriori. Il test non è stato letto.
+
+**Risultati**
+
+| | Versione 1 (Passaggio 4) | Combinazione scelta dalla v2 (1 minuto, 20 bps, solo fine giornata) |
+| --- | --- | --- |
+| Trade | 624 | 604 |
+| Guadagno lordo per trade | 6.77 bps | 6.01 bps |
+| Netto a 2 bps per operazione | -1.2 bps | -2.0 bps |
+| Netto a 5 bps per operazione | -13.2 bps | -14.0 bps |
+| Costo di pareggio | 1.69 bps | 1.5 bps |
+| Netto a 2 bps, prima metà / seconda metà | +3.1 / -5.8 bps | +3.4 / **-7.9 bps** |
+
+- **Nessuna combinazione è valida.** Tutte le 18 sono negative a 2 e a 5 bps sull'intero train, e tutte negative nella seconda metà. La scelta della regola è **non valida** e la v2 è scartata: si resta alle regole del Passaggio 4, più semplici e senza una scelta in più da giustificare.
+- **Il problema è il periodo, non i parametri.** Con le regole di prima il lordo è 11.1 bps nei primi 32 giorni e 2.2 negli ultimi 32; con le barre da 5 minuti 9.1 e 3.9. Nessuna combinazione supera 4 bps lordi nella seconda metà, quindi nessuna copre nemmeno il costo più basso (8 bps per trade a 2 bps per operazione). Con 64 giorni di train non si distingue un segnale che si è spento da un risultato dovuto al caso.
+- **La soglia in bps non serve ai valori provati.** Con 8 bps i trade sono identici a quelli senza soglia; con 20 bps ne cadono solo 14 su 624: a z = 2 lo scostamento è quasi sempre già sopra 20 bps.
+- **Allungare il tempo massimo peggiora.** Con 180 minuti il lordo scende a 5.9 bps; con "solo fine giornata" i 69 trade chiusi a fine giornata perdono 58 bps in media.
+- **Barre da 5 minuti:** dimezzano i trade (309), ma il lordo non migliora (6.4 bps con 90 minuti, dentro l'incertezza).
+- **Gap della notte:** resta la stessa struttura. Nella combinazione scelta, 11.4 bps lordi per gli ingressi nei minuti 15-30 e 1.7 dopo i 30 minuti.
+
+**Da dichiarare nel report.** Le combinazioni provate sono 18, in più delle 32 del Passaggio 4. La v2 non migliora la v1 e non ha superato il controllo sulla seconda metà; il train è lo stesso su cui erano stati scelti i parametri della v1. La conclusione è che a costi realistici la strategia di base non rende e che la differenza tra "funziona" e "non funziona" dipende dal periodo.
+
+### Passaggio 4, versione 2. Spread e segnale per le 15 coppie
+
+Stato: **fatto sul periodo di addestramento**, con le stesse regole e gli stessi parametri della versione 1. Il lavoro è nel notebook [src/04_segnali/segnali_coppie_v2.ipynb](../src/04_segnali/segnali_coppie_v2.ipynb), con codice, motivazioni e testo dei risultati generato dai dati. Le regole sono nel modulo [src/signals.py](../src/signals.py), esteso con un parametro `version` (con `version=2` legge le 15 coppie e i file puliti della versione 2; il default resta la versione 1). I segnali sono in `data/processed/signals_15pairs_v2_train.csv` (cartella ignorata da git: chi li vuole rilancia il notebook). Il periodo di test **non è stato calcolato**.
+
+Perché: è il cuore matematico della strategia, indipendente dall'agente. Si usano gli stessi parametri della versione 1 perché il confronto tra le due versioni riguardi le coppie e non il segnale, e per non cercare parametri sui dati della versione 2.
+
+#### Scelte del gruppo per la versione 2
+
+| Tema | Scelta |
+| --- | --- |
+| Divisione train/test | Uguale per tutte le coppie: train fino al 16 settembre 2026, test dal 17 settembre. Le sei coppie con 91 giorni hanno 4 giorni di train in meno e 1 di test in meno |
+| Spread | Logaritmo del rapporto tra i prezzi, β = 1 (importi uguali sulle due gambe, senza leva) |
+| Parametri | **Quelli della versione 1**, uguali per tutte: emivita 60 minuti, ingresso a \|z\| ≥ 2.0, uscita a \|z\| ≤ 0, stop a 3.5, tempo massimo 90 minuti. Nessuna ricerca nuova |
+| Orari | Nessun ingresso nei primi 15 e negli ultimi 30 minuti; tutto chiuso a fine giornata |
+| Barre riempite (decisione B) | Non si apre se una delle due gambe ha la barra del segnale riempita |
+| Salto di WDAY del 13 agosto | Lasciato: nessun dato escluso |
+| Dividendi (decisione C) | Prezzi non aggiustati: limite da dichiarare |
+| Costi | **Non considerati** (indicazione del docente): guadagno lordo |
+| Frequenza | Barre da 1 minuto (file a 5, 15 e 60 minuti disponibili per la robustezza) |
+| Versione per il report | Da decidere alla fine |
+
+#### Cosa abbiamo fatto
+
+1. **Dati**: i file puliti a 1 minuto della versione 2 (Passaggio 2, `data/processed/pairs_intraday_v2/`).
+2. **Spread** $S_t = \ln P^A_t - \ln P^B_t$ e **z-score** con media e deviazione standard esponenziali (EMA continua su tutta la serie, la notte conta come una barra).
+3. **Regole**: ingresso alla chiusura della barra *t* se \|z\| ≥ 2.0, esecuzione all'apertura della barra *t+1* (niente lookahead); uscita al primo tra rientro, stop, tempo massimo e fine giornata; una posizione alla volta per coppia.
+4. **Controlli**: lo z-score di ogni barra non dipende dalle barre successive (verificato su tutte le coppie); sulle 5 coppie in comune con la versione 1 (MA-V, CSX-UNP, PYPL-XYZ, HD-LOW, KO-PEP) i trade sono **identici** a quelli della versione 1 (stessi orari, stessi guadagni).
+
+#### Risultati sul train (15 coppie)
+
+| | |
+|---|---|
+| Trade | **973** (circa 1 al giorno per coppia) |
+| Guadagno **lordo** medio per trade | **7.4 bps** (errore standard 2.0; mediano 10.8; 60% in positivo) |
+| Coppie con guadagno medio positivo | 12 su 15 |
+| Senza PYPL-XYZ (la coppia migliore) | 913 trade, 6.0 bps (errore 2.0) |
+| Confronto con la versione 1 (stessi parametri) | 624 trade, 6.8 bps (errore 2.1) |
+| Barre riempite | 129 trade (13%) eseguiti a un prezzo vecchio; 233 occasioni scartate per gamba ferma |
+| Segnali sovrapposti | il 30% dei trade ha un segnale di un'altra coppia nello stesso minuto |
+
+| Coppia | Trade | Lordo medio (bps) | Errore standard | In positivo | Uscita per tempo |
+| --- | --- | --- | --- | --- | --- |
+| PYPL-XYZ | 60 | 29.6 | 14.0 | 63% | 47% |
+| CRM-WDAY | 60 | 28.2 | 19.1 | 60% | 48% |
+| ELV-UNH | 59 | 10.8 | 7.4 | 58% | 58% |
+| GS-MS | 72 | 9.6 | 4.1 | 65% | 36% |
+| MA-V | 75 | 7.5 | 2.5 | 64% | 36% |
+| CSX-UNP | 61 | 6.8 | 4.2 | 56% | 41% |
+| CL-PG | 63 | 6.6 | 4.7 | 60% | 40% |
+| DHR-TMO | 62 | 6.6 | 6.5 | 58% | 44% |
+| HD-LOW | 65 | 4.4 | 4.1 | 68% | 31% |
+| JPM-WFC | 65 | 4.3 | 5.9 | 62% | 38% |
+| KO-PEP | 68 | 3.5 | 4.9 | 60% | 49% |
+| BAC-C | 71 | 3.4 | 6.2 | 65% | 41% |
+| COP-EOG | 61 | -1.0 | 5.3 | 59% | 48% |
+| NXPI-TXN | 68 | -2.2 | 7.3 | 50% | 44% |
+| ISRG-SYK | 63 | -3.2 | 9.6 | 54% | 56% |
+
+**Come escono i trade**: il rientro è 464 trade e guadagna in media 39 bps; il tempo massimo è 422 trade e perde 23 bps; lo stop 31 trade e perde 32 bps; la fine giornata 56 trade, circa 0. Solo il 48% dei trade rientra.
+
+**Orario**: le entrate nei minuti 15-30 sono 457 trade (47%) e producono il **72% del guadagno lordo** (11.4 bps in media); dopo i primi 30 minuti 516 trade fanno 3.9 bps (errore 2.6), vicino a zero. Come nella versione 1, gran parte del guadagno è il rientro del gap della notte, non un movimento dentro la giornata.
+
+**Stazionarietà sul train** (descrittiva): Engle-Granger sotto 0.05 solo per 1 coppia su 15 e ADF per nessuna; l'emivita dello spread va da 2.9 a 17.6 giorni. Il legame statistico del Passaggio 1 (giornaliero, 5 anni) non si conferma sull'orizzonte di una giornata, come nella versione 1.
+
+#### Il giorno del salto di WDAY (13 agosto)
+
+Per scelta del gruppo il giorno non è escluso. Quel giorno CRM-WDAY ha 5 trade: -2, +7, +72, -42 e **+985 bps** (quest'ultimo chiuso a fine giornata). Quel solo trade vale il **14% del guadagno lordo totale** delle 15 coppie: senza di esso la media scenderebbe da 7.4 a 6.4 bps e quella di CRM-WDAY da 28.2 a 12.0 bps. È il dato che pesa di più sul risultato della coppia e va dichiarato nel report; la decisione di tenerlo o toglierlo si può riaprire.
+
+#### Cosa ci dicono i risultati
+
+- **Il segnale della versione 1 funziona in modo simile sulle nuove coppie**: 7.4 bps lordi contro 6.8, con più trade. Ma è un guadagno piccolo, con errore standard di circa 2 bps, e senza costi.
+- **Il risultato dipende da poche coppie e da pochi trade**: PYPL-XYZ (29.6 bps, errore 14.0) e CRM-WDAY (28.2, errore 19.1, di cui buona parte dal trade del 13 agosto) tirano su la media; le altre coppie sono tra -3 e +11 bps, con errori standard di diversi punti base (colonna "Errore standard" della tabella): per la maggior parte indistinguibili da zero. Tre coppie sono negative (ISRG-SYK, NXPI-TXN, COP-EOG, tutte vicine a zero).
+- **Concentrazione nei primi 30 minuti**: da dichiarare, come nella versione 1.
+- **Barre riempite**: le coppie con la gamba ferma più spesso (CSX-UNP 42%, DHR-TMO 41%, ELV-UNH 37%, HD-LOW 37%) hanno guadagni al minuto meno credibili come guadagni realizzabili.
+
+#### Decisioni ancora da prendere
+
+- Tenere o togliere il giorno del salto di WDAY (decisione presa per ora: tenerlo).
+- Le decisioni sul gap della notte (se è una strategia che vogliamo) e sul tempo massimo di 90 minuti, che nella versione 1 sono ancora aperte.
+- La versione da usare nel report (alla fine).
+
+#### Limiti da dichiarare nel report
+
+- Guadagno lordo: i costi non sono considerati (indicazione del docente).
+- Solo periodo di addestramento; il test non è stato calcolato.
+- Parametri della versione 1 non ottimizzati sulla versione 2: scelta voluta, ma potrebbero non essere i migliori per queste coppie.
+- Un trade (CRM-WDAY, 13 agosto) pesa per il 14% del guadagno totale.
+- Prezzi non aggiustati per dividendi; barre riempite e prezzi di esecuzione vecchi per alcuni titoli.
+- Segnali non indipendenti tra coppie (30% nello stesso minuto): gli errori standard sono sottostimati.
+- Circa 3 mesi di dati: un solo tipo di mercato.
+
+Risultato: una tabella di 973 segnali del train (`signals_15pairs_v2_train.csv`).
+
 ### Passaggio 5. Agente di notizie
 
 Perché: distinguere un allargamento dello spread dovuto a rumore (rientra) da uno dovuto a un fatto vero (può non rientrare).
@@ -546,6 +853,12 @@ Controlli:
 Risultato: un file con la decisione dell'agente per ogni segnale.
 
 ### Passaggio 6. Simulazione (backtest)
+
+Stato: **versione A fatta sul train, con costi**; B e C non ancora (aspettano l'agente). Motore in [src/backtest.py](../src/backtest.py), notebook con spiegazioni e risultati in [src/06_backtest/backtest_A.ipynb](../src/06_backtest/backtest_A.ipynb). Scelte di Bea: 10.000 dollari per gamba, scenario realistico 5 bps per operazione. Il test non è stato letto (il motore rifiuta trade dopo il 16 settembre).
+
+**Risultato sul train (624 trade): la versione A perde con i costi.** Il costo di pareggio è 1.69 bps per operazione (6.77 bps per trade). Guadagno netto per trade: 0 bps = +6.8, 2 bps = -1.2, 5 bps = -13.2, 10 bps = -33.2. Rendimento sul capitale in 64 giorni a 5 bps: -4.1%. Rientrano e guadagnano solo i trade che rientrano (301, +37 bps lordi); tempo massimo, fine giornata e stop perdono. Le entrate subito dopo l'apertura (gap della notte) hanno 12.4 bps lordi, quelle dopo i 30 minuti 2.4 bps. A 5 bps solo PYPL-XYZ è netta positiva (errore standard 14 bps). Versioni B e C: il motore le accetta (B con decisioni finte, solo prova tecnica; C da implementare con la direzione scelta dall'agente).
+
+Conseguenza: abbiamo provato a rivedere le regole del segnale sul train (soglia minima in bps, tempo massimo, barre da 5 minuti; vedi "Versione 2 del segnale" nel Passaggio 4) e nessuna combinazione è valida. Resta da confrontare A, B e C al lordo e a costi bassi dichiarando il limite, oppure da provare altre leve dichiarandole.
 
 Perché: ricostruire che cosa sarebbe successo seguendo le regole, barra per barra, in ordine cronologico.
 

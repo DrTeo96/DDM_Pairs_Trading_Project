@@ -18,7 +18,7 @@ Il testo del progetto è in [resources/instructions.pdf](resources/instructions.
    uv run python -m src.data    # da data/raw/ a data/processed/, poi stampa i controlli di qualità
    ```
 
-4. Apri [src/plots.ipynb](src/plots.ipynb) in VS Code e scegli come kernel l'ambiente del progetto:
+4. Apri [src/00_esplorazione/plots.ipynb](src/00_esplorazione/plots.ipynb) in VS Code e scegli come kernel l'ambiente del progetto:
    *Select Kernel → Python Environments → .venv*. Senza VS Code: `uv run --with jupyter jupyter lab`.
 
 ## Dati
@@ -56,13 +56,17 @@ daily = load("daily")    # oppure "intraday_1m", "sentiment"
 | File | Contenuto |
 |---|---|
 | [src/data.py](src/data.py) | Dai file grezzi ai dataset puliti, la funzione `load()` e i controlli di qualità |
-| [src/plots.ipynb](src/plots.ipynb) | Grafici: panoramica dei dati, confronto dei prezzi, esploratore di una coppia con lo z-score dello spread, correlazioni, notizie e movimenti di prezzo |
-| [src/coppie.ipynb](src/coppie.ipynb) | Passaggio 1: selezione delle coppie (crea `data/processed/selected_pairs.csv`) |
-| [src/intraday_pulizia.ipynb](src/intraday_pulizia.ipynb) | Passaggio 2: prezzi intraday puliti per coppia (crea `data/processed/pairs_intraday/`) |
+| [src/00_esplorazione/plots.ipynb](src/00_esplorazione/plots.ipynb) | Grafici: panoramica dei dati, confronto dei prezzi, esploratore di una coppia con lo z-score dello spread, correlazioni, notizie e movimenti di prezzo |
+| [src/01_selezione_coppie/coppie.ipynb](src/01_selezione_coppie/coppie.ipynb) | Passaggio 1 (versione 1): selezione delle prime 10 coppie (crea `data/processed/selected_pairs.csv`) |
+| [src/01_selezione_coppie/coppie_2.ipynb](src/01_selezione_coppie/coppie_2.ipynb) | Passaggio 1 (versione 2): nuova selezione separata di 15 coppie, stesso settore e legame forte (crea `data/processed/selected_pairs_2.csv`) |
+| [src/02_dati_intraday/intraday_pulizia.ipynb](src/02_dati_intraday/intraday_pulizia.ipynb) | Passaggio 2 (versione 1): prezzi intraday puliti per coppia (crea `data/processed/pairs_intraday/`) |
+| [src/02_dati_intraday/intraday_pulizia_v2.ipynb](src/02_dati_intraday/intraday_pulizia_v2.ipynb) | Passaggio 2 (versione 2): prezzi intraday puliti per le 15 coppie della versione 2 (crea `data/processed/pairs_intraday_v2/`) |
 | [src/signals.py](src/signals.py) | Regole dei segnali di pairs trading (spread, z-score con EMA, ingresso e uscita) |
-| [src/segnale_mav.ipynb](src/segnale_mav.ipynb), [src/segnali_coppie.ipynb](src/segnali_coppie.ipynb) | Passaggio 4: segnali, prima su MA-V e poi sulle 10 coppie |
-| [src/news.py](src/news.py) | Passaggio 3: scarica e archivia le notizie di Alpaca (servono le chiavi nel file `.env`, vedi `.env.example`) |
-| [src/notizie_mav.ipynb](src/notizie_mav.ipynb), [src/notizie_coppie.ipynb](src/notizie_coppie.ipynb) | Passaggio 3: qualità e copertura delle notizie, tabella notizie-segnali |
+| [src/04_segnali/segnale_mav.ipynb](src/04_segnali/segnale_mav.ipynb), [src/04_segnali/segnali_coppie.ipynb](src/04_segnali/segnali_coppie.ipynb) | Passaggio 4 (versione 1): segnali, prima su MA-V e poi sulle 10 coppie |
+| [src/04_segnali/segnali_coppie_v2.ipynb](src/04_segnali/segnali_coppie_v2.ipynb) | Passaggio 4 (versione 2): segnali sulle 15 coppie della versione 2, stessi parametri della versione 1 (crea `data/processed/signals_15pairs_v2_train.csv`) |
+| [src/news.py](src/news.py) | Passaggio 3 (versioni 1 e 2): scarica e archivia le notizie di Alpaca (servono le chiavi nel file `.env`, vedi `.env.example`) |
+| [src/03_notizie/notizie_mav.ipynb](src/03_notizie/notizie_mav.ipynb), [src/03_notizie/notizie_coppie.ipynb](src/03_notizie/notizie_coppie.ipynb) | Passaggio 3 (versione 1): qualità e copertura delle notizie, tabella notizie-segnali |
+| [src/03_notizie/notizie_v2.ipynb](src/03_notizie/notizie_v2.ipynb) | Passaggio 3 (versione 2): qualità e copertura delle notizie dei 30 titoli delle 15 coppie (`python -m src.news --pair ALL15_V2`) |
 | `.env.example` | Modello del file `.env` con le chiavi di Alpaca (il file `.env` è privato e git lo ignora) |
 | `pyproject.toml`, `uv.lock`, `.python-version` | Librerie e versioni dell'ambiente: si modificano solo con uv (vedi [docs/setup.md](docs/setup.md)) |
 
