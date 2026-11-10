@@ -2,10 +2,10 @@
 
 Serve un ambiente con duckdb, pandas e numpy.
 Dal terminale, nella cartella del progetto:
-    python -m src.data      ricostruisce data/processed/ dai file di data/raw/ e stampa i controlli
-In un notebook dentro src/:
-    from data import load
-    daily = load("daily")   # oppure "intraday_1m", "sentiment"
+    uv run python -m src.data      ricostruisce data/processed/ dai file di data/raw/ e stampa i controlli
+In un notebook:
+    from src.data import load
+    daily = load("daily")          # oppure "intraday_1m", "sentiment"
 
 Da sapere prima di usare i dati (emerso dai controlli):
 - l'universo sono i titoli dell'indice di oggi: chi è entrato dopo il 2006 non ha la storia completa (survivorship bias)
@@ -15,15 +15,11 @@ Da sapere prima di usare i dati (emerso dai controlli):
   il volume è solo una parte di PX_VOLUME, in quota diversa per borsa
 - sentiment: copertura crescente, da circa il 10% dei giorni nel 2007 a circa il 60% dal 2022
 """
-from pathlib import Path
-
 import duckdb
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
-RAW = ROOT / "data/raw"
-PROCESSED = ROOT / "data/processed"
+from src.config import PROCESSED, RAW
 
 # il nome del file grezzo è il ticker Bloomberg: AAPL_UW_Equity.parquet -> "AAPL UW Equity"
 TICKER_FROM_FILENAME = r"replace(regexp_extract(filename, '([^/\\]+)\.parquet$', 1), '_', ' ')"

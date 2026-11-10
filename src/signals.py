@@ -2,8 +2,8 @@
 
 Sono le stesse regole di segnale_mav.ipynb (coppia MA-V), scritte come funzioni per poterle applicare alle 10 coppie.
 Serve un ambiente con duckdb, pandas e numpy.
-In un notebook dentro src/:
-    from signals import list_pairs, load_pair, zscore, run_rules
+In un notebook:
+    from src.signals import list_pairs, load_pair, zscore, run_rules
     d = load_pair("KO-PEP")
     z = zscore(d.S, hl=120)
     trades, blocked = run_rules(d, z, entry=2.0, exit_=0.0)
@@ -17,19 +17,12 @@ Le regole (spiegate con le motivazioni in segnale_mav.ipynb):
 - guadagno lordo in punti base sull'importo di una gamba: senza costi (i costi sono nel Passaggio 6)
 """
 from dataclasses import dataclass
-from pathlib import Path
 
-import duckdb
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
-PAIRS_DIR = ROOT / "data/processed/pairs_intraday"     # file puliti del Passaggio 2
-SELECTED = ROOT / "data/processed/selected_pairs.csv"  # le 10 coppie del Passaggio 1 (versione 1)
-PAIRS_DIR_V2 = ROOT / "data/processed/pairs_intraday_v2"   # versione 2: file puliti del Passaggio 2 per le 15 coppie
-SELECTED_V2 = ROOT / "data/processed/selected_pairs_2.csv"  # versione 2: le 15 coppie del Passaggio 1
+from src.config import PAIRS_DIR, SELECTED, TRAIN_END, read_parquet
 
-TRAIN_END = "2026-09-16"   # ultimo giorno del train, uguale per tutte le coppie (date di calendario); il test è dal 17 settembre
 N_MINUTES = 390            # barre da 1 minuto nella seduta: 09:30-15:59
 EMA_MIN_PERIODS = 60       # barre di storia necessarie prima di fidarsi di media e deviazione standard della EMA
 OPEN_SKIP = 15             # niente nuovi ingressi nei primi 15 minuti
@@ -39,9 +32,9 @@ STOP_EXTRA = 1.5           # stop-loss: ingresso + 1.5 in unità di z
 LOOKBACK = 30              # minuti usati solo per la colonna descrittiva "titolo più mosso"
 
 
-def list_pairs(version: int = 1) -> pd.DataFrame:
-    """Le coppie con i ticker Bloomberg (colonne pair, A, B) e i ticker brevi (sym_A, sym_B). version=1: le 10 coppie; version=2: le 15 coppie della versione 2."""
-    sel = pd.read_csv(SELECTED if version == 1 else SELECTED_V2)[["pair", "A", "B"]]
+def list_pairs() -> pd.DataFrame:
+    """Le coppie con i ticker Bloomberg (colonne pair, A, B) e i ticker brevi (sym_A, sym_B)."""
+    sel = pd.read_csv(SELECTED)[["pair", "A", "B"]]
     sel["sym_A"] = sel["A"].str.split().str[0]
     sel["sym_B"] = sel["B"].str.split().str[0]
     return sel
@@ -68,11 +61,10 @@ class PairData:
     is_train: np.ndarray      # True per le barre dei giorni fino a TRAIN_END
 
 
-def load_pair(pair: str, version: int = 1) -> PairData:
-    """Legge il file pulito a 1 minuto di una coppia (Passaggio 2) e prepara gli array usati dal motore. version=2: coppie della versione 2."""
-    row = list_pairs(version).set_index("pair").loc[pair]
-    folder = PAIRS_DIR if version == 1 else PAIRS_DIR_V2
-    raw = duckdb.sql(f"SELECT * FROM '{(folder / f'{pair}_1min.parquet').as_posix()}'").df()
+def load_pair(pair: str) -> PairData:
+    """Legge il file pulito a 1 minuto di una coppia (02_intraday.ipynb) e prepara gli array usati dal motore."""
+    row = list_pairs().set_index("pair").loc[pair]
+    raw = read_parquet(PAIRS_DIR / f"{pair}_1min.parquet")
     wide = lambda col: raw.pivot(index="ts", columns="ticker", values=col).sort_index()
     close, open_, filled = wide("close"), wide("open"), wide("filled")
     assert close.isna().sum().sum() == 0, f"{pair}: ci sono prezzi mancanti"

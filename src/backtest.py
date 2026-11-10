@@ -1,10 +1,10 @@
 """Simulazione (Passaggio 6): costi, tre versioni (A, B, C) e metriche sui trade dei segnali del Passaggio 4.
 
-Il motore non rifà il segnale: parte dalla tabella dei trade di `signals_10pairs_train.csv` (orari, prezzi, direzione, guadagno lordo)
+Il motore non rifà il segnale: parte dalla tabella dei trade di 03_segnali.ipynb (orari, prezzi, direzione, guadagno lordo)
 e ci applica, in questo ordine, la decisione della versione (A, B o C), i costi e il capitale.
-In un notebook dentro src/:
-    from backtest import load_trades, apply_version, add_costs, summary, daily_pnl
-    trades = load_trades()                                  # train, 624 trade
+In un notebook:
+    from src.backtest import load_trades, apply_version, add_costs, summary, daily_pnl
+    trades = load_trades()                                  # trade del train
     a = add_costs(apply_version(trades, "A"), cost_bps=5)   # versione A, 5 bps per operazione
     print(summary(a))
 
@@ -23,10 +23,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
-SIGNALS_TRAIN = ROOT / "data/processed/signals_10pairs_train.csv"
+from src.config import SIGNALS, TRAIN_END
+from src.signals import list_pairs, load_pair
 
-TRAIN_END = "2026-09-16"      # uguale a signals.TRAIN_END
 NOTIONAL_LEG = 10_000         # dollari per gamba (scelta di Bea): importo uguale sulle due gambe, senza leva
 CAPITAL_PER_PAIR = 2 * NOTIONAL_LEG
 OPERATIONS_PER_TRADE = 4      # apertura e chiusura di due gambe
@@ -38,7 +37,7 @@ OPEN_WINDOW = (15, 30)        # minuti dall'apertura del segnale: "gap della not
 DECISIONS = {"entra", "blocca", "segui"}  # decisioni possibili dell'agente (Passaggio 5)
 
 
-def load_trades(path: Path = SIGNALS_TRAIN, allow_test: bool = False) -> pd.DataFrame:
+def load_trades(path: Path = SIGNALS, allow_test: bool = False) -> pd.DataFrame:
     """Trade del Passaggio 4. Orari come datetime; minuto del segnale dall'apertura delle 9:30."""
     t = pd.read_csv(path, parse_dates=["t_signal", "t_entry", "t_exit"])
     if not allow_test and (t.t_exit.dt.normalize() > pd.Timestamp(TRAIN_END)).any():
@@ -50,7 +49,6 @@ def load_trades(path: Path = SIGNALS_TRAIN, allow_test: bool = False) -> pd.Data
 
 def trading_days() -> pd.DatetimeIndex:
     """Giorni di seduta del train, dai file di prezzi puliti (serve per contare anche i giorni senza trade)."""
-    from signals import load_pair, list_pairs
     d = load_pair(list_pairs().pair.iloc[0])
     return pd.DatetimeIndex(d.ts[d.is_train].normalize().unique())
 
@@ -93,17 +91,18 @@ def add_costs(trades: pd.DataFrame, cost_bps: float) -> pd.DataFrame:
     return t
 
 
-def daily_pnl(trades: pd.DataFrame, days: pd.DatetimeIndex, n_pairs: int = 10) -> pd.DataFrame:
-    """Guadagno in dollari, rendimento sul capitale e curva di capitale per giorno (i giorni senza trade valgono 0)."""
+def daily_pnl(trades: pd.DataFrame, days: pd.DatetimeIndex, n_pairs: int | None = None) -> pd.DataFrame:
+    """Guadagno in dollari, rendimento sul capitale e curva di capitale per giorno (i giorni senza trade valgono 0).
+    n_pairs: coppie su cui è allocato il capitale; di default tutte quelle della lista, anche se una non ha trade."""
     pnl = trades.groupby("day").pnl_usd.sum().reindex(days, fill_value=0.0)
-    capital = n_pairs * CAPITAL_PER_PAIR
+    capital = (len(list_pairs()) if n_pairs is None else n_pairs) * CAPITAL_PER_PAIR
     out = pd.DataFrame({"pnl_usd": pnl, "ret": pnl / capital})
     out["equity"] = out.ret.cumsum()          # capitale fisso, quindi si somma (niente reinvestimento)
     out["drawdown"] = out.equity - out.equity.cummax().clip(lower=0)
     return out
 
 
-def summary(trades: pd.DataFrame, days: pd.DatetimeIndex | None = None, n_pairs: int = 10) -> dict:
+def summary(trades: pd.DataFrame, days: pd.DatetimeIndex | None = None, n_pairs: int | None = None) -> dict:
     """Metriche dei trade (in punti base) e, se si passano i giorni, del portafoglio giornaliero."""
     net = trades.net_bps if "net_bps" in trades else trades.gross_bps
     n = len(net)
