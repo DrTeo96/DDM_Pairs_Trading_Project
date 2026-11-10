@@ -43,57 +43,9 @@ Le prime quattro decisioni bloccano il lavoro degli altri e vanno chiuse entro i
 
 ## Come rilanciare il lavoro sul proprio computer
 
-Questa sezione dice, nell'ordine, cosa fare per ottenere sul proprio computer gli stessi file e gli stessi risultati descritti nei passaggi 1-4, senza dover chiedere a nessuno. I dati (cartella `data/`) **non sono su git**: ognuno li ricostruisce con i passi qui sotto, a partire dai file Bloomberg. Il codice nuovo (notizie e segnali) va condiviso con un commit; finché non è nel repository, chi non l'ha ricevuto non lo trova.
+Le istruzioni, passo per passo e con i comandi da eseguire, sono in [src/README.md](../src/README.md): ambiente, dati Bloomberg, chiavi di Alpaca, ordine dei passi, tempo e memoria di ciascuno.
 
-Tutti i comandi si eseguono **dalla cartella del progetto** (`DDM_Luiss_Project`) nel terminale. Se compare `No module named 'src'`, il terminale è nella cartella sbagliata: entrare nella cartella del progetto con `cd` e riprovare. I notebook si aprono in VS Code scegliendo come kernel l'ambiente del progetto (*Select Kernel → Python Environments → .venv*) e si eseguono dall'alto in basso.
-
-| # | Cosa | Come | Cosa si ottiene | Serve prima |
-| --- | --- | --- | --- | --- |
-| 1 | Installare uv e l'ambiente | Seguire [setup.md](setup.md); poi `uv sync` | cartella `.venv/` | niente |
-| 2 | Dati Bloomberg | Copiare i file in `data/raw/` come descritto nel [README](../README.md) e mettere `data/gics.csv` (classificazione GICS, da Bloomberg) | dati grezzi | chi li ha scaricati da Bloomberg |
-| 3 | Dataset puliti | `uv run python -m src.data` | `data/processed/*_all.parquet` | 2 |
-| 4 | Selezione delle coppie (Passaggio 1) | Eseguire [coppie.ipynb](../src/01_selezione_coppie/coppie.ipynb) | `data/processed/selected_pairs.csv` | 3 |
-| 5 | Prezzi intraday per coppia (Passaggio 2) | Eseguire [intraday_pulizia.ipynb](../src/02_dati_intraday/intraday_pulizia.ipynb) | `data/processed/pairs_intraday/` | 4 |
-| 6 | Segnali, prima prova su MA-V (Passaggio 4) | Eseguire [segnale_mav.ipynb](../src/04_segnali/segnale_mav.ipynb) | `signals_MA-V_train.csv` | 5 |
-| 7 | Segnali delle 10 coppie (Passaggio 4) | Eseguire [segnali_coppie.ipynb](../src/04_segnali/segnali_coppie.ipynb) | `signals_10pairs_train.csv` | 5 (il 6 è facoltativo: serve solo a un controllo di coerenza) |
-| 8 | Account e chiavi di Alpaca | Vedi sotto | file `.env` con le proprie chiavi | un account Alpaca |
-| 9 | Notizie (Passaggio 3) | Vedi sotto: `uv run python -m src.news --probe`, poi `uv run python -m src.news` e `uv run python -m src.news --pair ALL10` | `news_MA-V_train.parquet`, `news_ALL10_train.parquet` | 8 |
-| 10 | Notizie e segnali (Passaggio 3) | Eseguire [notizie_mav.ipynb](../src/03_notizie/notizie_mav.ipynb) (serve il 6 e il file MA-V del 9) e [notizie_coppie.ipynb](../src/03_notizie/notizie_coppie.ipynb) (serve il 7 e il file ALL10 del 9) | `news_for_signals_MA-V_train.csv`, `news_for_signals_10pairs_train.csv` | 6, 7, 9 |
-| 11 | Backtest della versione A con costi (Passaggio 6) | Eseguire [backtest_A.ipynb](../src/06_backtest/backtest_A.ipynb) | tabelle e grafici nel notebook | 7 |
-| 12 | Versione 2 del segnale, scartata (Passaggio 4) | Eseguire [segnali_v2.ipynb](../src/04_segnali/segnali_v2.ipynb) | `signals_v2_train.csv` | 5, 7 |
-
-I passi 1-5 erano già stati fatti prima dei passaggi 3 e 4; si ripetono solo su un computer nuovo. Un passo si rifà solo quando cambiano i file da cui dipende.
-
-### Passo 8: account e chiavi di Alpaca
-
-Le notizie vengono dall'API gratuita di Alpaca, che chiede due chiavi personali. **Ognuno crea le proprie**: non si scambiano, non si mettono su git e non si incollano in chat, nei notebook o nei documenti. Se per sbaglio vengono condivise, si generano di nuove sul sito.
-
-1. Creare un account gratuito su [alpaca.markets](https://alpaca.markets). Basta il conto **Paper Trading** (simulato, senza soldi veri): serve solo per i dati.
-2. Nella dashboard passare a **Paper Trading** e, nel riquadro **API Keys**, premere **Generate New Keys**. Appaiono due valori: il **Key ID** (di solito inizia con `PK`) e il **Secret Key**, che viene mostrato **una sola volta**: va copiato subito (altrimenti se ne genera un altro). I nomi dei pulsanti potrebbero essere diversi, perché non abbiamo un riferimento aggiornato dell'interfaccia.
-3. Nella cartella del progetto, accanto a `README.md`, creare il file `.env`. Il modo più semplice è copiare il modello `.env.example`:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   Aprire `.env` e scrivere i due valori subito dopo l'uguale, senza spazi e senza virgolette:
-
-   ```
-   ALPACA_API_KEY_ID=il_tuo_key_id
-   ALPACA_API_SECRET_KEY=il_tuo_secret_key
-   ```
-
-   Il nome deve essere esattamente `.env` (con il punto, senza `.example`). Su Mac i file che iniziano con il punto sono nascosti nel Finder (`Cmd+Shift+.` per vederli): meglio usare VS Code. Il file è già nel `.gitignore`: non finisce su GitHub.
-
-### Passo 9: scaricare le notizie
-
-```bash
-uv run python -m src.news --probe            # una sola chiamata di prova, non salva niente: dice se le chiavi funzionano e se lo storico è accessibile
-uv run python -m src.news                    # scarica MA e V (174 notizie) in data/raw/news/alpaca/ e crea news_MA-V_train.parquet
-uv run python -m src.news --pair ALL10       # scarica i 20 titoli delle 10 coppie (1250 notizie) e crea news_ALL10_train.parquet
-```
-
-Lo scaricamento usa i giorni dal 1 giugno al 16 settembre 2026 (train e due settimane prima). Il periodo di test non si scarica. Le risposte di Alpaca vengono salvate come arrivano in `data/raw/news/alpaca/`, così i risultati si possono riprodurre. Se le chiavi sono sbagliate il messaggio d'errore lo dice (`401`); se mancano, il programma si ferma e indica quale chiave manca. Il piano gratuito ha un limite di chiamate al minuto: il programma aspetta tra una chiamata e l'altra e riprova se lo supera.
+La pipeline in `src/` è quella delle 15 coppie. I notebook delle prime 10 coppie, le prime prove su MA-V e la versione 2 del segnale sono in `Old files/`, con la struttura di cartelle che avevano: i link di questo documento puntano lì.
 
 ## Chi ha fatto cosa
 
@@ -135,7 +87,7 @@ Risultato: una pagina con le due risposte, che chiude le decisioni 1 e 2.
 
 > Questa sezione descrive la **versione 1** (10 coppie). La **versione 2** (selezione separata, 15 coppie) è descritta in "Passaggio 1, versione 2", subito prima del Passaggio 2.
 
-Stato: **fatto in gran parte** (restano tre controlli, vedi più sotto). Il lavoro è nel notebook [src/01_selezione_coppie/coppie.ipynb](../src/01_selezione_coppie/coppie.ipynb), che contiene il codice, le motivazioni di ogni scelta e il testo dei risultati. La lista finale è salvata in `data/processed/selected_pairs.csv` (cartella ignorata da git: chi la vuole rilancia il notebook).
+Stato: **fatto in gran parte** (restano tre controlli, vedi più sotto). Il lavoro è nel notebook [Old files/src/01_selezione_coppie/coppie.ipynb](../Old%20files/src/01_selezione_coppie/coppie.ipynb), che contiene il codice, le motivazioni di ogni scelta e il testo dei risultati. La lista finale è salvata in `data/processed/selected_pairs.csv` (cartella ignorata da git: chi la vuole rilancia il notebook).
 
 Perché: una coppia scelta male è come due persone che camminano nella stessa direzione senza elastico. Lo spread non torna indietro e la strategia perde.
 
@@ -236,7 +188,7 @@ Riferimenti (da verificare prima di citarli): Gatev, Goetzmann e Rouwenhorst (20
 
 ### Passaggio 1, versione 2. Selezione separata delle coppie
 
-Stato: **fatto**. Le coppie sono 15 e il gruppo ha deciso di **tenerle tutte** (il programma ne prevede 6-9). Il lavoro è nel notebook [src/01_selezione_coppie/coppie_2.ipynb](../src/01_selezione_coppie/coppie_2.ipynb), che contiene il codice, le motivazioni di ogni scelta e il testo dei risultati generato dai dati. La lista è salvata in `data/processed/selected_pairs_2.csv` (cartella ignorata da git: chi la vuole rilancia il notebook). La versione 1 (`coppie.ipynb`, `selected_pairs.csv`) non è stata toccata.
+Stato: **fatto**. Le coppie sono 15 e il gruppo ha deciso di **tenerle tutte** (il programma ne prevede 6-9). Il lavoro è nel notebook [src/01_coppie.ipynb](../src/01_coppie.ipynb), che contiene il codice, le motivazioni di ogni scelta e il testo dei risultati generato dai dati. La lista è salvata in `data/processed/selected_pairs_2.csv` (cartella ignorata da git: chi la vuole rilancia il notebook). La versione 1 (`coppie.ipynb`, `selected_pairs.csv`) non è stata toccata.
 
 Perché una seconda versione: la versione 1 sceglieva per distanza dei prezzi dentro gruppi industriali ampi, e alcune coppie hanno un legame economico debole (per esempio BNY-GS, ITW-OTIS). Abbiamo deciso di ripartire dall'inizio con criteri più vicini all'obiettivo del progetto: **stesso settore e legame forte**, con titoli davvero scambiati.
 
@@ -319,7 +271,7 @@ Gli eventi noti sono scritti a memoria e **vanno verificati** prima di metterli 
 
 > Questa sezione descrive la **versione 1** (10 coppie). La **versione 2** (15 coppie) è descritta in "Passaggio 2, versione 2", subito prima del Passaggio 3.
 
-Stato: **fatto** per la parte di pulizia; restano tre decisioni collegate (vedi "Decisioni ancora da prendere"). Il lavoro è nel notebook [src/02_dati_intraday/intraday_pulizia.ipynb](../src/02_dati_intraday/intraday_pulizia.ipynb), che contiene il codice, le motivazioni e i controlli. I risultati sono in `data/processed/pairs_intraday/` (cartella ignorata da git: chi li vuole rilancia il notebook).
+Stato: **fatto** per la parte di pulizia; restano tre decisioni collegate (vedi "Decisioni ancora da prendere"). Il lavoro è nel notebook [Old files/src/02_dati_intraday/intraday_pulizia.ipynb](../Old%20files/src/02_dati_intraday/intraday_pulizia.ipynb), che contiene il codice, le motivazioni e i controlli. I risultati sono in `data/processed/pairs_intraday/` (cartella ignorata da git: chi li vuole rilancia il notebook).
 
 Perché: sono il materiale di base del segnale e della simulazione.
 
@@ -400,7 +352,7 @@ Risultato: 40 file puliti (10 coppie × 4 frequenze) più una tabella di qualit�
 
 ### Passaggio 2, versione 2. Dati di prezzo intraday delle coppie della versione 2
 
-Stato: **fatto** per la pulizia, con lo stesso metodo della versione 1. Il lavoro è nel notebook [src/02_dati_intraday/intraday_pulizia_v2.ipynb](../src/02_dati_intraday/intraday_pulizia_v2.ipynb), che legge `selected_pairs_2.csv` e scrive in una cartella **separata**, `data/processed/pairs_intraday_v2/` (cartella ignorata da git: chi la vuole rilancia il notebook). I file della versione 1 in `data/processed/pairs_intraday/` non sono stati toccati.
+Stato: **fatto** per la pulizia, con lo stesso metodo della versione 1. Il lavoro è nel notebook [src/02_intraday.ipynb](../src/02_intraday.ipynb), che legge `selected_pairs_2.csv` e scrive in una cartella **separata**, `data/processed/pairs_intraday_v2/` (cartella ignorata da git: chi la vuole rilancia il notebook). I file della versione 1 in `data/processed/pairs_intraday/` non sono stati toccati.
 
 Perché: sono il materiale di base del segnale e della simulazione sulle coppie della versione 2.
 
@@ -437,7 +389,7 @@ Risultato: 60 file puliti (15 coppie × 4 frequenze) più una tabella di qualit�
 
 > Questa sezione descrive la **versione 1** (10 coppie). La **versione 2** (15 coppie) è descritta in "Passaggio 3, versione 2", subito prima del Passaggio 4.
 
-Stato: **fatto in via sperimentale con Alpaca (fonte Benzinga), sul periodo di addestramento, per le 10 coppie**. Il lavoro è nel modulo [src/news.py](../src/news.py) (scaricamento e archivio locale) e in due notebook, con codice, motivazioni e controlli: [src/03_notizie/notizie_mav.ipynb](../src/03_notizie/notizie_mav.ipynb) (prima prova su MA-V) e [src/03_notizie/notizie_coppie.ipynb](../src/03_notizie/notizie_coppie.ipynb) (le 10 coppie). Le risposte grezze sono in `data/raw/news/alpaca/` e le tabelle in `data/processed/` (cartelle ignorate da git: chi le vuole rilancia `python -m src.news --pair ALL10` e i notebook). Servono le chiavi API di Alpaca nel file `.env`, che git ignora: **ognuno crea le sue** e non le condivide. I passi per crearle e per rilanciare tutto sono nella sezione [Come rilanciare il lavoro sul proprio computer](#come-rilanciare-il-lavoro-sul-proprio-computer); chi ha fatto cosa è nel [registro](#chi-ha-fatto-cosa).
+Stato: **fatto in via sperimentale con Alpaca (fonte Benzinga), sul periodo di addestramento, per le 10 coppie**. Il lavoro è nel modulo [src/news.py](../src/news.py) (scaricamento e archivio locale) e in due notebook, con codice, motivazioni e controlli: [Old files/src/03_notizie/notizie_mav.ipynb](../Old%20files/src/03_notizie/notizie_mav.ipynb) (prima prova su MA-V) e [Old files/src/03_notizie/notizie_coppie.ipynb](../Old%20files/src/03_notizie/notizie_coppie.ipynb) (le 10 coppie). Le risposte grezze sono in `data/raw/news/alpaca/` e le tabelle in `data/processed/` (cartelle ignorate da git: chi le vuole rilancia `python -m src.news --pair ALL10` e i notebook). Servono le chiavi API di Alpaca nel file `.env`, che git ignora: **ognuno crea le sue** e non le condivide. I passi per crearle e per rilanciare tutto sono nella sezione [Come rilanciare il lavoro sul proprio computer](#come-rilanciare-il-lavoro-sul-proprio-computer); chi ha fatto cosa è nel [registro](#chi-ha-fatto-cosa).
 
 Perché: l'agente deve poter leggere solo le notizie uscite prima di ogni segnale, altrimenti vede il futuro.
 
@@ -505,7 +457,7 @@ Le informazioni vengono da guide e confronti di terzi che spesso si contraddicon
 | **Finnhub** | Notizie per azienda; 60 chiamate al minuto nel piano gratuito | Le fonti discordano su cosa sia gratuito; licenza per uso personale |
 | **Alpha Vantage** | Notizie con sentiment e filtro per ticker | Limiti gratuiti discordanti (5 o 25 richieste al giorno) |
 | **GDELT** | Gratuita, senza chiave, ricerca dal 2017 | Non è finanziaria: la ricerca per nome è ambigua (con "Visa" si trovano anche i visti di viaggio); l'orario è quello in cui GDELT vede l'articolo, non quello di pubblicazione; massimo 250 articoli per richiesta |
-| **Bloomberg** | Già nel progetto: sentiment e numero di notizie *giornalieri* (`sentiment_all.parquet`, vedi [bloomberg-api.md](bloomberg-api.md)) | Senza orario: per un segnale di giornata rischia di includere notizie successive; si può usare solo il valore del giorno prima |
+| **Bloomberg** | Già nel progetto: sentiment e numero di notizie *giornalieri* (`sentiment_all.parquet`, vedi [bloomberg-api.md](../Old%20files/docs/bloomberg-api.md)) | Senza orario: per un segnale di giornata rischia di includere notizie successive; si può usare solo il valore del giorno prima |
 
 Ordine consigliato: **Marketaux e Finnhub** per prime (notizie per ticker con orario); GDELT come fonte generale, ma richiede filtri per non raccogliere rumore; Bloomberg è un tipo di dato diverso (un indicatore giornaliero, non titoli con orario). Una seconda fonte di titoli porta duplicati con Benzinga, da raggruppare.
 
@@ -521,7 +473,7 @@ Risultato: una tabella di 1250 notizie con orario (`news_ALL10_train.parquet`) e
 
 ### Passaggio 3, versione 2. Archivio delle notizie per le 15 coppie
 
-Stato: **fatto** per l'archivio e la copertura, sul periodo di addestramento. Il lavoro è nel modulo [src/news.py](../src/news.py) (esteso con `--pair ALL15_V2`; la versione 1 non cambia) e nel notebook [src/03_notizie/notizie_v2.ipynb](../src/03_notizie/notizie_v2.ipynb), con codice, motivazioni e testo dei risultati generato dai dati. Le risposte grezze sono in `data/raw/news/alpaca/ALL15_V2_2026-06-01_2026-09-16/` e la tabella in `data/processed/news_ALL15_V2_train.parquet` (cartelle ignorate da git: chi le vuole rilancia `python -m src.news --pair ALL15_V2` e il notebook). Servono le chiavi API di Alpaca nel file `.env`, come per la versione 1.
+Stato: **fatto** per l'archivio e la copertura, sul periodo di addestramento. Il lavoro è nel modulo [src/news.py](../src/news.py) (esteso con `--pair ALL15_V2`; la versione 1 non cambia) e nel notebook [src/04_notizie.ipynb](../src/04_notizie.ipynb), con codice, motivazioni e testo dei risultati generato dai dati. Le risposte grezze sono in `data/raw/news/alpaca/ALL15_V2_2026-06-01_2026-09-16/` e la tabella in `data/processed/news_ALL15_V2_train.parquet` (cartelle ignorate da git: chi le vuole rilancia `python -m src.news --pair ALL15_V2` e il notebook). Servono le chiavi API di Alpaca nel file `.env`, come per la versione 1.
 
 Perché: l'agente deve poter leggere solo le notizie uscite prima di ogni segnale, altrimenti vede il futuro.
 
@@ -571,7 +523,7 @@ Risultato: una tabella di 2.106 notizie con orario (`news_ALL15_V2_train.parquet
 
 > Questa sezione descrive la **versione 1** (10 coppie). La **versione 2** (15 coppie) è descritta in "Passaggio 4, versione 2", subito prima del Passaggio 5.
 
-Stato: **fatto in via sperimentale, solo sul periodo di addestramento**, su richiesta e con le scelte di Bea (vedi il [registro](#chi-ha-fatto-cosa)): prima su MA-V ([src/04_segnali/segnale_mav.ipynb](../src/04_segnali/segnale_mav.ipynb), con codice, motivazioni e controlli), poi esteso alle 10 coppie con parametri uguali per tutte ([src/04_segnali/segnali_coppie.ipynb](../src/04_segnali/segnali_coppie.ipynb); le regole sono nel modulo [src/signals.py](../src/signals.py)). I segnali sono in `data/processed/signals_MA-V_train.csv` e `data/processed/signals_10pairs_train.csv` (cartella ignorata da git: chi li vuole rilancia i notebook). Il periodo di test non è stato calcolato.
+Stato: **fatto in via sperimentale, solo sul periodo di addestramento**, su richiesta e con le scelte di Bea (vedi il [registro](#chi-ha-fatto-cosa)): prima su MA-V ([Old files/src/04_segnali/segnale_mav.ipynb](../Old%20files/src/04_segnali/segnale_mav.ipynb), con codice, motivazioni e controlli), poi esteso alle 10 coppie con parametri uguali per tutte ([Old files/src/04_segnali/segnali_coppie.ipynb](../Old%20files/src/04_segnali/segnali_coppie.ipynb); le regole sono nel modulo [src/signals.py](../src/signals.py)). I segnali sono in `data/processed/signals_MA-V_train.csv` e `data/processed/signals_10pairs_train.csv` (cartella ignorata da git: chi li vuole rilancia i notebook). Il periodo di test non è stato calcolato.
 
 Perché: è il cuore matematico della strategia, indipendente dall'agente.
 
@@ -642,7 +594,7 @@ Con la EMA azzerata ogni giorno il risultato è peggiore: migliore combinazione 
 
 #### Estensione alle 10 coppie (parametri uguali per tutte, scelta di Bea)
 
-Notebook: [src/04_segnali/segnali_coppie.ipynb](../src/04_segnali/segnali_coppie.ipynb). Segnali: `data/processed/signals_10pairs_train.csv`.
+Notebook: [Old files/src/04_segnali/segnali_coppie.ipynb](../Old%20files/src/04_segnali/segnali_coppie.ipynb). Segnali: `data/processed/signals_10pairs_train.csv`.
 
 **Cosa abbiamo fatto**
 
@@ -699,7 +651,7 @@ Risultato: una tabella di 624 segnali del train per le 10 coppie con orario, dir
 
 #### Versione 2 del segnale: provata e scartata
 
-Stato: **fatta sul train, scartata**. Codice in [src/signals_v2.py](../src/signals_v2.py), notebook con regole, risultati e conclusioni in [src/04_segnali/segnali_v2.ipynb](../src/04_segnali/segnali_v2.ipynb). I file della versione 1 (`signals.py`, `segnali_coppie.ipynb`, `backtest.py`) non sono stati modificati. Il file `data/processed/signals_v2_train.csv` contiene la combinazione scelta dalla regola, ma non ha superato il controllo e **non va usato come input del Passaggio 5** senza dichiararlo.
+Stato: **fatta sul train, scartata**. Codice in [Old files/src/signals_v2.py](../Old%20files/src/signals_v2.py), notebook con regole, risultati e conclusioni in [Old files/src/04_segnali/segnali_v2.ipynb](../Old%20files/src/04_segnali/segnali_v2.ipynb). I file della versione 1 (`signals.py`, `segnali_coppie.ipynb`, `backtest.py`) non sono stati modificati. Il file `data/processed/signals_v2_train.csv` contiene la combinazione scelta dalla regola, ma non ha superato il controllo e **non va usato come input del Passaggio 5** senza dichiararlo.
 
 **Perché.** Il backtest con costi (Passaggio 6) ha mostrato che con le regole sopra il guadagno lordo, 6.77 bps per trade, non copre i costi: costo di pareggio 1.69 bps per operazione, mentre lo scenario realistico è 5. Prima di costruire l'agente abbiamo provato se qualche modifica semplice delle regole potesse portare il segnale in guadagno netto, **solo sul train**.
 
@@ -737,7 +689,7 @@ Rimasti uguali: emivita 60 minuti, ingresso z 2.0, uscita 0, stop 3.5, niente in
 
 ### Passaggio 4, versione 2. Spread e segnale per le 15 coppie
 
-Stato: **fatto sul periodo di addestramento**, con le stesse regole e gli stessi parametri della versione 1. Il lavoro è nel notebook [src/04_segnali/segnali_coppie_v2.ipynb](../src/04_segnali/segnali_coppie_v2.ipynb), con codice, motivazioni e testo dei risultati generato dai dati. Le regole sono nel modulo [src/signals.py](../src/signals.py), esteso con un parametro `version` (con `version=2` legge le 15 coppie e i file puliti della versione 2; il default resta la versione 1). I segnali sono in `data/processed/signals_15pairs_v2_train.csv` (cartella ignorata da git: chi li vuole rilancia il notebook). Il periodo di test **non è stato calcolato**.
+Stato: **fatto sul periodo di addestramento**, con le stesse regole e gli stessi parametri della versione 1. Il lavoro è nel notebook [src/03_segnali.ipynb](../src/03_segnali.ipynb), con codice, motivazioni e testo dei risultati generato dai dati. Le regole sono nel modulo [src/signals.py](../src/signals.py), esteso con un parametro `version` (con `version=2` legge le 15 coppie e i file puliti della versione 2; il default resta la versione 1). I segnali sono in `data/processed/signals_15pairs_v2_train.csv` (cartella ignorata da git: chi li vuole rilancia il notebook). Il periodo di test **non è stato calcolato**.
 
 Perché: è il cuore matematico della strategia, indipendente dall'agente. Si usano gli stessi parametri della versione 1 perché il confronto tra le due versioni riguardi le coppie e non il segnale, e per non cercare parametri sui dati della versione 2.
 
@@ -854,7 +806,7 @@ Risultato: un file con la decisione dell'agente per ogni segnale.
 
 ### Passaggio 6. Simulazione (backtest)
 
-Stato: **versione A fatta sul train, con costi**; B e C non ancora (aspettano l'agente). Motore in [src/backtest.py](../src/backtest.py), notebook con spiegazioni e risultati in [src/06_backtest/backtest_A.ipynb](../src/06_backtest/backtest_A.ipynb). Scelte di Bea: 10.000 dollari per gamba, scenario realistico 5 bps per operazione. Il test non è stato letto (il motore rifiuta trade dopo il 16 settembre).
+Stato: **versione A fatta sul train, con costi**; B e C non ancora (aspettano l'agente). Motore in [src/backtest.py](../src/backtest.py), notebook con spiegazioni e risultati in [Old files/src/06_backtest/backtest_A.ipynb](../Old%20files/src/06_backtest/backtest_A.ipynb). Scelte di Bea: 10.000 dollari per gamba, scenario realistico 5 bps per operazione. Il test non è stato letto (il motore rifiuta trade dopo il 16 settembre).
 
 **Risultato sul train (624 trade): la versione A perde con i costi.** Il costo di pareggio è 1.69 bps per operazione (6.77 bps per trade). Guadagno netto per trade: 0 bps = +6.8, 2 bps = -1.2, 5 bps = -13.2, 10 bps = -33.2. Rendimento sul capitale in 64 giorni a 5 bps: -4.1%. Rientrano e guadagnano solo i trade che rientrano (301, +37 bps lordi); tempo massimo, fine giornata e stop perdono. Le entrate subito dopo l'apertura (gap della notte) hanno 12.4 bps lordi, quelle dopo i 30 minuti 2.4 bps. A 5 bps solo PYPL-XYZ è netta positiva (errore standard 14 bps). Versioni B e C: il motore le accetta (B con decisioni finte, solo prova tecnica; C da implementare con la direzione scelta dall'agente).
 

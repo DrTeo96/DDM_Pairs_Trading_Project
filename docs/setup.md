@@ -34,10 +34,10 @@ The environment is the `.venv/` folder: never edit it by hand. If it breaks, del
 
 ## Run the code
 
-Run every script with `uv run`, which uses the environment of the project (no need to activate it):
+Run every module with `uv run`, from the project folder: it uses the environment of the project (no need to activate it). The steps of the pipeline are in [src/README.md](../src/README.md).
 
 ```bash
-uv run python <script>.py
+uv run python -m src.data
 ```
 
 ## Add dependencies
@@ -52,7 +52,7 @@ also the indirect ones), then installs them in `.venv/`. **Do not use `pip insta
 | Add a package with a minimum version | `uv add "scikit-learn>=1.5"` |
 | Add a package used only while developing (e.g. Jupyter) | `uv add --dev ipykernel` |
 | Remove a package | `uv remove scikit-learn` |
-| Update one package to its latest version | `uv lock --upgrade-package yfinance`, then `uv sync` |
+| Update one package to its latest version | `uv lock --upgrade-package pandas`, then `uv sync` |
 | Update all packages | `uv lock --upgrade`, then `uv sync` |
 | See the installed packages and their dependencies | `uv tree` |
 | Align `.venv/` with `uv.lock` (e.g. after receiving a new version of the project) | `uv sync` |
@@ -70,5 +70,4 @@ uvx ruff format .    # format the code
 
 | Message | What to do |
 |---|---|
-| `ModuleNotFoundError: No module named ...` | The package is not in the project: add it with `uv add <package>`; check that you ran the script with `uv run` |
-| No prices from Yahoo Finance (`yfinance`) | Check the ticker on [Yahoo Finance](https://finance.yahoo.com); if it is right, wait a few minutes and retry (Yahoo limits the number of requests). If Yahoo changed its interface, update the library: `uv lock --upgrade-package yfinance`, then `uv sync` |
+| `ModuleNotFoundError: No module named ...` | The package is not in the project: add it with `uv add <package>`; check that you ran the module with `uv run` and, in a notebook, that the kernel is `.venv` |
