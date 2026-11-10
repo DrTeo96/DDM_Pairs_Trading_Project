@@ -1,4 +1,4 @@
-"""Simulazione (Passaggio 6): costi, tre versioni (A, B, C) e metriche sui trade dei segnali del Passaggio 4.
+"""Simulazione: costi, tre versioni (A, B, C) e metriche sui trade dei segnali.
 
 Il motore non rifà il segnale: parte dalla tabella dei trade di 03_segnali.ipynb (orari, prezzi, direzione, guadagno lordo)
 e ci applica, in questo ordine, la decisione della versione (A, B o C), i costi e il capitale.
@@ -26,19 +26,19 @@ import pandas as pd
 from src.config import SIGNALS, TRAIN_END
 from src.signals import list_pairs, load_pair
 
-NOTIONAL_LEG = 10_000         # dollari per gamba (scelta di Bea): importo uguale sulle due gambe, senza leva
+NOTIONAL_LEG = 10_000         # dollari per gamba: importo uguale sulle due gambe, senza leva
 CAPITAL_PER_PAIR = 2 * NOTIONAL_LEG
 OPERATIONS_PER_TRADE = 4      # apertura e chiusura di due gambe
-COST_SCENARIOS = [0, 2, 5, 10]  # punti base per operazione (decisione 8)
+COST_SCENARIOS = [0, 2, 5, 10]  # punti base per operazione
 MAIN_COST = 5                 # scenario realistico, deciso prima di guardare i risultati
 DAYS_PER_YEAR = 252
 OPEN_WINDOW = (15, 30)        # minuti dall'apertura del segnale: "gap della notte" se il segnale cade qui
 
-DECISIONS = {"entra", "blocca", "segui"}  # decisioni possibili dell'agente (Passaggio 5)
+DECISIONS = {"entra", "blocca", "segui"}  # decisioni possibili dell'agente (agent.py)
 
 
 def load_trades(path: Path = SIGNALS, allow_test: bool = False) -> pd.DataFrame:
-    """Trade del Passaggio 4. Orari come datetime; minuto del segnale dall'apertura delle 9:30."""
+    """Trade di 03_segnali.ipynb. Orari come datetime; minuto del segnale dall'apertura delle 9:30."""
     t = pd.read_csv(path, parse_dates=["t_signal", "t_entry", "t_exit"])
     if not allow_test and (t.t_exit.dt.normalize() > pd.Timestamp(TRAIN_END)).any():
         raise ValueError("la tabella contiene trade dopo la fine del train: il test si usa una sola volta, con allow_test=True")
@@ -60,7 +60,7 @@ def apply_version(trades: pd.DataFrame, version: str, decisions: pd.DataFrame | 
     B: l'agente può solo bloccare. `decisions` ha le colonne signal_id e decision ('entra' o 'blocca'): i trade bloccati escono.
     C: l'agente decide anche la direzione ('segui'). Non è ancora implementata: seguire la notizia cambia la direzione del trade
        e quindi anche l'uscita, per cui va rifatta la simulazione barra per barra; ribaltare il segno del guadagno darebbe un numero falso.
-    Se per un segnale non c'è nessuna decisione, nelle versioni B e C si blocca (regola di sicurezza del Passaggio 5)."""
+    Se per un segnale non c'è nessuna decisione, nelle versioni B e C si blocca (regola di sicurezza dell'agente)."""
     if version == "A":
         return trades.copy()
     if decisions is None:

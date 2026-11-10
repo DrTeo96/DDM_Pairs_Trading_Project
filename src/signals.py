@@ -1,20 +1,18 @@
-"""Segnali di pairs trading (Passaggio 4) per tutte le coppie: spread, z-score con EMA, regole di ingresso e uscita.
+"""Segnali di pairs trading: spread, z-score con EMA, regole di ingresso e uscita.
 
-Sono le stesse regole di segnale_mav.ipynb (coppia MA-V), scritte come funzioni per poterle applicare alle 10 coppie.
-Serve un ambiente con duckdb, pandas e numpy.
 In un notebook:
     from src.signals import list_pairs, load_pair, zscore, run_rules
     d = load_pair("KO-PEP")
     z = zscore(d.S, hl=120)
     trades, blocked = run_rules(d, z, entry=2.0, exit_=0.0)
 
-Le regole (spiegate con le motivazioni in segnale_mav.ipynb):
+Le regole:
 - spread logaritmico con beta = 1: S = ln(prezzo A) - ln(prezzo B), perché gli importi sulle due gambe sono uguali
 - z-score = (S - EMA(S)) / deviazione standard esponenziale; EMA continua su tutta la serie (la notte conta come una barra)
 - ingresso alla chiusura della barra t se |z| >= soglia, esecuzione all'apertura della barra t+1 (niente lookahead)
 - non si apre se una delle due gambe ha la barra t riempita (nessuno scambio in quel minuto: prezzo vecchio)
 - uscita al primo tra: rientro (|z| <= soglia di uscita), stop (|z| >= ingresso + STOP_EXTRA), tempo (MAX_HOLD minuti), fine giornata
-- guadagno lordo in punti base sull'importo di una gamba: senza costi (i costi sono nel Passaggio 6)
+- guadagno lordo in punti base sull'importo di una gamba: senza costi (i costi sono in backtest.py)
 """
 from dataclasses import dataclass
 

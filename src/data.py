@@ -1,6 +1,5 @@
 """Dati Bloomberg del progetto: dai file grezzi ai dataset puliti in pandas, con i controlli di qualità.
 
-Serve un ambiente con duckdb, pandas e numpy.
 Dal terminale, nella cartella del progetto:
     uv run python -m src.data      ricostruisce data/processed/ dai file di data/raw/ e stampa i controlli
 In un notebook:
