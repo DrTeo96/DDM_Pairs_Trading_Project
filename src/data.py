@@ -23,7 +23,7 @@ import pandas as pd
 from src.config import PROCESSED, RAW
 
 # Tetto alla memoria di duckdb: oltre, ordina appoggiandosi al disco (dentro data/) invece di occupare altra RAM.
-# Con 2 GB i passi pesanti restano sotto i 4 GB di picco anche su un computer da 8 GB.
+# Con 2 GB il passo più pesante resta intorno ai 4 GB di picco invece di superare i 5.
 MEMORY_LIMIT = "2GB"
 TEMP_DIR = PROCESSED / ".duckdb_tmp"
 
