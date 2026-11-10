@@ -15,11 +15,25 @@ Da sapere prima di usare i dati (emerso dai controlli):
   il volume è solo una parte di PX_VOLUME, in quota diversa per borsa
 - sentiment: copertura crescente, da circa il 10% dei giorni nel 2007 a circa il 60% dal 2022
 """
+import datetime
+
 import duckdb
 import numpy as np
 import pandas as pd
 
 from src.config import PROCESSED, RAW
+
+# Tetto alla memoria di duckdb: oltre, ordina appoggiandosi al disco (dentro data/) invece di occupare altra RAM.
+# Con 2 GB i passi pesanti restano sotto i 4 GB di picco anche su un computer da 8 GB.
+MEMORY_LIMIT = "2GB"
+TEMP_DIR = PROCESSED / ".duckdb_tmp"
+
+
+def _connect() -> duckdb.DuckDBPyConnection:
+    con = duckdb.connect()
+    con.execute(f"SET memory_limit='{MEMORY_LIMIT}'")
+    con.execute(f"SET temp_directory='{TEMP_DIR.as_posix()}'")
+    return con
 
 # il nome del file grezzo è il ticker Bloomberg: AAPL_UW_Equity.parquet -> "AAPL UW Equity"
 TICKER_FROM_FILENAME = r"replace(regexp_extract(filename, '([^/\\]+)\.parquet$', 1), '_', ' ')"
@@ -58,8 +72,7 @@ def build_processed() -> None:
     Il timestamp diventa due colonne, date e time (sempre 00:00:00 per daily e sentiment).
     """
     PROCESSED.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect()
-    con.execute("SET memory_limit='6GB'")
+    con = _connect()
     # scrittura in parallelo con meno memoria: i blocchi del file escono in ordine sparso, load() riordina
     con.execute("SET preserve_insertion_order=false")
     for name, cfg in DATASETS.items():
@@ -77,6 +90,7 @@ def build_processed() -> None:
             ) TO '{out.as_posix()}' (FORMAT PARQUET, COMPRESSION ZSTD, ROW_GROUP_SIZE 500000)
         """).fetchall()[0][0]
         print(f"{out.name}: {rows:,} righe")
+    con.close()
 
 
 def load(name: str) -> pd.DataFrame:
@@ -87,10 +101,19 @@ def load(name: str) -> pd.DataFrame:
     daily: in più le colonne step (giorni di borsa dal record precedente dello stesso ticker:
     1 = giorno successivo, > 1 = buco nella serie) e ret (rendimento di PX_LAST, solo dove step è 1).
     """
-    # DuckDB legge il parquet senza bisogno di pyarrow, che pd.read_parquet invece richiede
     path = (PROCESSED / f"{name}_all.parquet").as_posix()
-    df = duckdb.sql(f"SELECT * FROM '{path}' ORDER BY ticker, date, time").df()
-    df = df.astype({"ticker": "category", "time": "category"})
+    con = _connect()
+    # ticker e time diventano category già dentro duckdb (tipo ENUM). Convertendoli in pandas, .df() creerebbe prima un oggetto
+    # Python per ogni riga: con i 13 milioni di righe dell'intraday sono circa 6 GB di picco per una tabella che ne occupa 0,8.
+    con.execute(f"CREATE TYPE ticker_t AS ENUM (SELECT DISTINCT ticker FROM '{path}' ORDER BY ticker)")
+    con.execute(f"CREATE TYPE time_t AS ENUM (SELECT DISTINCT CAST(time AS VARCHAR) FROM '{path}' ORDER BY 1)")
+    df = con.execute(f"""
+        SELECT * REPLACE (CAST(ticker AS ticker_t) AS ticker, CAST(CAST(time AS VARCHAR) AS time_t) AS time)
+        FROM '{path}' ORDER BY ticker, date, time
+    """).df()
+    con.close()   # libera subito la copia dei dati che duckdb tiene per sé
+    df["ticker"] = df["ticker"].cat.as_unordered().cat.rename_categories(pd.Index(df["ticker"].cat.categories.astype(object)).astype("str"))
+    df["time"] = df["time"].cat.as_unordered().cat.rename_categories([datetime.time.fromisoformat(t) for t in df["time"].cat.categories])
     if name == "sentiment":
         num = df.select_dtypes("number").columns
         sentinel = df[num] == SENTINEL
@@ -132,7 +155,11 @@ def check_standard(name: str, df: pd.DataFrame) -> None:
         "null_%": (df.isna().mean() * 100).round(2),
         "unici": df.nunique(),
     }))
-    print(f"righe duplicate: {df.duplicated().sum()} | chiavi (ticker, date, time) duplicate: {df.duplicated(['ticker', 'date', 'time']).sum()}")
+    dup_keys = df.duplicated(["ticker", "date", "time"]).sum()
+    # una riga duplicata ha per forza la chiave duplicata: senza chiavi duplicate il confronto su tutte le colonne
+    # (il passo che usa più memoria, sull'intraday) non serve
+    dup_rows = df.duplicated().sum() if dup_keys else 0
+    print(f"righe duplicate: {dup_rows} | chiavi (ticker, date, time) duplicate: {dup_keys}")
     show(df.describe().T)
 
 
@@ -220,11 +247,14 @@ def check_intraday_vs_daily(sessions: pd.DataFrame, daily: pd.DataFrame) -> None
 
 if __name__ == "__main__":
     build_processed()
-    frames = {name: load(name) for name in DATASETS}
-    for name, df in frames.items():
-        check_standard(name, df)
-    intraday, daily = frames["intraday_1m"], frames["daily"]
+    # un dataset alla volta: tenerli tutti e tre in memoria insieme non serve a nessun controllo
+    intraday = load("intraday_1m")
+    check_standard("intraday_1m", intraday)
     sessions = intraday_sessions(intraday)
     check_intraday(intraday, sessions)
+    del intraday
+    daily = load("daily")
+    check_standard("daily", daily)
     check_daily(daily)
+    check_standard("sentiment", load("sentiment"))
     check_intraday_vs_daily(sessions, daily)
