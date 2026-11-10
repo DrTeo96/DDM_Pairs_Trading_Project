@@ -16,7 +16,6 @@ La tabella ha una riga per notizia:
 """
 import argparse
 import json
-import os
 import shutil
 import time
 import urllib.error
@@ -27,7 +26,7 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
-from src.config import NEWS_SET, NEWS_START, PROCESSED, RAW, ROOT, SELECTED, TRAIN_END, read_parquet
+from src.config import NEWS_SET, NEWS_START, PROCESSED, RAW, SELECTED, TRAIN_END, env, read_parquet
 
 RAW_NEWS = RAW / "news/alpaca"   # risposte grezze, una pagina per file: l'archivio da cui la tabella si può sempre ricostruire
 
@@ -53,18 +52,9 @@ def tickers_of(name: str = NEWS_SET) -> list[str]:
 
 
 def load_keys() -> dict:
-    """Legge le chiavi da .env (righe CHIAVE=valore) o dalle variabili d'ambiente. Non le stampa mai."""
-    keys = {}
-    env_file = ROOT / ".env"
-    if env_file.exists():
-        for line in env_file.read_text().splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                k, v = line.split("=", 1)
-                keys[k.strip()] = v.strip().strip('"').strip("'")
-    for k in ("ALPACA_API_KEY_ID", "ALPACA_API_SECRET_KEY"):
-        keys[k] = os.environ.get(k, keys.get(k, ""))
-    missing = [k for k in ("ALPACA_API_KEY_ID", "ALPACA_API_SECRET_KEY") if not keys[k]]
+    """Le chiavi di Alpaca, da .env o dalle variabili d'ambiente."""
+    keys = {k: env(k) for k in ("ALPACA_API_KEY_ID", "ALPACA_API_SECRET_KEY")}
+    missing = [k for k, v in keys.items() if not v]
     if missing:
         raise RuntimeError(f"Mancano {', '.join(missing)}: copia .env.example in .env e inserisci le chiavi di Alpaca")
     return keys
