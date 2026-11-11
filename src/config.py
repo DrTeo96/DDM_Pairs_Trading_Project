@@ -30,6 +30,7 @@ NEWS = PROCESSED / f"news_{NEWS_SET}_train.parquet"                         # no
 NEWS_FOR_SIGNALS = PROCESSED / "news_for_signals_15pairs_v2_train.csv"      # notizie prima di ogni segnale (04_notizie.ipynb)
 AGENT_RAW = RAW / "agent"                                                   # risposte grezze del modello (python -m src.agent)
 AGENT_DECISIONS = PROCESSED / "agent_decisions_15pairs_v2_train.csv"        # decisione dell'agente per ogni segnale
+AGENT_MANUAL = PROCESSED / "agent_manual_15pairs_v2_train.csv"              # campione classificato a mano dal gruppo (python -m src.agent --sample)
 
 
 def env(name: str, default: str = "") -> str:

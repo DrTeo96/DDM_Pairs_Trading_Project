@@ -55,7 +55,7 @@ Tempo e memoria sono misurati su un Mac con 16 GB (processore M4). La memoria è
 | 3 | `03_segnali.ipynb` | `selected_pairs_2.csv`, `pairs_intraday_v2/` | `signals_15pairs_v2_train.csv` | 4 s | 0,3 GB |
 | 4 | `uv run python -m src.news --probe`, poi `uv run python -m src.news` | Alpaca (chiavi in `.env`), `selected_pairs_2.csv` | `news_ALL15_V2_train.parquet`; pagine grezze in `data/raw/news/alpaca/` | circa 1 minuto (stima) | 0,1 GB |
 | 4 | `04_notizie.ipynb` | `news_ALL15_V2_train.parquet`, `signals_15pairs_v2_train.csv` | `news_for_signals_15pairs_v2_train.csv` | 1 s | 0,2 GB |
-| 5 | `uv run python -m src.agent` | `signals_15pairs_v2_train.csv`, `news_for_signals_15pairs_v2_train.csv`, il server del modello | `agent_decisions_15pairs_v2_train.csv`; risposte grezze in `data/raw/agent/` | vedi sotto | vedi sotto |
+| 5 | `uv run python -m src.agent` | `signals_15pairs_v2_train.csv`, `news_ALL15_V2_train.parquet`, il server del modello | `agent_decisions_15pairs_v2_train.csv`; risposte grezze e registri in `data/raw/agent/` | vedi sotto | vedi sotto |
 | 6 | `06_backtest.ipynb` | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/` | niente (tabelle e grafici) | 1 s | 0,2 GB |
 
 Un passo si rifà solo quando cambiano i file che legge. Nel Programma i passi hanno un'altra numerazione: lì le notizie sono il Passaggio 3 e i segnali il Passaggio 4. Qui i segnali vengono prima, perché la tabella notizie-segnali ha bisogno dei segnali.
@@ -98,30 +98,44 @@ Lo scaricamento sostituisce l'archivio solo quando è finito: se si interrompe, 
 
 ### Passo 5. Agente di notizie
 
-Per ogni segnale l'agente decide `entra` o `blocca`. Se nelle 24 ore prima non ci sono notizie la decisione è `entra` e il modello non viene chiamato; altrimenti il modello legge le notizie e risponde in un formato fisso, che il codice controlla. Una risposta non valida, un errore o un timeout danno `blocca`. Le regole sono nella docstring di [agent.py](agent.py).
+L'agente è un grafo [LangGraph](https://langchain-ai.github.io/langgraph/) a passi fissi, uguale per ogni segnale: **cerca** le notizie sui due titoli nelle 24 ore prima del segnale, **classifica** ogni notizia, **verifica** i fatti strutturali, **decide** con una regola scritta nel codice e **registra** tutto. Il modello linguistico classifica e basta: non decide, non vede le soglie del segnale, non vede la data. Le regole complete sono nella docstring di [agent.py](agent.py).
 
-Il modello linguistico gira in locale, su questo computer o su un altro, dietro un server che parla il protocollo dell'API di OpenAI. In `.env` si scrivono l'indirizzo del server e il nome del modello:
+- Nessuna notizia: `entra`, senza chiamare il modello.
+- Elenchi con più di 5 ticker: rumore per regola, senza chiamare il modello.
+- Fatto strutturale (acquisizione, indagine, frode, cambio del management) su uno solo dei due titoli: `blocca`. Per la versione C, `segui` se la direzione della notizia coincide con il movimento dei 30 minuti prima.
+- Verifica: quando il modello trova un fatto strutturale su un solo titolo, il codice controlla prima che titolo e sommario nominino davvero quell'azienda, poi il modello risponde a una seconda domanda: l'azienda è il compratore, il venditore, il bersaglio, l'indagato o quella che cambia capo? Se no, la notizia diventa rumore. Serve perché il modello confonde l'azienda a cui la notizia è collegata con quella di cui parla: sui casi provati ha corretto Yum! che vende Pizza Hut (collegata a PEP), Nvidia che compra Hugging Face (collegata a CRM), un'indagine del DOJ su tutte le banche USA e un'IPO in cui JPMorgan fa da consulente.
+- Solo rumore (risultati, analisti, accordi, prodotti, settore) o fatti su entrambi: `entra`, con una dimensione suggerita di 0,5 nella colonna `size`, che il backtest per ora non usa.
+- Ricerca fallita, server che non risponde, risposta non valida: `blocca`.
+
+**Anonimizzazione.** Prima di arrivare al modello, nomi, ticker, marchi e dirigenti delle due aziende diventano "Company A" e "Company B". Serve a ridurre il lookahead del modello, cioè il rischio che riconosca l'azienda e sappia già come è andata a finire. Non lo elimina: cifre, altre aziende citate e sotto-industria possono ancora far riconoscere il caso. Va dichiarato nel report. Sulle 958 notizie del train che arrivano al modello non resta visibile nessuno dei nomi della tabella `ALIASES`. Le istruzioni dicono al modello che ogni azienda nominata con il suo nome è un'altra azienda, non A o B. Due controlli: `--real-names` (stesso modello, nomi in chiaro) e un modello con data di addestramento lontana (`--model google/gemma-3-4b`).
+
+Il modello gira in locale dietro un server che parla il protocollo dell'API di OpenAI. In `.env` si scrivono l'indirizzo del server e il nome del modello; se l'indirizzo non finisce con `/v1`, il codice lo aggiunge:
 
 ```
-AGENT_BASE_URL=http://localhost:1234/v1
-AGENT_MODEL=nome-del-modello
+AGENT_BASE_URL=http://127.0.0.1:1234/v1
+AGENT_MODEL=spark-x2.6-4b
 ```
 
 | Server | Come si avvia | `AGENT_BASE_URL` | Provato con questo codice |
 |---|---|---|---|
-| LM Studio | scheda Developer, Start Server (oppure `lms server start`); nome del modello da `lms ls` | `http://localhost:1234/v1` | no |
+| LM Studio | scheda Developer, Start Server (oppure `lms server start`); nome del modello da `curl http://127.0.0.1:1234/v1/models` | `http://127.0.0.1:1234/v1` | sì, con Spark X2.6 4B (GGUF Q4_K_M) |
 | Ollama | `ollama serve`; nome del modello da `ollama list` | `http://localhost:11434/v1` | no |
-| mlx-lm (solo Mac con processore Apple) | `uv run --no-project --python 3.12 --with mlx-lm python -m mlx_lm.server --model <cartella del modello> --port 8089` | `http://localhost:8089/v1` | sì, con Gemma 3 da 4 miliardi di parametri |
+| mlx-lm (solo Mac con processore Apple) | `uv run --no-project --python 3.12 --with mlx-lm python -m mlx_lm.server --model <cartella del modello> --port 8089` | `http://localhost:8089/v1` | sì, con Gemma 3 4B e la versione precedente di agent.py |
 | un altro computer | uno dei server qui sopra, avviato là | `http://<indirizzo>:<porta>/v1` | no |
 
 ```bash
-uv run python -m src.agent --signals 0,1,2,3,4,5    # prova su sei segnali: stampa le decisioni, non scrive la tabella
-uv run python -m src.agent                          # tutti i 973 segnali: 586 hanno notizie e richiedono una chiamata
+uv run python -m src.agent --signals 0,1,2,3          # prova su pochi segnali: stampa le decisioni, non scrive la tabella
+uv run python -m src.agent                            # tutti i 973 segnali: 586 hanno notizie, 958 notizie da classificare
+uv run python -m src.agent --sample 40                # crea data/processed/agent_manual_15pairs_v2_train.csv da compilare a mano
+uv run python -m src.agent --agreement                # accordo tra il gruppo e l'agente (aggiungi --reasoning on per l'altra modalità)
+uv run python -m src.agent --hours 6                  # variante: finestra di 6 ore
 ```
 
-- **Quale modello.** Un modello addestrato dopo giugno 2026 può conoscere già gli eventi del periodo e "sapere" come è andata a finire. Va scelto un modello con data di fine addestramento precedente al 1 giugno 2026, e va dichiarato nel report. Gemma 3 dichiara agosto 2024.
-- **Tempo e memoria.** Il programma in sé usa meno di 0,2 GB. Il modello pesa sul computer dove gira il server: Gemma 3 da 4 miliardi di parametri ha occupato 4,0 GB e ha risposto in circa 4 secondi a domanda, quindi un giro completo dura circa 40 minuti (stima, da cinque chiamate misurate). Un modello più grande è più lento e chiede più memoria.
-- **Rieseguire è gratis.** Ogni risposta è salvata in `data/raw/agent/<modello>/` con orario e nome del modello. Se la risposta a una domanda c'è già viene riletta, senza chiamare il server. Le chiamate rimaste senza risposta vengono ripetute alla esecuzione successiva.
+- **Ragionamento.** Spark X2.6 4B è un modello che ragiona prima di rispondere. Misurato su questo Mac: circa 70 s a notizia con il ragionamento acceso (una risposta su tre supera il tetto di 2000 token e va richiesta senza ragionamento), circa 4 s con il ragionamento spento. Un giro completo dura circa un'ora senza ragionamento e circa 20 ore con il ragionamento acceso, quindi il default è spento. Le due modalità danno risposte diverse sulla stessa notizia: si sceglie con l'accordo sul campione classificato a mano.
+- **Classificazione a mano.** `--sample 40` estrae 40 segnali con notizie, distribuiti sulle coppie, senza le risposte dell'agente: il gruppo non le vede prima di classificare. Per ogni notizia si compilano `mano_riguarda` (A, B, entrambi, nessuno), `mano_sottotipo`, `mano_direzione` e, se serve, `mano_note`. `--agreement` calcola la quota di accordo e il kappa di Cohen, per notizia e per decisione. La decisione del gruppo si ricava dalle sue etichette con la stessa regola dell'agente. Il comando rifiuta di sovrascrivere un campione già esistente.
+- **Quale modello.** Un modello addestrato dopo giugno 2026 può conoscere già gli eventi del periodo. La data di fine addestramento di Spark X2.6 4B va verificata e dichiarata nel report. Gemma 3 dichiara agosto 2024: è il controllo.
+- **Rieseguire è gratis.** Ogni risposta del modello è salvata in `data/raw/agent/<modello>/notizie/` con orario, richiesta e risposta grezza. Se la stessa domanda è già stata fatta, la risposta viene riletta senza chiamare il server; cambiare finestra non richiede le notizie già classificate. Gli errori di rete o del server non si salvano: alla esecuzione successiva la chiamata si ripete.
+- **Registri.** Ogni giro scrive in `data/raw/agent/<modello>/<impostazioni>/` un JSON per segnale (notizie trovate, testo mostrato al modello, classificazioni, decisione), più `decisions.csv` e `classifications.csv`.
 - **Stesse decisioni per tutto il gruppo.** Basta che una persona faccia il giro completo e passi agli altri la cartella `data/raw/agent/`: con quella, e con lo stesso nome del modello in `.env`, il comando ricrea la tabella senza server.
 
 ### Passo 6. Backtest
@@ -155,6 +169,8 @@ La versione C, in cui l'agente sceglie anche la direzione, non è simulata.
 | `Alpaca ha risposto 401` | Chiavi sbagliate: rigenerale sul sito di Alpaca |
 | `manca news_for_signals_15pairs_v2_train.csv` | Esegui prima `04_notizie.ipynb` |
 | `Nessun server risponde a ...` | Il server del modello è spento o `AGENT_BASE_URL` è sbagliato |
+| `ServerError: Unexpected endpoint or method` | L'indirizzo del server è sbagliato: per LM Studio è `http://127.0.0.1:1234/v1` |
+| Da Claude Code l'agente non raggiunge il server, dal terminale sì | La sandbox di Claude Code blocca le connessioni locali: lancia il comando dal terminale |
 | Molte righe `risposta non valida` nell'agente | Il modello non rispetta il formato: usa un server che impone lo schema della risposta (LM Studio, Ollama) o un modello più grande |
 | Il computer rallenta molto al passo 0 | Chiudi le altre applicazioni: servono circa 4 GB liberi |
 
