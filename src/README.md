@@ -11,16 +11,14 @@ La pipeline lavora sulle 15 coppie scelte in `01_coppie.ipynb` e solo sul period
    ```bash
    uv sync
    ```
-
 2. **Dati Bloomberg.** Non sono su git: vanno copiati in `data/` da chi li ha scaricati.
 
-   | Dove | Contenuto |
-   |---|---|
-   | `data/raw/daily/` | un file per titolo (`AAPL_UW_Equity.parquet`): `PX_LAST`, `PX_VOLUME`, `TOT_RETURN_INDEX_GROSS_DVDS`, dal 2006 |
-   | `data/raw/intraday_1m/` | un file per titolo: barre da 1 minuto in UTC, dal 16 giugno al 30 ottobre 2026 |
-   | `data/raw/sentiment/` | numero di notizie e sentiment giornaliero per titolo, dal 2006 |
-   | `data/gics.csv` | classificazione GICS dei titoli |
-
+   | Dove                      | Contenuto                                                                                                              |
+   | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+   | `data/raw/daily/`       | un file per titolo (`AAPL_UW_Equity.parquet`): `PX_LAST`, `PX_VOLUME`, `TOT_RETURN_INDEX_GROSS_DVDS`, dal 2006 |
+   | `data/raw/intraday_1m/` | un file per titolo: barre da 1 minuto in UTC, dal 16 giugno al 30 ottobre 2026                                         |
+   | `data/raw/sentiment/`   | numero di notizie e sentiment giornaliero per titolo, dal 2006                                                         |
+   | `data/gics.csv`         | classificazione GICS dei titoli                                                                                        |
 3. **File `.env`.** Serve dal passo 4. Copia il modello e compila i valori, senza spazi e senza virgolette:
 
    ```bash
@@ -46,17 +44,17 @@ Un notebook si esegue in uno di questi due modi:
 
 Tempo e memoria sono misurati su un Mac con 16 GB (processore M4). La memoria è il picco del passo: è quanta RAM libera serve perché giri senza rallentare.
 
-| Passo | Cosa si esegue | Legge | Scrive in `data/processed/` | Tempo | Memoria |
-|---|---|---|---|---|---|
-| 0 | `uv run python -m src.data` | `data/raw/daily`, `intraday_1m`, `sentiment` | `daily_all.parquet`, `intraday_1m_all.parquet`, `sentiment_all.parquet` | 15 s | 4,0 GB |
-| 0, facoltativo | `00_esplorazione.ipynb` | i tre file del passo 0 | niente (grafici) | 5 s | 4,1 GB |
-| 1 | `01_coppie.ipynb` | `daily_all.parquet`, `data/gics.csv` | `selected_pairs_2.csv` | 3 s | 0,9 GB |
-| 2 | `02_intraday.ipynb` | `selected_pairs_2.csv`, `intraday_1m_all.parquet`, `daily_all.parquet` | `pairs_intraday_v2/` (60 file e `quality_summary.csv`) | 6 s | 0,9 GB |
-| 3 | `03_segnali.ipynb` | `selected_pairs_2.csv`, `pairs_intraday_v2/` | `signals_15pairs_v2_train.csv` | 4 s | 0,3 GB |
-| 4 | `uv run python -m src.news --probe`, poi `uv run python -m src.news` | Alpaca (chiavi in `.env`), `selected_pairs_2.csv` | `news_ALL15_V2_train.parquet`; pagine grezze in `data/raw/news/alpaca/` | circa 1 minuto (stima) | 0,1 GB |
-| 4 | `04_notizie.ipynb` | `news_ALL15_V2_train.parquet`, `signals_15pairs_v2_train.csv` | `news_for_signals_15pairs_v2_train.csv` | 1 s | 0,2 GB |
-| 5 | `uv run python -m src.agent` | `signals_15pairs_v2_train.csv`, `news_ALL15_V2_train.parquet`, il server del modello | `agent_decisions_15pairs_v2_train.csv`; risposte grezze e registri in `data/raw/agent/` | vedi sotto | vedi sotto |
-| 6 | `06_backtest.ipynb` | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/` | niente (tabelle e grafici) | 1 s | 0,2 GB |
+| Passo          | Cosa si esegue                                                           | Legge                                                                                    | Scrive in `data/processed/`                                                               | Tempo                  | Memoria    |
+| -------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------- | ---------- |
+| 0              | `uv run python -m src.data`                                            | `data/raw/daily`, `intraday_1m`, `sentiment`                                       | `daily_all.parquet`, `intraday_1m_all.parquet`, `sentiment_all.parquet`               | 15 s                   | 4,0 GB     |
+| 0, facoltativo | `00_esplorazione.ipynb`                                                | i tre file del passo 0                                                                   | niente (grafici)                                                                            | 5 s                    | 4,1 GB     |
+| 1              | `01_coppie.ipynb`                                                      | `daily_all.parquet`, `data/gics.csv`                                                 | `selected_pairs_2.csv`                                                                    | 3 s                    | 0,9 GB     |
+| 2              | `02_intraday.ipynb`                                                    | `selected_pairs_2.csv`, `intraday_1m_all.parquet`, `daily_all.parquet`             | `pairs_intraday_v2/` (60 file e `quality_summary.csv`)                                  | 6 s                    | 0,9 GB     |
+| 3              | `03_segnali.ipynb`                                                     | `selected_pairs_2.csv`, `pairs_intraday_v2/`                                         | `signals_15pairs_v2_train.csv`                                                            | 4 s                    | 0,3 GB     |
+| 4              | `uv run python -m src.news --probe`, poi `uv run python -m src.news` | Alpaca (chiavi in `.env`), `selected_pairs_2.csv`                                    | `news_ALL15_V2_train.parquet`; pagine grezze in `data/raw/news/alpaca/`                 | circa 1 minuto (stima) | 0,1 GB     |
+| 4              | `04_notizie.ipynb`                                                     | `news_ALL15_V2_train.parquet`, `signals_15pairs_v2_train.csv`                        | `news_for_signals_15pairs_v2_train.csv`                                                   | 1 s                    | 0,2 GB     |
+| 5              | `uv run python -m src.agent`                                           | `signals_15pairs_v2_train.csv`, `news_ALL15_V2_train.parquet`, il server del modello | `agent_decisions_15pairs_v2_train.csv`; risposte grezze e registri in `data/raw/agent/` | vedi sotto             | vedi sotto |
+| 6              | `06_backtest.ipynb`                                                    | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/`                                 | niente (tabelle e grafici)                                                                  | 1 s                    | 0,2 GB     |
 
 Un passo si rifà solo quando cambiano i file che legge. Nel Programma i passi hanno un'altra numerazione: lì le notizie sono il Passaggio 3 e i segnali il Passaggio 4. Qui i segnali vengono prima, perché la tabella notizie-segnali ha bisogno dei segnali.
 
@@ -116,12 +114,12 @@ AGENT_BASE_URL=http://127.0.0.1:1234/v1
 AGENT_MODEL=spark-x2.6-4b
 ```
 
-| Server | Come si avvia | `AGENT_BASE_URL` | Provato con questo codice |
-|---|---|---|---|
-| LM Studio | scheda Developer, Start Server (oppure `lms server start`); nome del modello da `curl http://127.0.0.1:1234/v1/models` | `http://127.0.0.1:1234/v1` | sì, con Spark X2.6 4B (GGUF Q4_K_M) |
-| Ollama | `ollama serve`; nome del modello da `ollama list` | `http://localhost:11434/v1` | no |
-| mlx-lm (solo Mac con processore Apple) | `uv run --no-project --python 3.12 --with mlx-lm python -m mlx_lm.server --model <cartella del modello> --port 8089` | `http://localhost:8089/v1` | sì, con Gemma 3 4B e la versione precedente di agent.py |
-| un altro computer | uno dei server qui sopra, avviato là | `http://<indirizzo>:<porta>/v1` | no |
+| Server                                 | Come si avvia                                                                                                              | `AGENT_BASE_URL`                | Provato con questo codice                                |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------- |
+| LM Studio                              | scheda Developer, Start Server (oppure `lms server start`); nome del modello da `curl http://127.0.0.1:1234/v1/models` | `http://127.0.0.1:1234/v1`      | sì, con Spark X2.6 4B (GGUF Q4_K_M)                     |
+| Ollama                                 | `ollama serve`; nome del modello da `ollama list`                                                                      | `http://localhost:11434/v1`     | no                                                       |
+| mlx-lm (solo Mac con processore Apple) | `uv run --no-project --python 3.12 --with mlx-lm python -m mlx_lm.server --model <cartella del modello> --port 8089`     | `http://localhost:8089/v1`      | sì, con Gemma 3 4B e la versione precedente di agent.py |
+| un altro computer                      | uno dei server qui sopra, avviato là                                                                                      | `http://<indirizzo>:<porta>/v1` | no                                                       |
 
 ```bash
 uv run python -m src.agent --signals 0,1,2,3          # prova su pochi segnali: stampa le decisioni, non scrive la tabella
@@ -159,30 +157,30 @@ La versione C, in cui l'agente sceglie anche la direzione, non è simulata.
 
 ## Se qualcosa si rompe
 
-| Messaggio | Cosa fare |
-|---|---|
-| `No module named 'src'` dal terminale | Il terminale non è nella cartella del progetto: entra lì con `cd` |
-| `No module named 'src'` in un notebook | Il notebook è stato spostato fuori dal progetto, oppure la prima cella non è stata eseguita |
-| `No module named ...` (un'altra libreria) | Il kernel non è `.venv`, oppure manca `uv sync` |
-| `manca selected_pairs_2.csv` | Esegui prima `01_coppie.ipynb` |
-| `Mancano ALPACA_API_KEY_ID ...` | Manca `.env` o è vuoto: vedi il passo 4 |
-| `Alpaca ha risposto 401` | Chiavi sbagliate: rigenerale sul sito di Alpaca |
-| `manca news_for_signals_15pairs_v2_train.csv` | Esegui prima `04_notizie.ipynb` |
-| `Nessun server risponde a ...` | Il server del modello è spento o `AGENT_BASE_URL` è sbagliato |
-| `ServerError: Unexpected endpoint or method` | L'indirizzo del server è sbagliato: per LM Studio è `http://127.0.0.1:1234/v1` |
-| Da Claude Code l'agente non raggiunge il server, dal terminale sì | La sandbox di Claude Code blocca le connessioni locali: lancia il comando dal terminale |
-| Molte righe `risposta non valida` nell'agente | Il modello non rispetta il formato: usa un server che impone lo schema della risposta (LM Studio, Ollama) o un modello più grande |
-| Il computer rallenta molto al passo 0 | Chiudi le altre applicazioni: servono circa 4 GB liberi |
+| Messaggio                                                          | Cosa fare                                                                                                                          |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `No module named 'src'` dal terminale                            | Il terminale non è nella cartella del progetto: entra lì con `cd`                                                              |
+| `No module named 'src'` in un notebook                           | Il notebook è stato spostato fuori dal progetto, oppure la prima cella non è stata eseguita                                      |
+| `No module named ...` (un'altra libreria)                        | Il kernel non è `.venv`, oppure manca `uv sync`                                                                               |
+| `manca selected_pairs_2.csv`                                     | Esegui prima `01_coppie.ipynb`                                                                                                   |
+| `Mancano ALPACA_API_KEY_ID ...`                                  | Manca `.env` o è vuoto: vedi il passo 4                                                                                         |
+| `Alpaca ha risposto 401`                                         | Chiavi sbagliate: rigenerale sul sito di Alpaca                                                                                    |
+| `manca news_for_signals_15pairs_v2_train.csv`                    | Esegui prima `04_notizie.ipynb`                                                                                                  |
+| `Nessun server risponde a ...`                                   | Il server del modello è spento o `AGENT_BASE_URL` è sbagliato                                                                  |
+| `ServerError: Unexpected endpoint or method`                     | L'indirizzo del server è sbagliato: per LM Studio è `http://127.0.0.1:1234/v1`                                                 |
+| Da Claude Code l'agente non raggiunge il server, dal terminale sì | La sandbox di Claude Code blocca le connessioni locali: lancia il comando dal terminale                                            |
+| Molte righe `risposta non valida` nell'agente                    | Il modello non rispetta il formato: usa un server che impone lo schema della risposta (LM Studio, Ollama) o un modello più grande |
+| Il computer rallenta molto al passo 0                              | Chiudi le altre applicazioni: servono circa 4 GB liberi                                                                            |
 
 ## I moduli
 
-| File | Cosa contiene |
-|---|---|
-| [config.py](config.py) | Percorsi, `TRAIN_END`, nomi dei file, lettura di `.env` e dei parquet |
-| [data.py](data.py) | Passo 0: costruzione dei dataset, `load()`, controlli di qualità |
-| [signals.py](signals.py) | Spread, z-score e regole di ingresso e uscita |
-| [news.py](news.py) | Scaricamento e archivio delle notizie, notizie prima di ogni segnale |
-| [agent.py](agent.py) | Agente di notizie |
-| [backtest.py](backtest.py) | Costi, versioni A e B, metriche |
+| File                      | Cosa contiene                                                             |
+| ------------------------- | ------------------------------------------------------------------------- |
+| [config.py](config.py)     | Percorsi, `TRAIN_END`, nomi dei file, lettura di `.env` e dei parquet |
+| [data.py](data.py)         | Passo 0: costruzione dei dataset, `load()`, controlli di qualità       |
+| [signals.py](signals.py)   | Spread, z-score e regole di ingresso e uscita                             |
+| [news.py](news.py)         | Scaricamento e archivio delle notizie, notizie prima di ogni segnale      |
+| [agent.py](agent.py)       | Agente di notizie                                                         |
+| [backtest.py](backtest.py) | Costi, versioni A e B, metriche                                           |
 
 Ciò che non fa più parte della pipeline è in `Old files/`, nella struttura di cartelle che aveva: i notebook delle prime 10 coppie, le prime prove su una coppia sola, la versione 2 del segnale (scartata) e i documenti del piano iniziale. Sono conservati come erano e non vengono aggiornati: usano percorsi e funzioni di allora.
