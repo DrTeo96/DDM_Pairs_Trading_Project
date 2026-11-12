@@ -32,6 +32,15 @@ AGENT_RAW = RAW / "agent"                                                   # ri
 AGENT_DECISIONS = PROCESSED / "agent_decisions_15pairs_v2_train.csv"        # decisione dell'agente per ogni segnale
 AGENT_MANUAL = PROCESSED / "agent_manual_15pairs_v2_train.csv"              # campione classificato a mano dal gruppo (python -m src.agent --sample)
 
+# Le versioni di risultati che il backtest confronta (06_backtest.ipynb). Ogni giro dell'agente ha la sua cartella in AGENT_RAW.
+AGENT_RUN_DIR = AGENT_RAW / "spark-x2.6-4b"
+RUN_24H = AGENT_RUN_DIR / "h24_diretto_anonimo/decisions.csv"               # finestra 24 ore, ragionamento spento: la versione principale
+RUN_6H = AGENT_RUN_DIR / "h6_diretto_anonimo/decisions.csv"                 # finestra 6 ore, ragionamento spento
+RUN_24H_REASONING = AGENT_RUN_DIR / "h24_ragiona_anonimo/accordo_segnali.csv"  # ragionamento acceso, solo sui 40 segnali del campione a mano
+MANUAL_DECISIONS = AGENT_RUN_DIR / "h24_diretto_anonimo/accordo_segnali.csv"  # decisioni ricavate dalla classificazione a mano (colonne mano_*)
+BASELINE_LEXICON = PROCESSED / "baseline_lexicon_decisions_15pairs_v2_train.csv"  # baseline senza modello: lessico Loughran-McDonald
+RESULTS = ROOT / "Results"                                                  # tabelle e trade del backtest, su git
+
 
 def env(name: str, default: str = "") -> str:
     """Una impostazione personale (chiave, indirizzo): dalle variabili d'ambiente, altrimenti dal file .env nella cartella
