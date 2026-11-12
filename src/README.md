@@ -54,7 +54,7 @@ Tempo e memoria sono misurati su un Mac con 16 GB (processore M4). La memoria è
 | 4              | `uv run python -m src.news --probe`, poi `uv run python -m src.news` | Alpaca (chiavi in `.env`), `selected_pairs_2.csv`                                    | `news_ALL15_V2_train.parquet`; pagine grezze in `data/raw/news/alpaca/`                 | circa 1 minuto (stima) | 0,1 GB     |
 | 4              | `04_notizie.ipynb`                                                     | `news_ALL15_V2_train.parquet`, `signals_15pairs_v2_train.csv`                        | `news_for_signals_15pairs_v2_train.csv`                                                   | 1 s                    | 0,2 GB     |
 | 5              | `uv run python -m src.agent`                                           | `signals_15pairs_v2_train.csv`, `news_ALL15_V2_train.parquet`, il server del modello | `agent_decisions_15pairs_v2_train.csv`; risposte grezze e registri in `data/raw/agent/` | vedi sotto             | vedi sotto |
-| 6              | `06_backtest.ipynb`                                                    | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/`                                 | niente (tabelle e grafici)                                                                  | 1 s                    | 0,2 GB     |
+| 6              | `06_backtest.ipynb`                                                    | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/`, le decisioni di ogni versione (vedi passo 6) | `Results/` (su git): tabelle, trade di ogni versione, `curve_capitale.png`               | 10 s                   | 0,3 GB     |
 
 Un passo si rifà solo quando cambiano i file che legge. Nel Programma i passi hanno un'altra numerazione: lì le notizie sono il Passaggio 3 e i segnali il Passaggio 4. Qui i segnali vengono prima, perché la tabella notizie-segnali ha bisogno dei segnali.
 
@@ -138,16 +138,34 @@ uv run python -m src.agent --hours 6                  # variante: finestra di 6 
 
 ### Passo 6. Backtest
 
-Applica costi e capitale ai trade del passo 3 e confronta le versioni: A senza agente, B con l'agente che può bloccare. Per la versione B:
+Applica costi e capitale ai trade del passo 3 e confronta tre versioni:
+
+- **A**: tutti i segnali entrano, senza agente;
+- **B**: l'agente può bloccare (colonna `decision`);
+- **C**: l'agente può anche seguire la notizia (colonna `decision_C` = `segui`, direzione in `follow_side`). Il trade che segue la notizia apre alla stessa barra della A, nella direzione opposta, e si rifà barra per barra sui prezzi di `pairs_intraday_v2/`: esce al primo tra rientro dello spread (z torna a 0), 90 minuti e fine giornata, senza stop.
+
+Le versioni girano su ogni **set di decisioni** elencato in `VERSIONS` ([backtest.py](backtest.py)); i percorsi sono in [config.py](config.py):
+
+| Nome            | File                                                              | Segnali |
+| --------------- | ----------------------------------------------------------------- | ------- |
+| `spark_24h`         | `data/raw/agent/spark-x2.6-4b/h24_diretto_anonimo/decisions.csv` (principale, uguale a `agent_decisions_15pairs_v2_train.csv`) | 973 |
+| `spark_6h`          | `data/raw/agent/spark-x2.6-4b/h6_diretto_anonimo/decisions.csv` (`--hours 6`) | 973 |
+| `lessico`           | `data/processed/baseline_lexicon_decisions_15pairs_v2_train.csv`: baseline senza modello, lessico Loughran-McDonald. Il codice che lo produce non è nel repo | 973 |
+| `spark_24h_ragiona` | `data/raw/agent/spark-x2.6-4b/h24_ragiona_anonimo/accordo_segnali.csv` (`--agreement --reasoning on`) | 40 |
+| `mano`              | colonne `mano_*` di `h24_diretto_anonimo/accordo_segnali.csv` (`--agreement`): solo B, perché manca la direzione da seguire | 40 |
+
+I set da 40 segnali si confrontano solo sui segnali del campione classificato a mano. Per il lessico, `flat` vuol dire bloccare e `solo_A`/`solo_B` con `long`/`short` vuol dire seguire: la C si simula con la coppia coperta, come per l'agente.
 
 ```python
-from src.agent import load_decisions
-from src.backtest import load_trades, apply_version
+from src.backtest import load_trades, trading_days, load_version, apply_version, compare_versions
 
-B = apply_version(load_trades(), "B", load_decisions())
+trades = load_trades()
+B = apply_version(trades, "B", load_version("spark_24h"))
+C = apply_version(trades, "C", load_version("spark_24h"))
+cmp = compare_versions(trades, trading_days(), ["spark_24h", "spark_6h", "lessico"])
 ```
 
-La versione C, in cui l'agente sceglie anche la direzione, non è simulata.
+Il notebook salva tabelle, trade e grafico in `Results/`, che è su git, così i risultati si leggono anche senza i dati. Il commento dei numeri per chi non conosce la finanza è in [Results/RESOCONTO.md](../Results/RESOCONTO.md). Per aggiungere un nuovo set di decisioni: il percorso in `config.py`, una riga in `VERSIONS`, poi si riesegue il notebook.
 
 ## Regole da non rompere
 
@@ -181,6 +199,6 @@ La versione C, in cui l'agente sceglie anche la direzione, non è simulata.
 | [signals.py](signals.py)   | Spread, z-score e regole di ingresso e uscita                             |
 | [news.py](news.py)         | Scaricamento e archivio delle notizie, notizie prima di ogni segnale      |
 | [agent.py](agent.py)       | Agente di notizie                                                         |
-| [backtest.py](backtest.py) | Costi, versioni A e B, metriche                                           |
+| [backtest.py](backtest.py) | Costi, versioni A, B e C, set di decisioni da confrontare, metriche, salvataggio in `Results/` |
 
 Ciò che non fa più parte della pipeline è in `Old files/`, nella struttura di cartelle che aveva: i notebook delle prime 10 coppie, le prime prove su una coppia sola, la versione 2 del segnale (scartata) e i documenti del piano iniziale. Sono conservati come erano e non vengono aggiornati: usano percorsi e funzioni di allora.

@@ -2,7 +2,9 @@
 
 Progetto d'esame (LUISS). Il testo del progetto è in [resources/instructions.pdf](resources/instructions.pdf).
 
-Il pairs trading scommette su due aziende simili: quando i loro prezzi si allontanano più del solito, si compra il titolo rimasto indietro e si vende quello andato avanti, aspettando che la distanza rientri. Qui la distanza (lo spread) si misura minuto per minuto su 15 coppie di titoli dell'S&P 500, con dati Bloomberg. Un agente legge le notizie uscite prima di ogni segnale e blocca il trade quando l'allontanamento ha una causa vera in una sola delle due aziende. Il progetto confronta la strategia senza agente con quella con l'agente.
+Il pairs trading scommette su due aziende simili: quando i loro prezzi si allontanano più del solito, si compra il titolo rimasto indietro e si vende quello andato avanti, aspettando che la distanza rientri. Qui la distanza (lo spread) si misura minuto per minuto su 15 coppie di titoli dell'S&P 500, con dati Bloomberg. Un agente legge le notizie uscite prima di ogni segnale e blocca il trade quando l'allontanamento ha una causa vera in una sola delle due aziende. Il progetto confronta tre versioni: A senza agente, B con l'agente che può bloccare, C con l'agente che può anche seguire la notizia. Le decisioni sulle notizie vengono da più fonti messe a confronto: l'agente con due finestre di notizie (24 e 6 ore), una baseline a lessico senza modello e, su un campione, il ragionamento acceso e la classificazione a mano del gruppo.
+
+I risultati sul periodo di addestramento, spiegati anche per chi non conosce la finanza, sono in [Results/RESOCONTO.md](Results/RESOCONTO.md).
 
 ## Per iniziare
 
@@ -20,6 +22,7 @@ Il pairs trading scommette su due aziende simili: quando i loro prezzi si allont
 | Dove | Cosa c'è |
 |---|---|
 | [src/](src/README.md) | Il codice della pipeline, nell'ordine di esecuzione |
+| [Results/](Results/RESOCONTO.md) | Risultati del backtest, su git: tabelle, trade di ogni versione, decisioni dell'agente, curve di capitale e il resoconto |
 | [docs/Programma.md](docs/Programma.md) | Il diario del gruppo: decisioni, risultati e limiti di ogni passaggio |
 | [docs/setup.md](docs/setup.md) | Uso di uv: installare, eseguire, aggiungere librerie |
 | `data/` | Dati grezzi e file prodotti dalla pipeline. Non è su git: ognuno tiene la sua copia |
