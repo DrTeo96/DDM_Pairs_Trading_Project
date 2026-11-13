@@ -3,7 +3,7 @@
 Scritto il 13 novembre 2026, DOPO aver visto i risultati del train in 06_backtest.ipynb: le scelte qui dentro sono state fatte
 guardando gli stessi dati su cui vengono misurate, quindi i numeri sono ottimistici. Usa solo il train (load_trades rifiuta il test).
 Dalla cartella del progetto:
-    uv run python -m src.post_train         stampa le tabelle e le salva in Results/post_train/
+    uv run python -m src.varianti_agente.post_train    stampa le tabelle e le salva in Results/varianti_agente/post_train/
 
 Da dove parte. Nel Passaggio 6 la versione B (l'agente blocca un fatto strutturale su un solo titolo) toglie trade che guadagnavano
 più della media. Qui si guarda dentro quei blocchi, con informazioni che l'agente produce già (nessuna nuova chiamata al modello):
@@ -25,17 +25,17 @@ import numpy as np
 import pandas as pd
 
 from src.backtest import MAIN_COST, add_costs, apply_version, blocked_vs_random, daily_pnl, load_trades, save_results, summary, trading_days
-from src.config import AGENT_DECISIONS, RESULTS, RUN_24H
+from src.config import AGENT_DECISIONS, AGENT_DECISIONS_COPY, RESULTS, RUN_24H, VARIANTI
 
-OUT = RESULTS / "post_train"
+OUT = VARIANTI / "post_train"
 CASES = ["conferma", "contraddice", "direzione incerta", "nessun blocco nella B"]
 
 
 def load_decisions() -> pd.DataFrame:
     """Le decisioni dell'agente principale (spark_24h): il giro completo se c'è sul computer, altrimenti la copia su git in Results/."""
-    for p in (RUN_24H, AGENT_DECISIONS, RESULTS / AGENT_DECISIONS.name):
+    for p in (RUN_24H, AGENT_DECISIONS, AGENT_DECISIONS_COPY):
         if p.exists() and "decision_C" in pd.read_csv(p, nrows=0):
-            print(f"decisioni da {p.relative_to(p.parents[2])}")
+            print(f"decisioni da {p.relative_to(RESULTS.parent)}")
             return pd.read_csv(p)
     raise FileNotFoundError("nessuna tabella di decisioni dell'agente con la colonna decision_C")
 
@@ -96,9 +96,9 @@ def main() -> None:
 
     OUT.mkdir(parents=True, exist_ok=True)
     cols = ["signal_id", "pair", "t_signal", "ticker", "news_direction", "rel", "gross_bps", "exit_reason", "reason", "caso"]
-    written = save_results({"post_train/per_caso": per_caso, "post_train/confronto": confronto, "post_train/bloccati_contro_caso": bloccati,
-                            "post_train/blocchi_B": m[m.caso != "nessun blocco nella B"][cols].reset_index(drop=True),
-                            "post_train/trades_B_esagerazione": add_costs(books["B_esagerazione"], 0)})
+    written = save_results({"varianti_agente/post_train/per_caso": per_caso, "varianti_agente/post_train/confronto": confronto, "varianti_agente/post_train/bloccati_contro_caso": bloccati,
+                            "varianti_agente/post_train/blocchi_B": m[m.caso != "nessun blocco nella B"][cols].reset_index(drop=True),
+                            "varianti_agente/post_train/trades_B_esagerazione": add_costs(books["B_esagerazione"], 0)})
     fig, ax = plt.subplots(figsize=(11, 4.5))
     for name, t in books.items():
         d = daily_pnl(add_costs(t, 0), days)
@@ -109,7 +109,7 @@ def main() -> None:
     fig.tight_layout()
     fig.savefig(OUT / "curve_capitale.png", dpi=150)
     plt.close(fig)
-    print("\nsalvati:", ", ".join(str(p.relative_to(RESULTS.parent)) for p in written), "e Results/post_train/curve_capitale.png")
+    print("\nsalvati:", ", ".join(str(p.relative_to(RESULTS.parent)) for p in written), "e Results/varianti_agente/post_train/curve_capitale.png")
 
 
 if __name__ == "__main__":

@@ -28,9 +28,9 @@ SIGNALS = PROCESSED / "signals_15pairs_v2_train.csv"                        # se
 NEWS_SET = "ALL15_V2"                                                       # i 30 titoli delle 15 coppie, scaricati insieme
 NEWS = PROCESSED / f"news_{NEWS_SET}_train.parquet"                         # notizie (python -m src.news)
 NEWS_FOR_SIGNALS = PROCESSED / "news_for_signals_15pairs_v2_train.csv"      # notizie prima di ogni segnale (04_notizie.ipynb)
-AGENT_RAW = RAW / "agent"                                                   # risposte grezze del modello (python -m src.agent)
+AGENT_RAW = RAW / "agent"                                                   # risposte grezze del modello (python -m src.varianti_agente.agent)
 AGENT_DECISIONS = PROCESSED / "agent_decisions_15pairs_v2_train.csv"        # decisione dell'agente per ogni segnale
-AGENT_MANUAL = PROCESSED / "agent_manual_15pairs_v2_train.csv"              # campione classificato a mano dal gruppo (python -m src.agent --sample)
+AGENT_MANUAL = PROCESSED / "agent_manual_15pairs_v2_train.csv"              # campione classificato a mano dal gruppo (python -m src.varianti_agente.agent --sample)
 
 # Le versioni di risultati che il backtest confronta (06_backtest.ipynb). Ogni giro dell'agente ha la sua cartella in AGENT_RAW.
 AGENT_RUN_DIR = AGENT_RAW / "spark-x2.6-4b"
@@ -40,6 +40,18 @@ RUN_24H_REASONING = AGENT_RUN_DIR / "h24_ragiona_anonimo/accordo_segnali.csv"  #
 MANUAL_DECISIONS = AGENT_RUN_DIR / "h24_diretto_anonimo/accordo_segnali.csv"  # decisioni ricavate dalla classificazione a mano (colonne mano_*)
 BASELINE_LEXICON = PROCESSED / "baseline_lexicon_decisions_15pairs_v2_train.csv"  # baseline senza modello: lessico Loughran-McDonald
 RESULTS = ROOT / "Results"                                                  # tabelle e trade del backtest, su git
+DAILY = PROCESSED / "daily_all.parquet"                                     # prezzi giornalieri (python -m src.data): calendario dei giorni di borsa
+SPY_DAILY = PROCESSED / "spy_daily_train.parquet"                           # prezzi giornalieri di SPY da Alpaca (python -m src.spy)
+
+# Le varianti dell'agente: codice in src/varianti_agente/, una cartella di risultati per variante in Results/varianti_agente/ (su git).
+# Le decisioni stanno nella cartella della variante, così chi non ha fatto girare il modello rifà il backtest lo stesso.
+VARIANTI = RESULTS / "varianti_agente"
+AGENT_DECISIONS_COPY = VARIANTI / "spark_24h" / AGENT_DECISIONS.name       # copia su git delle decisioni dell'agente principale
+FINBERT_SCORES = VARIANTI / "finbert_seduta/news_finbert.parquet"           # sentiment FinBERT di ogni notizia (score_finbert.py)
+DEC_3B_6H = VARIANTI / "3b_6h/decisioni.csv"                                # Llama 3.2 3B, 6 ore, prompt completo (agent_3b.py)
+DEC_FINBERT_SEDUTA = VARIANTI / "finbert_seduta/decisioni.csv"              # FinBERT, finestra legata alla seduta (agent_finbert.py)
+DEC_C_FRESCA = VARIANTI / "c_fresca/decisioni.csv"                          # C solo su notizie fresche e forti (c_fresca.py)
+DEC_FINBERT_EPISODIO = VARIANTI / "finbert_episodio/decisioni.csv"          # FinBERT, finestra dell'episodio (episodio.py)
 
 
 def env(name: str, default: str = "") -> str:

@@ -1,6 +1,6 @@
 # Esperimento post-train: dove l'agente blocca bene
 
-**Questo esperimento è stato deciso il 13 novembre 2026, dopo aver visto i risultati del train in [../RESOCONTO.md](../RESOCONTO.md).** Non fa parte delle regole fissate prima dei risultati. I numeri vengono da [src/post_train.py](../../src/post_train.py) (`uv run python -m src.post_train`) e riguardano solo il **periodo di addestramento** (train, dal 16 giugno al 16 settembre 2026). Il test non è stato usato.
+**Questo esperimento è stato deciso il 13 novembre 2026, dopo aver visto i risultati del train in [../../RESOCONTO.md](../../RESOCONTO.md).** Non fa parte delle regole fissate prima dei risultati. I numeri vengono da [src/varianti_agente/post_train.py](../../../src/varianti_agente/post_train.py) (`uv run python -m src.varianti_agente.post_train`) e riguardano solo il **periodo di addestramento** (train, dal 16 giugno al 16 settembre 2026). Il test non è stato usato.
 
 ## In breve
 

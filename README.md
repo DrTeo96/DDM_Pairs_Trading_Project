@@ -23,6 +23,7 @@ I risultati sul periodo di addestramento, spiegati anche per chi non conosce la 
 |---|---|
 | [src/](src/README.md) | Il codice della pipeline, nell'ordine di esecuzione |
 | [Results/](Results/RESOCONTO.md) | Risultati del backtest, su git: tabelle, trade di ogni versione, decisioni dell'agente, curve di capitale e il resoconto |
+| [src/varianti_agente/](src/varianti_agente/README.md) | Tutte le varianti dell'agente di notizie (Giulio, Orfeo, Beatrice): codice, comandi e regole; i loro risultati sono in `Results/varianti_agente/` |
 | [docs/Programma.md](docs/Programma.md) | Il diario del gruppo: decisioni, risultati e limiti di ogni passaggio |
 | [docs/setup.md](docs/setup.md) | Uso di uv: installare, eseguire, aggiungere librerie |
 | `data/` | Dati grezzi e file prodotti dalla pipeline. Non è su git: ognuno tiene la sua copia |

@@ -27,15 +27,18 @@ Le versioni:
   rientro dello spread (|z| <= soglia di uscita: la notizia aveva torto), MAX_HOLD minuti, fine giornata. Niente stop oltre al rientro.
 
 Le versioni di risultati (VERSIONS) sono i set di decisioni da confrontare: i giri dell'agente, la baseline a lessico e la
-classificazione a mano del gruppo. `load_version` li porta tutti allo stesso formato (signal_id, decision, decision_C, follow_side).
+classificazione a mano del gruppo e le varianti dell'agente in src/varianti_agente/. `load_version` li porta tutti allo stesso
+formato (signal_id, decision, decision_C, follow_side). Se il file originale non c'è (per esempio le risposte grezze dell'agente, che
+stanno solo sul computer di chi l'ha fatto girare), si legge la copia su git in Results/varianti_agente/<nome>/ (`copy`), già in
+questo formato.
 """
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from src.config import (BASELINE_LEXICON, MANUAL_DECISIONS, RESULTS, RUN_6H, RUN_24H, RUN_24H_REASONING, SIGNALS,
-                        TRAIN_END)
+from src.config import (AGENT_DECISIONS_COPY, BASELINE_LEXICON, DEC_3B_6H, DEC_C_FRESCA, DEC_FINBERT_EPISODIO, DEC_FINBERT_SEDUTA,
+                        MANUAL_DECISIONS, RESULTS, RUN_6H, RUN_24H, RUN_24H_REASONING, SIGNALS, TRAIN_END, VARIANTI)
 from src.signals import MAX_HOLD, list_pairs, load_pair, zscore
 
 NOTIONAL_LEG = 10_000         # dollari per gamba: importo uguale sulle due gambe, senza leva
@@ -46,22 +49,49 @@ MAIN_COST = 5                 # scenario realistico, deciso prima di guardare i 
 DAYS_PER_YEAR = 252
 OPEN_WINDOW = (15, 30)        # minuti dall'apertura del segnale: "gap della notte" se il segnale cade qui
 
-DECISIONS = {"entra", "blocca", "segui"}  # decisioni possibili dell'agente (agent.py)
+DECISIONS = {"entra", "blocca", "segui"}  # decisioni possibili dell'agente (varianti_agente/agent.py)
 
 # I set di decisioni confrontati nel backtest. complete=True: una decisione per ognuno dei 973 segnali del train;
 # complete=False: solo i 40 segnali del campione classificato a mano, quindi si confrontano solo su quei segnali.
+# path: file originale; copy: copia su git nel formato di load_version (None se non serve); chi: chi ha fatto la variante;
+# letters: le versioni che il set prevede, se non sono B e C (3b_6h decide solo la B, c_fresca solo la C).
+# Le varianti che cambiano il backtest stesso (dimensione ridotta, ingresso ritardato, B_esagerazione) non sono set di decisioni:
+# i loro trade sono in Results/varianti_agente/ e il notebook 06 li legge da lì.
 VERSIONS = {
-    "spark_24h": dict(path=RUN_24H, kind="agente", complete=True,
+    "spark_24h": dict(path=RUN_24H, copy=AGENT_DECISIONS_COPY, kind="agente", complete=True, chi="Giulio",
                       label="Agente Spark X2.6 4B, notizie delle 24 ore prima, ragionamento spento (versione principale)"),
-    "spark_6h": dict(path=RUN_6H, kind="agente", complete=True,
+    "spark_6h": dict(path=RUN_6H, copy=VARIANTI / "spark_6h/decisioni.csv", kind="agente", complete=True, chi="Giulio",
                      label="Agente Spark X2.6 4B, notizie delle 6 ore prima, ragionamento spento"),
-    "lessico": dict(path=BASELINE_LEXICON, kind="lessico", complete=True,
+    "lessico": dict(path=BASELINE_LEXICON, copy=VARIANTI / "lessico/decisioni.csv", kind="lessico", complete=True, chi="Giulio",
                     label="Baseline senza modello: parole positive e negative del lessico Loughran-McDonald"),
-    "spark_24h_ragiona": dict(path=RUN_24H_REASONING, kind="agente", complete=False,
+    "3b_6h": dict(path=DEC_3B_6H, copy=None, kind="agente", complete=True, chi="Beatrice", letters=("B",),
+                  label="Agente Llama 3.2 3B, notizie delle 6 ore prima, prompt completo, filtro a parole chiave sul blocco (solo B)"),
+    "finbert_seduta": dict(path=DEC_FINBERT_SEDUTA, copy=None, kind="agente", complete=True, chi="Beatrice",
+                           label="FinBERT sulle notizie mirate, finestra legata alla seduta (gap della notte: dall'ultima chiusura)"),
+    "c_fresca": dict(path=DEC_C_FRESCA, copy=None, kind="agente", complete=True, chi="Beatrice", letters=("C",),
+                     label="Solo C: segue notizie fresche (60 minuti, in seduta), forti, con un evento e direzione uguale al movimento"),
+    "finbert_episodio": dict(path=DEC_FINBERT_EPISODIO, copy=None, kind="agente", complete=True, chi="Beatrice",
+                             label="FinBERT, regole di finbert_seduta con le notizie uscite mentre lo spread si allontanava"),
+    "spark_24h_ragiona": dict(path=RUN_24H_REASONING, copy=None, kind="agente", complete=False, chi="Giulio",
                               label="Agente Spark X2.6 4B, 24 ore, ragionamento acceso (solo campione)"),
-    "mano": dict(path=MANUAL_DECISIONS, kind="mano", complete=False,
+    "mano": dict(path=MANUAL_DECISIONS, copy=None, kind="mano", complete=False, chi="Giulio",
                  label="Classificazione a mano del gruppo, con la stessa regola dell'agente (solo campione)"),
 }
+
+
+def version_file(name: str) -> tuple[Path | None, bool]:
+    """Il file da cui leggere un set di decisioni: l'originale se c'è, altrimenti la copia su git. Il secondo valore dice se è la copia."""
+    v = VERSIONS[name]
+    if v["path"].exists():
+        return v["path"], False
+    if v["copy"] is not None and v["copy"].exists():
+        return v["copy"], True
+    return None, False
+
+
+def available_versions(complete: bool | None = None) -> list[str]:
+    """I set di decisioni che si possono leggere su questo computer (originale o copia)."""
+    return [n for n, v in VERSIONS.items() if version_file(n)[0] is not None and (complete is None or v["complete"] == complete)]
 
 
 def load_trades(path: Path = SIGNALS, allow_test: bool = False) -> pd.DataFrame:
@@ -91,10 +121,14 @@ def load_version(name: str) -> pd.DataFrame:
     if name not in VERSIONS:
         raise ValueError(f"versione sconosciuta: {name}. Possibili: {', '.join(VERSIONS)}")
     v = VERSIONS[name]
-    if not v["path"].exists():
+    path, is_copy = version_file(name)
+    if path is None:
         raise FileNotFoundError(f"manca {v['path']}: è il file della versione {name}")
-    d = pd.read_csv(v["path"])
-    if v["kind"] == "agente":
+    d = pd.read_csv(path)
+    if v["kind"] == "agente" or is_copy:
+        # un set solo B (nessuna colonna decision_C) nella C decide come nella B; un set solo C (nessuna colonna decision) nella B entra sempre
+        d = d.assign(decision=d.decision if "decision" in d else "entra")
+        d = d.assign(decision_C=d.decision_C if "decision_C" in d else d.decision, follow_side=d.follow_side if "follow_side" in d else "")
         out = d[["signal_id", "decision", "decision_C", "follow_side"]].copy()
     elif v["kind"] == "mano":
         out = d[["signal_id", "mano_decision", "mano_decision_C"]].rename(columns={"mano_decision": "decision", "mano_decision_C": "decision_C"})
@@ -211,11 +245,12 @@ def random_decisions(trades: pd.DataFrame, p_block: float = 0.2, seed: int = 0) 
 
 
 def add_costs(trades: pd.DataFrame, cost_bps: float) -> pd.DataFrame:
-    """Aggiunge il costo, il guadagno netto in punti base e il guadagno netto in dollari."""
+    """Aggiunge il costo, il guadagno netto in punti base e il guadagno netto in dollari.
+    Se c'è la colonna `size` (dimensione del trade: 1 intera, 0,5 metà), guadagno e costi in dollari si moltiplicano per la dimensione."""
     t = trades.copy()
     t["cost_bps"] = OPERATIONS_PER_TRADE * cost_bps
     t["net_bps"] = t.gross_bps - t.cost_bps
-    t["pnl_usd"] = t.net_bps / 1e4 * NOTIONAL_LEG
+    t["pnl_usd"] = t.net_bps / 1e4 * NOTIONAL_LEG * (t["size"] if "size" in t else 1)
     return t
 
 
@@ -231,14 +266,16 @@ def daily_pnl(trades: pd.DataFrame, days: pd.DatetimeIndex, n_pairs: int | None 
 
 
 def summary(trades: pd.DataFrame, days: pd.DatetimeIndex | None = None, n_pairs: int | None = None) -> dict:
-    """Metriche dei trade (in punti base) e, se si passano i giorni, del portafoglio giornaliero."""
+    """Metriche dei trade (in punti base) e, se si passano i giorni, del portafoglio giornaliero.
+    Con la colonna `size`, guadagno lordo e netto medi sono pesati con la dimensione (guadagno per dollaro investito)."""
     net = trades.net_bps if "net_bps" in trades else trades.gross_bps
     n = len(net)
     wins, losses = net[net > 0], net[net < 0]
+    w = trades["size"] if "size" in trades else None
     out = {
         "trade": n,
-        "gross_bps": trades.gross_bps.mean(),
-        "net_bps": net.mean(),
+        "gross_bps": np.average(trades.gross_bps, weights=w) if n else np.nan,
+        "net_bps": np.average(net, weights=w) if n else np.nan,
         "se_bps": net.std(ddof=1) / np.sqrt(n) if n > 1 else np.nan,
         "win_rate": (net > 0).mean(),
         "profit_factor": wins.sum() / abs(losses.sum()) if len(losses) else np.nan,
@@ -294,7 +331,9 @@ def version_trades(trades: pd.DataFrame, name: str, letters=("A", "B", "C")) -> 
     dec = load_version(name)
     if not VERSIONS[name]["complete"]:
         trades = trades[trades.signal_id.isin(dec.signal_id)]
-    if (dec.follow_side == "").all():
+    if "letters" in VERSIONS[name]:
+        letters = [x for x in letters if x == "A" or x in VERSIONS[name]["letters"]]
+    elif (dec.follow_side == "").all():
         letters = [x for x in letters if x != "C"]   # senza direzione da seguire la C non si può simulare
     return {x: apply_version(trades, x, None if x == "A" else dec) for x in letters}
 

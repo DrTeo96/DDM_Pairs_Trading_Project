@@ -181,12 +181,14 @@ Non possiamo dire:
 
 | File | Contenuto |
 |---|---|
-| [confronto_versioni.csv](confronto_versioni.csv) | Tutte le metriche per set, versione e costo |
-| [differenza_dalla_A.csv](differenza_dalla_A.csv) | Differenza di ogni versione dalla A |
-| [bloccati_contro_caso.csv](bloccati_contro_caso.csv) | Trade bloccati contro blocco a caso |
+| [confronto_versioni.csv](confronto_versioni.csv) | Tutte le varianti: metriche e differenza dal riferimento, a costo 0 e 5 |
+| [bloccati_contro_caso.csv](bloccati_contro_caso.csv) | Trade bloccati: quota di rientro e confronto con un blocco a caso |
+| [notizia_giusta_C.csv](notizia_giusta_C.csv) | Versione C: quante volte la notizia seguita aveva ragione |
+| [candidate.csv](candidate.csv) | Le 3 candidate per il test secondo il criterio del gruppo (dollari a costo 0, regola scritta prima) |
 | [confronto_campione_40.csv](confronto_campione_40.csv) | I 40 segnali del campione |
 | [A_per_costo.csv](A_per_costo.csv), [A_per_coppia.csv](A_per_coppia.csv) | La versione A per costo e per coppia |
-| [trades_A.csv](trades_A.csv), `<set>/trades_B.csv`, `<set>/trades_C.csv` | Ogni trade di ogni versione |
-| [agent_decisions_15pairs_v2_train.csv](agent_decisions_15pairs_v2_train.csv) | Le decisioni dell'agente principale, segnale per segnale |
+| [trades_A.csv](trades_A.csv), `varianti_agente/<variante>/trades_*.csv` | Ogni trade di ogni versione |
+| [varianti_agente/spark_24h/agent_decisions_15pairs_v2_train.csv](varianti_agente/spark_24h/agent_decisions_15pairs_v2_train.csv) | Le decisioni dell'agente principale, segnale per segnale |
+| [robustezza/](robustezza/tabella_finale.csv) | Passaggio 7: bootstrap, beta e alpha, costi, coppie, settori, periodo |
 
-Per rifare tutto: [src/README.md](../src/README.md), passo 6.
+Per rifare tutto: [src/README.md](../src/README.md), passi 6 e 7.

@@ -49,12 +49,12 @@ Il modello gira in locale dietro un server compatibile con l'API di OpenAI (LM S
 del modello stanno in .env (vedi .env.example).
 
  cartella del progetto:
-    uv run python -m src.agent --signals 0,1,2            prova su pochi segnali: stampa le decisioni, non scrive la tabella
-    uv run python -m src.agent                            tutti i segnali del train: crea data/processed/agent_decisions_15pairs_v2_train.csv
-    uv run python -m src.agent --reasoning on             il modello ragiona prima di rispondere: circa 70 s a notizia invece di 4
-    uv run python -m src.agent --hours 6                  finestra di 6 ore (confronto); le notizie già classificate non si richiedono
-    uv run python -m src.agent --sample 40                estrae il campione da classificare a mano in agent_manual_15pairs_v2_train.csv
-    uv run python -m src.agent --agreement                accordo tra il gruppo e l'agente sul campione compilato
+    uv run python -m src.varianti_agente.agent --signals 0,1,2            prova su pochi segnali: stampa le decisioni, non scrive la tabella
+    uv run python -m src.varianti_agente.agent                            tutti i segnali del train: crea data/processed/agent_decisions_15pairs_v2_train.csv
+    uv run python -m src.varianti_agente.agent --reasoning on             il modello ragiona prima di rispondere: circa 70 s a notizia invece di 4
+    uv run python -m src.varianti_agente.agent --hours 6                  finestra di 6 ore (confronto); le notizie già classificate non si richiedono
+    uv run python -m src.varianti_agente.agent --sample 40                estrae il campione da classificare a mano in agent_manual_15pairs_v2_train.csv
+    uv run python -m src.varianti_agente.agent --agreement                accordo tra il gruppo e l'agente sul campione compilato
 La tabella principale è scritta dall'ultimo giro completo con finestra WINDOW_H, nomi nascosti e il modello di .env, con
 ragionamento acceso o spento (la colonna `reasoning` dice quale). Le altre varianti (finestra diversa, nomi in chiaro,
 altro modello) scrivono le decisioni solo nella loro cartella in data/raw/agent/.
@@ -65,7 +65,7 @@ ragionamento e una risposta su tre che supera MAX_TOKENS, circa 4 s senza. Per l
 mano (`--agreement --reasoning on`), e si sceglie la modalità con l'accordo migliore. Se il ragionamento supera
 MAX_TOKENS la stessa notizia si richiede senza ragionamento, e la classificazione è segnata con `fallback`.
 In un notebook:
-    from src.agent import load_decisions
+    from src.varianti_agente.agent import load_decisions
     B = apply_version(trades, "B", load_decisions())
 
 Salvataggio. Ogni risposta del modello è salvata in data/raw/agent/<modello>/notizie/ con orario, richiesta e risposta
@@ -608,7 +608,7 @@ def load_decisions(path=AGENT_DECISIONS) -> pd.DataFrame:
     """La tabella delle decisioni, nel formato che `backtest.apply_version(trades, "B", decisions)` legge così com'è.
     Per una variante: load_decisions(<cartella del giro>/decisions.csv)."""
     if not path.exists():
-        raise FileNotFoundError(f"manca {path.name}: dalla cartella del progetto esegui `uv run python -m src.agent`")
+        raise FileNotFoundError(f"manca {path.name}: dalla cartella del progetto esegui `uv run python -m src.varianti_agente.agent`")
     return pd.read_csv(path)
 
 
@@ -660,7 +660,7 @@ def agreement(s: Settings) -> pd.DataFrame:
     """Confronta il campione compilato dal gruppo con l'agente: quota di accordo e kappa per notizia (a chi si riferisce,
     tipo, sottotipo, direzione) e per segnale (decisione B e C, con la stessa regola applicata alle etichette del gruppo)."""
     if not AGENT_MANUAL.exists():
-        raise SystemExit(f"manca {AGENT_MANUAL.name}: crealo con `uv run python -m src.agent --sample 40` e fallo compilare al gruppo")
+        raise SystemExit(f"manca {AGENT_MANUAL.name}: crealo con `uv run python -m src.varianti_agente.agent --sample 40` e fallo compilare al gruppo")
     m = pd.read_csv(AGENT_MANUAL, dtype={c: str for c in MANUAL_FIELDS}).fillna({c: "" for c in MANUAL_FIELDS})
     for c in MANUAL_FIELDS[:3]:
         m[c] = m[c].str.strip()
@@ -727,7 +727,7 @@ if __name__ == "__main__":
         sample = make_manual_sample(s, a.sample)
         print(f"salvato data/processed/{AGENT_MANUAL.name}: {sample.signal_id.nunique()} segnali, {len(sample)} notizie (elenchi esclusi).\n"
               f"Compila per ogni riga mano_riguarda (A, B, entrambi, nessuno), mano_sottotipo ({', '.join(SUBTYPES)}),\n"
-              f"mano_direzione ({', '.join(NEWS_DIRECTIONS)}) e, se serve, mano_note. Poi: uv run python -m src.agent --agreement")
+              f"mano_direzione ({', '.join(NEWS_DIRECTIONS)}) e, se serve, mano_note. Poi: uv run python -m src.varianti_agente.agent --agreement")
         raise SystemExit
     if a.agreement:
         print(agreement(s).to_string(index=False, float_format=lambda x: f"{x:.2f}"))

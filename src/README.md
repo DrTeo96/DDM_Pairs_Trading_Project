@@ -53,8 +53,9 @@ Tempo e memoria sono misurati su un Mac con 16 GB (processore M4). La memoria è
 | 3              | `03_segnali.ipynb`                                                     | `selected_pairs_2.csv`, `pairs_intraday_v2/`                                         | `signals_15pairs_v2_train.csv`                                                            | 4 s                    | 0,3 GB     |
 | 4              | `uv run python -m src.news --probe`, poi `uv run python -m src.news` | Alpaca (chiavi in `.env`), `selected_pairs_2.csv`                                    | `news_ALL15_V2_train.parquet`; pagine grezze in `data/raw/news/alpaca/`                 | circa 1 minuto (stima) | 0,1 GB     |
 | 4              | `04_notizie.ipynb`                                                     | `news_ALL15_V2_train.parquet`, `signals_15pairs_v2_train.csv`                        | `news_for_signals_15pairs_v2_train.csv`                                                   | 1 s                    | 0,2 GB     |
-| 5              | `uv run python -m src.agent`                                           | `signals_15pairs_v2_train.csv`, `news_ALL15_V2_train.parquet`, il server del modello | `agent_decisions_15pairs_v2_train.csv`; risposte grezze e registri in `data/raw/agent/` | vedi sotto             | vedi sotto |
-| 6              | `06_backtest.ipynb`                                                    | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/`, le decisioni di ogni versione (vedi passo 6) | `Results/` (su git): tabelle, trade di ogni versione, `curve_capitale.png`               | 10 s                   | 0,3 GB     |
+| 5              | `uv run python -m src.varianti_agente.agent`                                           | `signals_15pairs_v2_train.csv`, `news_ALL15_V2_train.parquet`, il server del modello | `agent_decisions_15pairs_v2_train.csv`; risposte grezze e registri in `data/raw/agent/` | vedi sotto             | vedi sotto |
+| 6              | `06_backtest.ipynb`                                                    | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/`, le decisioni di ogni versione (vedi passo 6) | `Results/` (su git): tabelle, `curve_capitale.png`; trade e decisioni di ogni variante in `Results/varianti_agente/` | 10 s                   | 0,3 GB     |
+| 7              | `07_robustezza.ipynb`                                                  | come il passo 6, più `spy_daily_train.parquet` (`uv run python -m src.spy`) | `Results/robustezza/` (su git): tabella finale con bootstrap, beta e alpha; costi, coppie, settori, periodo | meno di 1 minuto       | non misurata |
 
 Un passo si rifà solo quando cambiano i file che legge. Nel Programma i passi hanno un'altra numerazione: lì le notizie sono il Passaggio 3 e i segnali il Passaggio 4. Qui i segnali vengono prima, perché la tabella notizie-segnali ha bisogno dei segnali.
 
@@ -96,7 +97,9 @@ Lo scaricamento sostituisce l'archivio solo quando è finito: se si interrompe, 
 
 ### Passo 5. Agente di notizie
 
-L'agente è un grafo [LangGraph](https://langchain-ai.github.io/langgraph/) a passi fissi, uguale per ogni segnale: **cerca** le notizie sui due titoli nelle 24 ore prima del segnale, **classifica** ogni notizia, **verifica** i fatti strutturali, **decide** con una regola scritta nel codice e **registra** tutto. Il modello linguistico classifica e basta: non decide, non vede le soglie del segnale, non vede la data. Le regole complete sono nella docstring di [agent.py](agent.py).
+Questo passo descrive l'agente di Giulio, [varianti_agente/agent.py](varianti_agente/agent.py). Tutte le varianti dell'agente del gruppo (di Giulio, Orfeo e Beatrice), con il loro codice, i comandi e i risultati, sono elencate in [varianti_agente/README.md](varianti_agente/README.md).
+
+L'agente è un grafo [LangGraph](https://langchain-ai.github.io/langgraph/) a passi fissi, uguale per ogni segnale: **cerca** le notizie sui due titoli nelle 24 ore prima del segnale, **classifica** ogni notizia, **verifica** i fatti strutturali, **decide** con una regola scritta nel codice e **registra** tutto. Il modello linguistico classifica e basta: non decide, non vede le soglie del segnale, non vede la data. Le regole complete sono nella docstring di [varianti_agente/agent.py](varianti_agente/agent.py).
 
 - Nessuna notizia: `entra`, senza chiamare il modello.
 - Elenchi con più di 5 ticker: rumore per regola, senza chiamare il modello.
@@ -122,11 +125,11 @@ AGENT_MODEL=spark-x2.6-4b
 | un altro computer                      | uno dei server qui sopra, avviato là                                                                                      | `http://<indirizzo>:<porta>/v1` | no                                                       |
 
 ```bash
-uv run python -m src.agent --signals 0,1,2,3          # prova su pochi segnali: stampa le decisioni, non scrive la tabella
-uv run python -m src.agent                            # tutti i 973 segnali: 586 hanno notizie, 958 notizie da classificare
-uv run python -m src.agent --sample 40                # crea data/processed/agent_manual_15pairs_v2_train.csv da compilare a mano
-uv run python -m src.agent --agreement                # accordo tra il gruppo e l'agente (aggiungi --reasoning on per l'altra modalità)
-uv run python -m src.agent --hours 6                  # variante: finestra di 6 ore
+uv run python -m src.varianti_agente.agent --signals 0,1,2,3          # prova su pochi segnali: stampa le decisioni, non scrive la tabella
+uv run python -m src.varianti_agente.agent                            # tutti i 973 segnali: 586 hanno notizie, 958 notizie da classificare
+uv run python -m src.varianti_agente.agent --sample 40                # crea data/processed/agent_manual_15pairs_v2_train.csv da compilare a mano
+uv run python -m src.varianti_agente.agent --agreement                # accordo tra il gruppo e l'agente (aggiungi --reasoning on per l'altra modalità)
+uv run python -m src.varianti_agente.agent --hours 6                  # variante: finestra di 6 ore
 ```
 
 - **Ragionamento.** Spark X2.6 4B è un modello che ragiona prima di rispondere. Misurato su questo Mac: circa 70 s a notizia con il ragionamento acceso (una risposta su tre supera il tetto di 2000 token e va richiesta senza ragionamento), circa 4 s con il ragionamento spento. Un giro completo dura circa un'ora senza ragionamento e circa 20 ore con il ragionamento acceso, quindi il default è spento. Le due modalità danno risposte diverse sulla stessa notizia: si sceglie con l'accordo sul campione classificato a mano.
@@ -153,19 +156,35 @@ Le versioni girano su ogni **set di decisioni** elencato in `VERSIONS` ([backtes
 | `lessico`           | `data/processed/baseline_lexicon_decisions_15pairs_v2_train.csv`: baseline senza modello, lessico Loughran-McDonald. Il codice che lo produce non è nel repo | 973 |
 | `spark_24h_ragiona` | `data/raw/agent/spark-x2.6-4b/h24_ragiona_anonimo/accordo_segnali.csv` (`--agreement --reasoning on`) | 40 |
 | `mano`              | colonne `mano_*` di `h24_diretto_anonimo/accordo_segnali.csv` (`--agreement`): solo B, perché manca la direzione da seguire | 40 |
+| `3b_6h`             | `Results/varianti_agente/3b_6h/decisioni.csv` (`varianti_agente/agent_3b.py`): solo B | 973 |
+| `finbert_seduta`    | `Results/varianti_agente/finbert_seduta/decisioni.csv` (`varianti_agente/agent_finbert.py`) | 973 |
+| `c_fresca`          | `Results/varianti_agente/c_fresca/decisioni.csv` (`varianti_agente/c_fresca.py`): solo C | 973 |
+| `finbert_episodio`  | `Results/varianti_agente/finbert_episodio/decisioni.csv` (`varianti_agente/episodio.py`) | 973 |
+
+Quando il file originale non c'è (le risposte grezze dell'agente stanno solo sul computer di chi l'ha fatto girare), `load_version` legge la copia su git in `Results/varianti_agente/<nome>/`. Le varianti che cambiano il backtest stesso (dimensione ridotta, ingresso ritardato, `B_esagerazione` di Orfeo) non sono set di decisioni: il notebook legge i loro trade da `Results/varianti_agente/`. Il notebook confronta tutto **solo sul train** (`Results/confronto_versioni.csv`), con le funzioni di [varianti_agente/confronto.py](varianti_agente/confronto.py).
 
 I set da 40 segnali si confrontano solo sui segnali del campione classificato a mano. Per il lessico, `flat` vuol dire bloccare e `solo_A`/`solo_B` con `long`/`short` vuol dire seguire: la C si simula con la coppia coperta, come per l'agente.
 
 ```python
-from src.backtest import load_trades, trading_days, load_version, apply_version, compare_versions
+from src.backtest import load_trades, trading_days, load_version, apply_version
+from src.varianti_agente.confronto import riferimenti, tutte_le_varianti, confronto
 
-trades = load_trades()
-B = apply_version(trades, "B", load_version("spark_24h"))
-C = apply_version(trades, "C", load_version("spark_24h"))
-cmp = compare_versions(trades, trading_days(), ["spark_24h", "spark_6h", "lessico"])
+trades, days = load_trades(), trading_days()
+B = apply_version(trades, "B", load_version("spark_24h"))          # una variante sola
+cmp = confronto(tutte_le_varianti(trades), riferimenti(trades), days)   # tutte, ordinate per dollari a costo 0 rispetto al riferimento
 ```
 
-Il notebook salva tabelle, trade e grafico in `Results/`, che è su git, così i risultati si leggono anche senza i dati. Il commento dei numeri per chi non conosce la finanza è in [Results/RESOCONTO.md](../Results/RESOCONTO.md). Per aggiungere un nuovo set di decisioni: il percorso in `config.py`, una riga in `VERSIONS`, poi si riesegue il notebook.
+Il notebook salva tabelle e grafico in `Results/` e i trade di ogni set di decisioni in `Results/varianti_agente/<nome>/`, tutto su git, così i risultati si leggono anche senza i dati. Il commento dei numeri per chi non conosce la finanza è in [Results/RESOCONTO.md](../Results/RESOCONTO.md). Per aggiungere un nuovo set di decisioni: il percorso in `config.py`, una riga in `VERSIONS`, poi si riesegue il notebook.
+
+### Passo 7. Robustezza
+
+`07_robustezza.ipynb` controlla, per ogni variante e solo sul train, se la differenza dal riferimento è vera o fortuna:
+- tabella finale con le metriche complete, l'intervallo di confidenza al 95% della differenza (bootstrap sui giorni), beta e alpha rispetto al mercato;
+- sensibilità ai costi (0, 2, 5, 10 bps);
+- differenza per settore e senza la coppia che pesa di più;
+- le due metà del train e il train senza il 13 agosto.
+
+Il mercato è SPY: i prezzi giornalieri, aggiustati per i dividendi, si scaricano da Alpaca con le stesse chiavi delle notizie (`uv run python -m src.spy`, solo fino alla fine del train). Le tabelle vanno in `Results/robustezza/`.
 
 ## Regole da non rompere
 
@@ -198,7 +217,8 @@ Il notebook salva tabelle, trade e grafico in `Results/`, che è su git, così i
 | [data.py](data.py)         | Passo 0: costruzione dei dataset, `load()`, controlli di qualità       |
 | [signals.py](signals.py)   | Spread, z-score e regole di ingresso e uscita                             |
 | [news.py](news.py)         | Scaricamento e archivio delle notizie, notizie prima di ogni segnale      |
-| [agent.py](agent.py)       | Agente di notizie                                                         |
+| [spy.py](spy.py)           | Prezzi giornalieri di SPY da Alpaca, per beta e alpha (passo 7)           |
+| [varianti_agente/](varianti_agente/README.md) | Tutte le varianti dell'agente di notizie: l'agente di Giulio (`agent.py`), le varianti di Beatrice e di Orfeo |
 | [backtest.py](backtest.py) | Costi, versioni A, B e C, set di decisioni da confrontare, metriche, salvataggio in `Results/` |
 
 Ciò che non fa più parte della pipeline è in `Old files/`, nella struttura di cartelle che aveva: i notebook delle prime 10 coppie, le prime prove su una coppia sola, la versione 2 del segnale (scartata) e i documenti del piano iniziale. Sono conservati come erano e non vengono aggiornati: usano percorsi e funzioni di allora.
