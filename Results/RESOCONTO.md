@@ -185,6 +185,7 @@ Non possiamo dire:
 | [bloccati_contro_caso.csv](bloccati_contro_caso.csv) | Trade bloccati: quota di rientro e confronto con un blocco a caso |
 | [notizia_giusta_C.csv](notizia_giusta_C.csv) | Versione C: quante volte la notizia seguita aveva ragione |
 | [candidate.csv](candidate.csv) | Le 3 candidate per il test secondo il criterio del gruppo (dollari a costo 0, regola scritta prima) |
+| [B_e_C_per_variante.csv](B_e_C_per_variante.csv) | B e C della stessa variante affiancate: differenze, posizioni in classifica, notizie giuste |
 | [confronto_campione_40.csv](confronto_campione_40.csv) | I 40 segnali del campione |
 | [A_per_costo.csv](A_per_costo.csv), [A_per_coppia.csv](A_per_coppia.csv) | La versione A per costo e per coppia |
 | [trades_A.csv](trades_A.csv), `varianti_agente/<variante>/trades_*.csv` | Ogni trade di ogni versione |

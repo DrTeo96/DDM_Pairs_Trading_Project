@@ -90,6 +90,25 @@ def confronto(varianti: list[Variante], rif: dict, days: pd.DatetimeIndex, costs
     return out.set_index(["variante", "versione", "cost_bps"]).reindex([(*k, c) for k in order for c in costs])
 
 
+def per_variante(cmp: pd.DataFrame, segui: pd.DataFrame, cost: float = 0) -> pd.DataFrame:
+    """B e C della stessa variante affiancate: differenza in dollari dal riferimento, posizione nella classifica del confronto (che è
+    ordinata per differenza a costo 0), quota di notizie giuste nella C. Solo le varianti che hanno sia la B sia la C.
+    Ordinata per la somma delle due differenze."""
+    c = cmp.xs(cost, level="cost_bps").reset_index()
+    c["posizione"] = np.arange(1, len(c) + 1)
+    b, cc = c[c.versione == "B"].set_index("variante"), c[c.versione == "C"].set_index("variante")
+    both = b.index.intersection(cc.index)
+    out = pd.DataFrame({
+        "riferimento": b.loc[both, "riferimento"], "regola_prima": b.loc[both, "regola_prima"],
+        "delta_B_usd": b.loc[both, "delta_pnl_usd"], "delta_C_usd": cc.loc[both, "delta_pnl_usd"],
+        "posizione_B": b.loc[both, "posizione"], "posizione_C": cc.loc[both, "posizione"],
+        "notizia_giusta_C": segui.notizia_giusta.reindex(both),
+    })
+    out["delta_B_piu_C_usd"] = out.delta_B_usd + out.delta_C_usd
+    out["posizione_media"] = (out.posizione_B + out.posizione_C) / 2
+    return out.sort_values("delta_B_piu_C_usd", ascending=False)[
+        ["riferimento", "regola_prima", "delta_B_usd", "delta_C_usd", "delta_B_piu_C_usd", "posizione_B", "posizione_C", "posizione_media", "notizia_giusta_C"]]
+
 def fisher(a: int, b: int, c: int, d: int) -> float:
     """Test esatto di Fisher a due code su [[a, b], [c, d]], adatto a pochi casi."""
     r1, c1, n = a + b, a + c, a + b + c + d
