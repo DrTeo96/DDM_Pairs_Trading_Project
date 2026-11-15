@@ -806,6 +806,8 @@ Risultato: un file con la decisione dell'agente per ogni segnale.
 
 ### Passaggio 6. Simulazione (backtest)
 
+**Stato al 15 novembre.** Fatto sulle 15 coppie, sul train, per tutte le 21 varianti dell'agente: [src/06_backtest.ipynb](../src/06_backtest.ipynb), commento in [Results/RESOCONTO.md](../Results/RESOCONTO.md). Variante scelta per il test: `finbert_episodio`. Il paragrafo "Stato" qui sotto è quello delle prime 10 coppie, lasciato com'era.
+
 Stato: **versione A fatta sul train, con costi**; B e C non ancora (aspettano l'agente). Motore in [src/backtest.py](../src/backtest.py), notebook con spiegazioni e risultati in [Old files/src/06_backtest/backtest_A.ipynb](../Old%20files/src/06_backtest/backtest_A.ipynb). Scelte di Bea: 10.000 dollari per gamba, scenario realistico 5 bps per operazione. Il test non è stato letto (il motore rifiuta trade dopo il 16 settembre).
 
 **Risultato sul train (624 trade): la versione A perde con i costi.** Il costo di pareggio è 1.69 bps per operazione (6.77 bps per trade). Guadagno netto per trade: 0 bps = +6.8, 2 bps = -1.2, 5 bps = -13.2, 10 bps = -33.2. Rendimento sul capitale in 64 giorni a 5 bps: -4.1%. Rientrano e guadagnano solo i trade che rientrano (301, +37 bps lordi); tempo massimo, fine giornata e stop perdono. Le entrate subito dopo l'apertura (gap della notte) hanno 12.4 bps lordi, quelle dopo i 30 minuti 2.4 bps. A 5 bps solo PYPL-XYZ è netta positiva (errore standard 14 bps). Versioni B e C: il motore le accetta (B con decisioni finte, solo prova tecnica; C da implementare con la direzione scelta dall'agente).
@@ -825,6 +827,8 @@ Risultato: un registro di trade per ciascuna versione.
 
 ### Passaggio 7. Metriche e controlli di robustezza
 
+**Stato al 15 novembre.** Fatto sul train per tutte le varianti (bootstrap, beta e alpha rispetto a SPY, costi, coppie, settori, periodo): [src/07_robustezza.ipynb](../src/07_robustezza.ipynb). Sul test, per `finbert_episodio`: [src/07_test_robustezza.ipynb](../src/07_test_robustezza.ipynb).
+
 Perché: dimostrare che un risultato non è fortuna.
 
 - Win rate netto dei costi, profit factor, Sharpe ratio, massimo drawdown, numero di trade, durata media, guadagno medio per trade in basis points.
@@ -837,6 +841,152 @@ Perché: dimostrare che un risultato non è fortuna.
 Attenzione: con pochi mesi di dati il numero di trade può essere basso. Conviene sapere presto quanti trade ci sono, perché con poche decine nessuna metrica è affidabile.
 
 Risultato: tabelle e grafici delle curve di capitale.
+
+### Il test: `finbert_episodio` dal 17 settembre al 30 ottobre
+
+Perché: vedere se la variante scelta sul train funziona su dati che nessuno aveva guardato.
+
+#### Cosa prevedeva il programma
+
+Il test si usa una volta sola, alla fine, con regole e parametri bloccati (decisione 3).
+
+#### Decisioni prese (14 novembre, Bea con il gruppo)
+
+- Variante: `finbert_episodio`, con le versioni A, B e C. Nessun'altra variante va sul test.
+- Criterio principale: la differenza in dollari tra B e A, e tra C e A, a costo 0 (lo stesso usato per scegliere la variante sul train). Costo 5 per confronto.
+- Controlli: gli stessi del train (bootstrap, blocchi contro caso, Fisher sul rientro, notizia giusta nella C, metriche, per coppia e per settore, senza PYPL-XYZ, beta e alpha) più la coerenza con il train. Non le due metà del periodo.
+- Regola per i casi a zero: se l'agente non blocca o non segue niente, il test non dice nulla su quella versione.
+- Notizie scaricate solo dal 17 settembre, script nuovi separati da quelli del train, nessun secondo giro.
+
+Le regole complete sono in [docs/Test.md](Test.md).
+
+#### Cosa abbiamo fatto
+
+Claude Code ha scritto gli script e i notebook e li ha eseguiti, con le chiavi Alpaca di Bea, su richiesta di Bea:
+- [src/test_dati.py](../src/test_dati.py): 2.725 notizie del test e SPY;
+- [src/test_finbert.py](../src/test_finbert.py): FinBERT sulle notizie del test, dopo aver controllato che ridà i punteggi del train;
+- [src/test_finale.py](../src/test_finale.py): prima ha rifatto il train e ha ritrovato esattamente i 973 segnali e le decisioni e i trade di `finbert_episodio`, poi ha calcolato il test (500 segnali in 32 giorni);
+- [src/06_test_backtest.ipynb](../src/06_test_backtest.ipynb) e [src/07_test_robustezza.ipynb](../src/07_test_robustezza.ipynb): risultati, confronto con il train e commento. Tabelle in `Results/test/`.
+
+#### Risultati sul test (costo 0)
+
+| | Test | Train |
+| --- | --- | --- |
+| A, senza agente | +2.472 $ (4,9 bps per trade, 500 trade) | +7.239 $ (7,4 bps, 973 trade) |
+| B rispetto alla A | **-189 $**, intervallo al 95% da -527 a +135 | -285 $ |
+| C rispetto alla A | **-1.242 $**, intervallo al 95% da -2.183 a -374 | -651 $ |
+
+- B: 7 blocchi. I trade bloccati avrebbero guadagnato +27 bps in media contro +4,6 dei tenuti; blocco a caso p = 0,90; rientro 43% contro 49% (p Fisher 1,00).
+- C: 21 trade nel verso opposto alla A, notizia giusta nel 24% dei casi (train 55%).
+- A costo 5: B -49 $, C -1.142 $ rispetto alla A; la A perde 7.528 $.
+- Beta di A, B e C rispetto a SPY: -0,04.
+
+#### Cosa ci dicono i risultati
+
+- Il segno è lo stesso del train: né bloccare né seguire le notizie con `finbert_episodio` migliora la strategia. La B non si distingue dalla A, la C è peggiore della A con una certa sicurezza.
+- I blocchi scattano su notizie che non sono fatti strutturali: comunicati di studi legali che "indagano", acquisizioni fatte dall'azienda stessa.
+- La A guadagna ancora a costo 0, ma meno che sul train (pareggio a 1,24 bps per operazione invece di 1,86); il vantaggio degli ingressi nel gap della notte sparisce.
+- Sul train la perdita della B veniva da PYPL-XYZ; sul test no: è distribuita su più coppie.
+
+#### Limiti da dichiarare nel report
+
+- 32 giorni, 7 blocchi, 21 trade seguiti: pochi casi.
+- Molte più notizie al giorno che nel train (2.725 in 44 giorni di calendario contro 2.106 in 108), probabilmente per la stagione dei risultati di ottobre.
+- Le regole in `docs/Test.md` sono state scritte prima del giro ma messe su git dopo: su git non c'è la prova dell'ordine.
+- Le regole e la variante sono state scelte sul train, il criterio di scelta è stato precisato dopo aver visto il train (ma prima del test).
+
+### Il segnale +1 / 0 / -1 per titolo
+
+Perché: le istruzioni del professore chiedono che il sistema dia, per ogni titolo e in ogni momento, un segnale +1 (long), 0 (fuori) o -1 (short), e che il rendimento di ogni periodo sia il rendimento del titolo moltiplicato per il segnale, con le ipotesi dichiarate. La strategia lavora per coppie e il backtest salva trade: l'informazione c'era, ma non in questa forma.
+
+#### Decisioni prese (15 novembre, Bea)
+
+- Un notebook dedicato, [src/08_segnale.ipynb](../src/08_segnale.ipynb), per train e test, invece di una sezione nel notebook del test.
+- I numeri principali restano quelli dei trade; il calcolo dal segnale è la formula del professore, mostrata accanto.
+- Se due trade della stessa coppia sono aperti insieme, le posizioni si sommano (il segnale potrebbe valere +2 o -2).
+
+#### Cosa abbiamo fatto
+
+Claude Code ha scritto ed eseguito il notebook, su richiesta di Bea. Per le versioni A, B e C di `finbert_episodio`, su train e test:
+- dai trade salvati, il segnale per ciascuno dei 30 titoli e per ogni minuto: +1 sul titolo comprato e -1 su quello venduto, dalla barra d'ingresso a quella d'uscita; 0 altrove e di notte;
+- il guadagno con la formula del professore: segnale x rendimento semplice del titolo, dall'apertura di una barra all'apertura della successiva (alla chiusura nell'ultima barra della giornata), x 10.000 dollari;
+- il confronto con il guadagno dei trade, e il rendimento giornaliero dal segnale sul capitale di 300.000 dollari, salvato per la curva di capitale e le metriche annualizzate.
+
+Le ipotesi sono scritte all'inizio del notebook: decisione alla chiusura della barra ed esecuzione all'apertura della successiva, niente posizioni di notte, 10.000 dollari per titolo senza leva, vendita allo scoperto sempre possibile e gratuita, costo 0.
+
+#### Risultati
+
+- Il segnale vale sempre -1, 0 o +1: nessun trade di `finbert_episodio` si sovrappone a un altro della stessa coppia, né sul train né sul test.
+- La formula del professore dà quasi lo stesso guadagno dei trade: da +2 a +9 dollari di differenza su tutto il periodo, meno dello 0,3% (A del test: 2.472 dollari dai trade, 2.477 dal segnale).
+- Le differenze dalla A non cambiano: test B -188 $ (trade -189), C -1.245 $ (trade -1.242); train B -288 $ (trade -285), C -648 $ (trade -651).
+
+File: `Results/segnale_A.parquet`, `Results/varianti_agente/finbert_episodio/segnale_B.parquet` e `segnale_C.parquet` (train), `Results/test/segnale_*.parquet` (test); `Results/rendimenti_segnale.csv` e `Results/test/rendimenti_segnale.csv` (rendimenti giornalieri); `Results/confronto_segnale_trade.csv`.
+
+#### Limiti da dichiarare nel report
+
+- Calcolo dal segnale solo a costo 0.
+- Le ipotesi del backtest restano: vendita allo scoperto gratuita, nessun effetto degli ordini sul prezzo, prezzi intraday non aggiustati per i dividendi.
+
+### Curve di capitale e metriche, train e test
+
+Perché: le istruzioni del professore chiedono metriche adatte su train e test, confrontate con un benchmark di cui si giustifica la scelta, tra cui la curva di capitale da 100 con il benchmark sullo stesso grafico, rendimento e volatilità annualizzati, Sharpe con il tasso privo di rischio dichiarato, massimo drawdown e profit factor.
+
+#### Decisioni prese (15 novembre, Bea)
+
+- Rendimenti dal **segnale** +1/0/-1 ([src/08_segnale.ipynb](../src/08_segnale.ipynb)), cioè con la formula del professore; l'analisi dell'agente (notebook 06 e 07) resta sui trade.
+- Benchmark: **SPY comprato e tenuto** (il mercato da cui vengono le azioni, suggerito dal professore) e **la versione A** (per giudicare l'agente). Non i 30 titoli comprati e tenuti: la strategia è quasi sempre fuori dal mercato.
+- Curva della strategia con capitale fisso di 300.000 dollari, senza reinvestimento; SPY capitalizzato. Tutte partono da 100 alla chiusura del giorno prima del periodo.
+- Rendimento annualizzato composto per tutti; tasso privo di rischio 0, dichiarato; costo 0 e 5 punti base.
+- Anche i controlli per il punto bonus "market-neutral": beta, correlazione con SPY, rendimento nei giorni in cui SPY scende.
+
+#### Cosa abbiamo fatto
+
+Claude Code ha scritto ed eseguito [src/09_curve_metriche.ipynb](../src/09_curve_metriche.ipynb), su richiesta di Bea. Legge solo file salvati. Per i costi conta le operazioni dal segnale (ogni variazione di 1 del segnale di un titolo): sono esattamente 4 per trade, come nel backtest.
+
+#### Risultati (costo 0)
+
+| | A | B | C | SPY |
+| --- | --- | --- | --- | --- |
+| **Train:** rendimento cumulato | +2,42% | +2,32% | +2,20% | +0,15% |
+| rendimento annualizzato | +9,9% | +9,5% | +8,9% | +0,6% |
+| volatilità annualizzata | 1,2% | 1,1% | 1,2% | 11,7% |
+| Sharpe | 8,2 | 8,2 | 7,5 | 0,1 |
+| massimo drawdown | -0,14% | -0,14% | -0,14% | -3,4% |
+| profit factor (giorni) | 3,9 | 3,9 | 3,5 | 1,0 |
+| **Test:** rendimento cumulato | +0,83% | +0,76% | +0,41% | +0,47% |
+| rendimento annualizzato | +6,7% | +6,2% | +3,3% | +3,8% |
+| volatilità annualizzata | 1,3% | 1,3% | 1,2% | 11,4% |
+| Sharpe | 4,9 | 4,7 | 2,8 | 0,4 |
+| massimo drawdown | -0,17% | -0,19% | -0,21% | -3,0% |
+| profit factor (giorni) | 2,5 | 2,3 | 1,6 | 1,1 |
+
+- A costo 5 tutte le versioni perdono: test A -2,5%, B -2,5%, C -2,9%; train A -4,1%, B -4,1%, C -4,3%.
+
+Dipendenza dal mercato sul test:
+
+| | A | B | C |
+| --- | --- | --- | --- |
+| beta rispetto a SPY (t) | -0,04 (-2,2) | -0,04 (-2,1) | -0,04 (-2,3) |
+| correlazione con SPY | -0,37 | -0,36 | -0,39 |
+| guadagno medio nei 16 giorni in cui SPY scende (-55 bps in media) | +4,0 bps | +3,6 bps | +2,8 bps |
+| quota di quei giorni in positivo | 62% | 62% | 56% |
+
+Sul train il beta è 0,01 e la correlazione 0,07-0,08 per tutte e tre.
+
+File: `Results/curva_capitale_100.png` (train), `Results/test/curva_capitale_100.png` (test), `Results/metriche_train_test.csv`, `Results/neutralita_mercato.csv`.
+
+#### Cosa ci dicono i risultati
+
+- L'agente non migliora la strategia nemmeno con queste metriche: la B sta poco sotto la A (blocca solo 7 trade sul test), la C più sotto. Sul test la C rende meno anche di SPY (+0,41% contro +0,47%), pur con molto meno rischio.
+- A costo 0 tutte e tre hanno molto meno rischio di SPY (volatilità 1,1-1,3% contro 11-12%, drawdown sotto lo 0,25% contro il 3%); con costi realistici perdono. La volatilità è bassissima perché il capitale è investito solo di giorno e in pochi trade: lo Sharpe alto non è confrontabile con quello di un fondo.
+- Beta vicino a zero e guadagni medi positivi nei giorni in cui SPY scende vanno a favore del bonus "market-neutral"; la correlazione negativa sul test e i rendimenti piccoli in assoluto no.
+
+#### Limiti da dichiarare nel report
+
+- Periodi brevi (64 e 32 giorni) e un solo tipo di mercato: SPY quasi fermo in tutti e due.
+- Annualizzare poche settimane è poco affidabile.
+- Tasso privo di rischio 0; nessun test statistico sulla differenza di Sharpe con SPY.
+- Rendimenti piccoli in assoluto (+0,8% in sei settimane sul test).
 
 ### Passaggio 8. Report e presentazione
 

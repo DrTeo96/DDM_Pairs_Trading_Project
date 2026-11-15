@@ -2,7 +2,7 @@
 
 Questa cartella contiene tutto il codice della strategia, nell'ordine in cui va eseguito: dai file Bloomberg ai segnali, alle decisioni dell'agente di notizie, al backtest. Seguendo i passi qui sotto si ottengono sul proprio computer gli stessi file e gli stessi numeri del gruppo.
 
-La pipeline lavora sulle 15 coppie scelte in `01_coppie.ipynb` e solo sul periodo di addestramento (train), che finisce il 16 settembre 2026. Le decisioni del gruppo e i risultati commentati sono in [docs/Programma.md](../docs/Programma.md).
+La pipeline lavora sulle 15 coppie scelte in `01_coppie.ipynb`. I passi 0-7 usano solo il periodo di addestramento (train), che finisce il 16 settembre 2026. Il test (17 settembre - 30 ottobre) è stato usato una volta sola, il 14 novembre 2026, per la variante scelta sul train: vedi [Il test](#il-test-una-volta-sola). Le decisioni del gruppo e i risultati commentati sono in [docs/Programma.md](../docs/Programma.md).
 
 ## Prima di iniziare
 
@@ -56,6 +56,10 @@ Tempo e memoria sono misurati su un Mac con 16 GB (processore M4). La memoria è
 | 5              | `uv run python -m src.varianti_agente.agent`                                           | `signals_15pairs_v2_train.csv`, `news_ALL15_V2_train.parquet`, il server del modello | `agent_decisions_15pairs_v2_train.csv`; risposte grezze e registri in `data/raw/agent/` | vedi sotto             | vedi sotto |
 | 6              | `06_backtest.ipynb`                                                    | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/`, le decisioni di ogni versione (vedi passo 6) | `Results/` (su git): tabelle, `curve_capitale.png`; trade e decisioni di ogni variante in `Results/varianti_agente/` | 10 s                   | 0,3 GB     |
 | 7              | `07_robustezza.ipynb`                                                  | come il passo 6, più `spy_daily_train.parquet` (`uv run python -m src.spy`) | `Results/robustezza/` (su git): tabella finale con bootstrap, beta e alpha; costi, coppie, settori, periodo | meno di 1 minuto       | non misurata |
+| Test, già fatto | `src.test_dati`, `src.test_finbert`, `src.test_finale`: **non si rilanciano** | Alpaca, i file del train, `pairs_intraday_v2/` | `news_ALL15_V2_test.parquet`, `spy_daily_test.parquet`; `Results/test/` (su git) | pochi minuti in tutto | non misurata |
+| Test, lettura  | `06_test_backtest.ipynb`, `07_test_robustezza.ipynb`                   | `Results/test/`, `spy_daily_test.parquet`, le tabelle del train in `Results/`             | tabelle in `Results/test/` e `Results/test/robustezza/`, `curve_capitale.png`             | meno di 1 minuto       | non misurata |
+| 8              | `08_segnale.ipynb`                                                     | i trade di A, B e C di `finbert_episodio` (train e test) e `pairs_intraday_v2/`             | `Results/`: segnale +1/0/-1 per titolo e minuto (`segnale_*.parquet`), `rendimenti_segnale.csv`, `confronto_segnale_trade.csv`; lo stesso per il test in `Results/test/` | meno di 1 minuto | non misurata |
+| 9              | `09_curve_metriche.ipynb`                                              | `rendimenti_segnale.csv` e `segnale_*.parquet` (train e test), SPY del train e del test       | `Results/`: `curva_capitale_100.png`, `metriche_train_test.csv`, `neutralita_mercato.csv`; `Results/test/curva_capitale_100.png` | meno di 1 minuto | non misurata |
 
 Un passo si rifà solo quando cambiano i file che legge. Nel Programma i passi hanno un'altra numerazione: lì le notizie sono il Passaggio 3 e i segnali il Passaggio 4. Qui i segnali vengono prima, perché la tabella notizie-segnali ha bisogno dei segnali.
 
@@ -186,9 +190,29 @@ Il notebook salva tabelle e grafico in `Results/` e i trade di ogni set di decis
 
 Il mercato è SPY: i prezzi giornalieri, aggiustati per i dividendi, si scaricano da Alpaca con le stesse chiavi delle notizie (`uv run python -m src.spy`, solo fino alla fine del train). Le tabelle vanno in `Results/robustezza/`.
 
+### Il test, una volta sola
+
+Le regole del test sono in [docs/Test.md](../docs/Test.md), scritte prima di scaricare i dati del test: solo `finbert_episodio`, con le versioni A, B e C; criterio principale la differenza in dollari dalla A a costo 0; costo 5 per confronto; gli stessi controlli del train, più la coerenza con il train. Il test è stato fatto il 14 novembre 2026 con tre script separati da quelli del train:
+
+| Script | Cosa ha fatto |
+| --- | --- |
+| [test_dati.py](test_dati.py) | Ha scaricato da Alpaca le notizie dal 17 settembre al 30 ottobre (2.725) e SPY dal 16 settembre al 30 ottobre |
+| [test_finbert.py](test_finbert.py) | Ha calcolato FinBERT sulle notizie del test, dopo aver controllato che ridà i punteggi del train |
+| [test_finale.py](test_finale.py) | Ha rifatto il train controllando che segnali, decisioni e trade di `finbert_episodio` fossero identici a quelli salvati, poi ha calcolato segnali, decisioni e trade del test |
+
+**Gli script del test non si rilanciano**: `test_finale.py` rifarebbe il test e sovrascriverebbe `Results/test/`. I risultati si leggono, quante volte serve, con [06_test_backtest.ipynb](06_test_backtest.ipynb) e [07_test_robustezza.ipynb](07_test_robustezza.ipynb), che usano solo i file salvati.
+
+### Passo 8. Il segnale +1 / 0 / -1
+
+Le istruzioni del professore chiedono un segnale +1, 0 o -1 per ogni titolo e un rendimento uguale a segnale x rendimento del titolo. `08_segnale.ipynb` trasforma i trade già salvati di A, B e C (train e test) in questo segnale, minuto per minuto, e ricalcola il guadagno con quella formula. Elenca anche le ipotesi (esecuzione, importi, vendita allo scoperto). Non cambia nessuna regola e non rifà il test: legge solo file salvati. Il guadagno dal segnale coincide con quello dei trade a meno di pochi dollari.
+
+### Passo 9. Curve di capitale e metriche
+
+`09_curve_metriche.ipynb` fa la valutazione chiesta dal professore, su train e test, con i rendimenti dal segnale del passo 8: curva di capitale da 100 con SPY sullo stesso grafico; rendimento cumulato e annualizzato, volatilità annualizzata, Sharpe (tasso privo di rischio 0), massimo drawdown e profit factor per A, B, C e SPY, a costo 0 e 5; beta, correlazione e rendimento nei giorni in cui SPY scende. Spiega la scelta dei benchmark (SPY e la versione A) e le ipotesi di calcolo. Legge solo file salvati.
+
 ## Regole da non rompere
 
-- **Il taglio train/test.** Il train finisce il 16 settembre 2026 e la data è scritta in un posto solo, `TRAIN_END` in [config.py](config.py). Il test, dal 17 settembre, si usa una volta sola, alla fine, con regole e parametri bloccati. Segnali, notizie e decisioni dell'agente non contengono giorni di test: `load_trades` rifiuta una tabella che ne contiene e `news.py` rifiuta di scaricarli.
+- **Il taglio train/test.** Il train finisce il 16 settembre 2026 e la data è scritta in un posto solo, `TRAIN_END` in [config.py](config.py). Il test, dal 17 settembre, è stato usato una volta sola, il 14 novembre 2026, con regole e parametri bloccati: non si rifà, e nessuna regola si cambia guardando i suoi risultati. Segnali, notizie e decisioni dell'agente non contengono giorni di test: `load_trades` rifiuta una tabella che ne contiene e `news.py` rifiuta di scaricarli.
 - **I nomi dei file in `data/`.** Ogni collega ha la sua copia di `data/`: rinominare un file di uscita rompe le copie degli altri. I nomi sono in `config.py`.
 - **Niente percorsi nei notebook.** Percorsi e date si importano da `config.py`.
 
@@ -220,5 +244,6 @@ Il mercato è SPY: i prezzi giornalieri, aggiustati per i dividendi, si scarican
 | [spy.py](spy.py)           | Prezzi giornalieri di SPY da Alpaca, per beta e alpha (passo 7)           |
 | [varianti_agente/](varianti_agente/README.md) | Tutte le varianti dell'agente di notizie: l'agente di Giulio (`agent.py`), le varianti di Beatrice e di Orfeo |
 | [backtest.py](backtest.py) | Costi, versioni A, B e C, set di decisioni da confrontare, metriche, salvataggio in `Results/` |
+| [test_dati.py](test_dati.py), [test_finbert.py](test_finbert.py), [test_finale.py](test_finale.py) | Il test di `finbert_episodio`: dati, sentiment, segnali, decisioni e trade. Già eseguiti, non si rilanciano |
 
 Ciò che non fa più parte della pipeline è in `Old files/`, nella struttura di cartelle che aveva: i notebook delle prime 10 coppie, le prime prove su una coppia sola, la versione 2 del segnale (scartata) e i documenti del piano iniziale. Sono conservati come erano e non vengono aggiornati: usano percorsi e funzioni di allora.

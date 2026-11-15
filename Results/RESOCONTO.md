@@ -1,6 +1,6 @@
 # Resoconto: la strategia e l'agente di notizie alla prova del backtest
 
-Questo resoconto spiega che cosa abbiamo provato e che cosa è uscito, senza dare per scontata nessuna conoscenza di finanza. I numeri vengono da [src/06_backtest.ipynb](../src/06_backtest.ipynb) e sono salvati nelle tabelle di questa cartella. Riguardano solo il **periodo di addestramento** (train, dal 16 giugno al 16 settembre 2026, 64 giorni di borsa).
+Questo resoconto spiega che cosa abbiamo provato e che cosa è uscito, senza dare per scontata nessuna conoscenza di finanza. I numeri delle sezioni 1-9 vengono da [src/06_backtest.ipynb](../src/06_backtest.ipynb) e riguardano il **periodo di addestramento** (train, dal 16 giugno al 16 settembre 2026, 64 giorni di borsa). La sezione 10 riguarda il **periodo di test** (dal 17 settembre al 30 ottobre 2026, 32 giorni di borsa), usato una volta sola: i numeri vengono da [src/06_test_backtest.ipynb](../src/06_test_backtest.ipynb) e [src/07_test_robustezza.ipynb](../src/07_test_robustezza.ipynb). Le tabelle sono in questa cartella e in [test/](test/). La sintesi di domanda di ricerca, risultati e richieste del professore è in [docs/Sintesi.md](../docs/Sintesi.md).
 
 ## In breve
 
@@ -10,6 +10,7 @@ Questo resoconto spiega che cosa abbiamo provato e che cosa è uscito, senza dar
 - Seguire la notizia (versione C) peggiora ancora: le 13 operazioni in cui l'agente segue la notizia perdono in media 155 punti base.
 - Una versione più semplice senza intelligenza artificiale, che conta le parole positive e negative delle notizie, blocca in modo indistinguibile dal caso.
 - Questi risultati dipendono da pochissime operazioni, soprattutto da un giorno (13 agosto). Sono un'indicazione, non una prova.
+- Tra 21 varianti dell'agente il gruppo ha scelto `finbert_episodio` e l'ha provata **sul test**, su dati mai guardati prima. Anche lì le notizie non aiutano: bloccare fa guadagnare 189 dollari meno della A, seguire la notizia 1.242 dollari meno. La strategia di base guadagna ancora senza costi (+2.472 dollari), ma meno che nel train.
 
 ## 1. L'idea, in parole semplici
 
@@ -43,7 +44,7 @@ Le due operazioni hanno lo stesso importo, 10.000 dollari ciascuna. Se tutto il 
 | Errore standard | Quanto è incerta una media. Se la media è 7,4 e l'errore standard 2,0, la media vera sta grosso modo tra 3,4 e 11,4. |
 | Sharpe ratio | Guadagno diviso per quanto oscillano i guadagni giorno per giorno, riportato a un anno. Più è alto, più il guadagno è regolare. Su 64 giorni e con guadagni giornalieri minuscoli viene gonfiato: un valore come 8 non va confrontato con quello di un fondo. |
 | Drawdown | La perdita massima dal punto più alto raggiunto. |
-| Train e test | Il periodo di borsa è diviso in due. Sul train (fino al 16 settembre) si costruisce e si prova la strategia; il test (dal 17 settembre) si usa una volta sola alla fine, con le regole bloccate, per vedere se funziona su dati mai visti. **Il test non è ancora stato letto.** |
+| Train e test | Il periodo di borsa è diviso in due. Sul train (fino al 16 settembre) si costruisce e si prova la strategia; il test (dal 17 settembre) si usa una volta sola alla fine, con le regole bloccate, per vedere se funziona su dati mai visti. **Il test è stato usato una volta sola, il 14 novembre 2026** (sezione 10). |
 | p-value | Qui: la probabilità che un blocco fatto a caso dia un risultato altrettanto buono o migliore di quello dell'agente. Piccolo (sotto 0,05) = l'agente sceglie meglio del caso. Vicino a 1 = l'agente sceglie peggio del caso. |
 
 ## 3. Come abbiamo messo alla prova la strategia
@@ -148,34 +149,83 @@ Quindi l'agente classifica le notizie più o meno come farebbe una persona: il p
 
 Ogni linea mostra come cresce (o cala) il capitale giorno dopo giorno. A sinistra senza costi: la A (nera) sta sempre sopra le altre. Il salto verso il basso della C (blu tratteggiata) a metà agosto è il 13 agosto di Salesforce-Workday. A destra, con 5 bps di costo, tutte le linee scendono.
 
-## 10. Cosa possiamo concludere, e cosa no
+## 10. Il test: la variante scelta, su dati mai visti
+
+**Quale variante.** Oltre all'agente principale (`spark_24h`), il gruppo ha provato sul train altre varianti: modelli diversi, finestre di notizie diverse, FinBERT (un modello che dà a ogni notizia un punteggio positivo o negativo), regole sul testo. In tutto 21, elencate in [src/varianti_agente/README.md](../src/varianti_agente/README.md). Nessuna batteva la A. Il gruppo ha scelto quella che perdeva meno considerando insieme B e C ed entrava al momento del segnale come la A: **`finbert_episodio`**. Legge le notizie uscite mentre lo spread si allontanava dalla media; blocca se trova una notizia forte su una sola azienda con una parola come "acquisizione", "indagine", "dimissioni"; segue la notizia se il suo punteggio va nella stessa direzione del movimento.
+
+**Le regole, scritte prima.** Prima di scaricare i dati del test il gruppo ha scritto in [docs/Test.md](../docs/Test.md) che cosa provare e come giudicarlo: solo `finbert_episodio`, con A, B e C; criterio principale la differenza in dollari dalla A a costo 0; gli stessi controlli del train. Il test è stato fatto una volta sola e non si rifà.
+
+**I risultati, a costo 0.**
+
+| | Test (32 giorni) | Train (64 giorni) |
+|---|---|---|
+| A, senza agente | 500 trade, +4,9 bps per trade, **+2.472 $** | 973 trade, +7,4 bps, +7.239 $ |
+| B, l'agente blocca | 493 trade, **-189 $** rispetto alla A | -285 $ |
+| C, l'agente blocca o segue | 495 trade, **-1.242 $** rispetto alla A | -651 $ |
+
+Come leggerla:
+
+- **La strategia di base regge, ma guadagna meno.** Il costo di pareggio scende a 1,24 bps per operazione; con 5 bps la A perde 7.528 dollari.
+- **Bloccare non aiuta.** L'agente blocca 7 trade, che avrebbero guadagnato in media +27 bps, contro +4,6 degli altri. Il 90% dei blocchi a caso avrebbe fatto meglio. Guardando le notizie si capisce perché: i blocchi nascono da comunicati di studi legali che "indagano" e da acquisizioni fatte dall'azienda stessa, cioè notizie che non allontanano davvero i due prezzi.
+- **Seguire la notizia peggiora.** In 21 casi la C scommette nel verso della notizia: ha ragione solo 5 volte su 21 (24%; nel train era il 55%).
+- **È fortuna o è vero?** Ricampionando i giorni, la differenza della B va da -527 a +135 dollari: non si distingue dalla A. Quella della C va da -2.183 a -374: è peggiore della A con una certa sicurezza.
+- **Stesso verso del train.** In tutti i confronti (B e C, costo 0 e 5) la differenza dalla A è negativa, come nel train. Nel train la perdita della B veniva da un solo trade su PayPal-Block; nel test è distribuita su più coppie.
+- **Neutrale al mercato.** Il legame con l'S&P 500 è minimo (beta -0,04), come nel train.
+
+![Curve di capitale del test](test/curve_capitale.png)
+
+**Il segnale +1 / 0 / -1 chiesto dal professore.** Le istruzioni del corso chiedono che la strategia dica, per ogni azione e in ogni minuto, se comprarla (+1), venderla allo scoperto (-1) o non averla (0), e che il guadagno si calcoli come rendimento dell'azione per quel segnale. Noi ragioniamo per coppie, ma è la stessa cosa: in un trade "compro Coca-Cola e vendo Pepsi" Coca-Cola ha +1 e Pepsi -1. [src/08_segnale.ipynb](../src/08_segnale.ipynb) scrive questo segnale per le 30 azioni, sul train e sul test, e ricalcola il guadagno con la formula del professore: viene praticamente uguale (per la A del test 2.477 dollari invece di 2.472) e le differenze di B e C dalla A non cambiano.
+
+**La strategia contro il mercato.** Come chiede il professore, [src/09_curve_metriche.ipynb](../src/09_curve_metriche.ipynb) confronta le tre versioni con SPY, l'S&P 500 comprato e tenuto, partendo da 100 (rendimenti dal segnale, costo 0):
+
+| | A, senza agente | B, l'agente blocca | C, l'agente blocca o segue | SPY |
+|---|---|---|---|---|
+| **Train:** guadagno nel periodo | +2,42% | +2,32% | +2,20% | +0,15% |
+| oscillazione annua (volatilità) | 1,2% | 1,1% | 1,2% | 11,7% |
+| perdita massima da un picco | -0,14% | -0,14% | -0,14% | -3,4% |
+| Sharpe | 8,2 | 8,2 | 7,5 | 0,1 |
+| **Test:** guadagno nel periodo | +0,83% | +0,76% | +0,41% | +0,47% |
+| oscillazione annua (volatilità) | 1,3% | 1,3% | 1,2% | 11,4% |
+| perdita massima da un picco | -0,17% | -0,19% | -0,21% | -3,0% |
+| Sharpe | 4,9 | 4,7 | 2,8 | 0,4 |
+
+Senza costi tutte e tre oscillano molto meno della borsa, perché sono investite solo di giorno e in pochi trade alla volta; con 5 punti base di costo perdono tutte (sul test -2,5% la A e la B, -2,9% la C). L'agente non aiuta: la B è quasi uguale alla A, la C peggiore, e sul test guadagna meno anche di SPY. Nessuna delle tre segue la borsa: nei giorni del test in cui SPY scende guadagnano in media un po' (+4,0 punti base al giorno la A, +3,6 la B, +2,8 la C).
+
+![Curva di capitale da 100, test](test/curva_capitale_100.png)
+
+## 11. Cosa possiamo concludere, e cosa no
 
 Possiamo dire:
 
 - la strategia di base ha un piccolo guadagno lordo, che non sopravvive a costi realistici;
 - sul train, nessun modo di usare le notizie che abbiamo provato migliora la strategia;
+- sul test, la variante scelta non migliora la strategia: bloccare non si distingue dalla A, seguire la notizia è peggio;
 - l'agente legge le notizie in modo simile al gruppo (95% di accordo).
 
 Non possiamo dire:
 
 - che l'agente sia dannoso in generale: la differenza dipende da 2-3 operazioni e da un giorno;
-- che la strategia funzioni o non funzioni nel futuro: il test non è stato ancora usato;
-- che una variante sia migliore delle altre: sceglierla adesso guardando questi numeri vorrebbe dire adattarsi ai dati del train.
+- che la strategia funzioni o non funzioni nel futuro: il test copre 32 giorni, con 7 blocchi e 21 notizie seguite;
+- che nessun agente di notizie possa funzionare: abbiamo provato sul test una sola variante, con regole semplici;
+- che una variante diversa da `finbert_episodio` sarebbe andata meglio sul test: provarle adesso, dopo aver visto i risultati, vorrebbe dire adattarsi ai dati del test.
 
-## 11. Limiti
+## 12. Limiti
 
-- **Solo train.** Il segnale e le regole dell'agente sono stati costruiti su questi stessi dati, quindi i risultati sono ottimistici.
+- **Train e test.** Il segnale e le regole dell'agente sono stati costruiti sul train, quindi i risultati del train sono ottimistici. Il test è più onesto ma corto: 32 giorni.
+- **Il test ha più notizie.** 2.725 notizie in 44 giorni di calendario, contro 2.106 in 108 nel train: probabilmente pesa la stagione dei risultati di ottobre.
+- **Le regole del test** sono state scritte prima del giro ma messe su git dopo: non c'è una prova su git dell'ordine. Il criterio con cui è stata scelta la variante è stato precisato dopo aver visto il train, ma prima del test.
 - **Pochi casi.** 25-166 blocchi e 9-61 trade che seguono la notizia: ogni conclusione è fragile.
 - **La regola della C è nostra**: niente stop, uscita a 90 minuti. In 2 casi un trade che segue la notizia è ancora aperto quando arriva il segnale successivo della stessa coppia, e così usa due volte il capitale di quella coppia.
 - **Il lessico** è un file già pronto: il codice che lo produce non è in questo repository.
 - **Costi stimati**, non misurati; nessun costo per prendere in prestito le azioni vendute allo scoperto; una parte dei trade usa un prezzo di un minuto senza scambi (prezzo vecchio).
 - **Il modello può "sapere" il futuro.** Se è stato addestrato su testi successivi a giugno 2026 può riconoscere gli eventi. Per ridurre il rischio i nomi delle aziende sono sostituiti con "Company A" e "Company B", ma non basta a escluderlo.
 
-## 12. Cosa resta da fare
+## 13. Cosa resta da fare
 
-1. Decidere, prima di aprire il test, quale versione e quali regole portarci, e scriverlo.
-2. Eseguire il test una volta sola, con tutto bloccato.
-3. Aggiungere i controlli previsti dal programma: intervallo di confidenza con il bootstrap sulla differenza tra le versioni, beta e alpha rispetto all'S&P 500.
+Il test è fatto e il bootstrap, beta e alpha sono calcolati sia sul train sia sul test. Resta:
+
+1. scrivere il report e la presentazione, dichiarando i limiti della sezione 12;
+2. non rifare il test e non cambiare regole guardando i suoi risultati.
 
 ## Dove sono i file
 
@@ -191,5 +241,16 @@ Non possiamo dire:
 | [trades_A.csv](trades_A.csv), `varianti_agente/<variante>/trades_*.csv` | Ogni trade di ogni versione |
 | [varianti_agente/spark_24h/agent_decisions_15pairs_v2_train.csv](varianti_agente/spark_24h/agent_decisions_15pairs_v2_train.csv) | Le decisioni dell'agente principale, segnale per segnale |
 | [robustezza/](robustezza/tabella_finale.csv) | Passaggio 7: bootstrap, beta e alpha, costi, coppie, settori, periodo |
+| [test/confronto_versioni.csv](test/confronto_versioni.csv) | Test: A, B e C di `finbert_episodio`, a costo 0 e 5, con la differenza dalla A |
+| [test/coerenza_con_train.csv](test/coerenza_con_train.csv) | Test: la differenza dalla A, accanto a quella del train |
+| [test/bloccati_contro_caso.csv](test/bloccati_contro_caso.csv), [test/notizia_giusta_C.csv](test/notizia_giusta_C.csv) | Test: i blocchi e i trade che seguono la notizia, accanto al train |
+| [test/robustezza/](test/robustezza/tabella_finale.csv) | Test: bootstrap, beta e alpha, costi, coppie, settori, senza PYPL-XYZ |
+| [test/decisioni.csv](test/decisioni.csv), `test/trades_*.csv` | Test: le decisioni dell'agente e ogni trade di A, B e C |
+| `segnale_A.parquet`, `varianti_agente/finbert_episodio/segnale_*.parquet`, `test/segnale_*.parquet` | Il segnale +1/0/-1 per azione e per minuto di A, B e C, train e test |
+| [rendimenti_segnale.csv](rendimenti_segnale.csv), [test/rendimenti_segnale.csv](test/rendimenti_segnale.csv) | Rendimento giornaliero di A, B e C calcolato dal segnale |
+| [confronto_segnale_trade.csv](confronto_segnale_trade.csv) | Guadagno dai trade e dal segnale, a confronto |
+| [metriche_train_test.csv](metriche_train_test.csv) | Metriche di A, B, C e SPY su train e test: rendimento cumulato e annualizzato, volatilità, Sharpe, drawdown, profit factor |
+| [neutralita_mercato.csv](neutralita_mercato.csv) | Beta, correlazione con SPY e rendimento nei giorni in cui SPY scende |
+| [curva_capitale_100.png](curva_capitale_100.png), [test/curva_capitale_100.png](test/curva_capitale_100.png) | Curve di capitale da 100 con SPY, train e test |
 
-Per rifare tutto: [src/README.md](../src/README.md), passi 6 e 7.
+Per rifare tutto: [src/README.md](../src/README.md), passi 6 e 7. Il test non si rifà: i suoi risultati si leggono con i notebook `06_test_backtest.ipynb` e `07_test_robustezza.ipynb`.

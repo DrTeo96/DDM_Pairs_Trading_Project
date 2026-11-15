@@ -2,7 +2,7 @@
 
 Qui c'è il codice di tutte le varianti dell'agente provate dal gruppo: quelle di Giulio, di Orfeo e di Beatrice. Ogni variante ha una cartella di risultati in [Results/varianti_agente/](../../Results/varianti_agente/), su git. Tutte le varianti si confrontano **solo sul train**: il backtest e il confronto sono in [06_backtest.ipynb](../06_backtest.ipynb) (tabella in [Results/confronto_versioni.csv](../../Results/confronto_versioni.csv)), i controlli di robustezza in [07_robustezza.ipynb](../07_robustezza.ipynb). Le funzioni che usano tutti e due i notebook sono in [confronto.py](confronto.py): caricano ogni variante con il suo riferimento (la A, oppure la A ritardata) e ne calcolano le differenze.
 
-Il test (dal 17 settembre) non è mai stato letto. Si usa una volta sola, alla fine, per la variante che il gruppo sceglierà con un criterio scritto prima, con regole e soglie bloccate.
+Sul train il gruppo ha scelto `finbert_episodio` (motivi in `06_backtest.ipynb`, sezione 7). Il test (dal 17 settembre al 30 ottobre) è stato usato una volta sola, il 14 novembre 2026, solo per quella variante e con le regole di [docs/Test.md](../../docs/Test.md): risultati in [06_test_backtest.ipynb](../06_test_backtest.ipynb) e [07_test_robustezza.ipynb](../07_test_robustezza.ipynb). Le altre varianti non sono state provate sul test e non vanno provate adesso.
 
 Le regole di Beatrice, scritte prima di ogni prova con i loro esiti, sono in [REGISTRO.md](REGISTRO.md). La colonna "Registro" dà il numero della variante lì.
 
