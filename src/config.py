@@ -53,6 +53,16 @@ DEC_FINBERT_SEDUTA = VARIANTI / "finbert_seduta/decisioni.csv"              # Fi
 DEC_C_FRESCA = VARIANTI / "c_fresca/decisioni.csv"                          # C solo su notizie fresche e forti (c_fresca.py)
 DEC_FINBERT_EPISODIO = VARIANTI / "finbert_episodio/decisioni.csv"          # FinBERT, finestra dell'episodio (episodio.py)
 
+# Il test: si usa una volta sola, per la variante scelta sul train (finbert_episodio), con le regole scritte in docs/Test.md.
+# Gli script del test sono separati da quelli del train: test_dati.py, test_finbert.py, test_finale.py; i notebook 06_test_backtest e
+# 07_test_robustezza leggono i risultati. Il test è stato fatto una volta, il 14 novembre 2026: non si rifà.
+TEST_START = "2026-09-17"                                                   # primo giorno del test
+TEST_END = "2026-10-30"                                                     # ultimo giorno con prezzi intraday
+NEWS_TEST = PROCESSED / f"news_{NEWS_SET}_test.parquet"                     # notizie del test (python -m src.test_dati)
+SPY_TEST = PROCESSED / "spy_daily_test.parquet"                             # SPY dal 16 settembre (serve la chiusura del giorno prima) a TEST_END
+RESULTS_TEST = RESULTS / "test"                                             # risultati del test, su git
+FINBERT_SCORES_TEST = RESULTS_TEST / "news_finbert_test.parquet"            # sentiment FinBERT delle notizie del test (python -m src.test_finbert)
+
 
 def env(name: str, default: str = "") -> str:
     """Una impostazione personale (chiave, indirizzo): dalle variabili d'ambiente, altrimenti dal file .env nella cartella
