@@ -100,6 +100,7 @@ Perché, secondo i dati: i blocchi nascono spesso da notizie che non sono fatti 
 | README con i comandi in ordine | Sì | [README.md](../README.md), [src/README.md](../src/README.md) |
 | Presentazione e zip | A cura del gruppo | |
 | Punto bonus "market-neutral" (facoltativo) | Beta vicino a zero e guadagno medio positivo nei giorni in cui SPY scende; correlazione -0,37 sul test e rendimenti piccoli | [09_curve_metriche.ipynb](../src/09_curve_metriche.ipynb), sezione 4 |
+| Punto bonus "rendimento corretto per il rischio superiore" (facoltativo) | Drawdown più basso di SPY per A, B e C; la differenza di Sharpe (+4,6 per la A) non è sostenuta dal bootstrap: intervallo al 95% da -4,6 a +12,5, contiene lo zero. Bonus non reclamabile | [09_curve_metriche.ipynb](../src/09_curve_metriche.ipynb), sezione 5 |
 
 ## 6. Analisi dei pitfall
 
@@ -145,5 +146,5 @@ Il professore chiede di mostrare come il metodo affronta cinque errori tipici de
 - Costi stimati, non misurati; vendita allo scoperto sempre possibile e senza costi di prestito; ordini eseguiti senza effetto sul prezzo.
 - Copertura delle notizie incompleta (una sola fonte); sul test molte più notizie al giorno che sul train.
 - Pochi casi per l'agente: 7 blocchi e 21 notizie seguite sul test.
-- Tasso privo di rischio 0 nello Sharpe; nessun test statistico sulla differenza di Sharpe con SPY.
+- Tasso privo di rischio 0 nello Sharpe. Lo Sharpe più alto di SPY non è sostenuto dal test statistico: in 32 giorni quello di SPY è troppo incerto.
 - Impostazioni non tutte in un file; alcune regole ripetute negli script del test.

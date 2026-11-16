@@ -191,6 +191,8 @@ Come leggerla:
 
 Senza costi tutte e tre oscillano molto meno della borsa, perché sono investite solo di giorno e in pochi trade alla volta; con 5 punti base di costo perdono tutte (sul test -2,5% la A e la B, -2,9% la C). L'agente non aiuta: la B è quasi uguale alla A, la C peggiore, e sul test guadagna meno anche di SPY. Nessuna delle tre segue la borsa: nei giorni del test in cui SPY scende guadagnano in media un po' (+4,0 punti base al giorno la A, +3,6 la B, +2,8 la C).
 
+**Lo Sharpe più alto di SPY è solo un caso?** Il professore dà un punto in più se sul test la strategia ha uno Sharpe più alto e un drawdown più basso del mercato, e se un test statistico conferma la differenza di Sharpe. Il drawdown è più basso per tutte e tre. Per lo Sharpe abbiamo ripescato a caso 10.000 volte i 32 giorni del test, gli stessi per la strategia e per SPY: la differenza a favore della A va da -4,6 a +12,5 (intervallo al 95%), e in circa un'estrazione su sette SPY ha lo Sharpe più alto; per la B e la C è simile o peggio. Siccome l'intervallo contiene lo zero, la differenza non è confermata e il punto in più non si può chiedere. Il motivo è che 32 giorni sono pochi per misurare lo Sharpe della borsa.
+
 ![Curva di capitale da 100, test](test/curva_capitale_100.png)
 
 ## 11. Cosa possiamo concludere, e cosa no
@@ -251,6 +253,7 @@ Il test è fatto e il bootstrap, beta e alpha sono calcolati sia sul train sia s
 | [confronto_segnale_trade.csv](confronto_segnale_trade.csv) | Guadagno dai trade e dal segnale, a confronto |
 | [metriche_train_test.csv](metriche_train_test.csv) | Metriche di A, B, C e SPY su train e test: rendimento cumulato e annualizzato, volatilità, Sharpe, drawdown, profit factor |
 | [neutralita_mercato.csv](neutralita_mercato.csv) | Beta, correlazione con SPY e rendimento nei giorni in cui SPY scende |
+| [test/sharpe_contro_spy.csv](test/sharpe_contro_spy.csv) | Test: differenza di Sharpe di A, B e C da SPY con l'intervallo del bootstrap, e i drawdown |
 | [curva_capitale_100.png](curva_capitale_100.png), [test/curva_capitale_100.png](test/curva_capitale_100.png) | Curve di capitale da 100 con SPY, train e test |
 
 Per rifare tutto: [src/README.md](../src/README.md), passi 6 e 7. Il test non si rifà: i suoi risultati si leggono con i notebook `06_test_backtest.ipynb` e `07_test_robustezza.ipynb`.

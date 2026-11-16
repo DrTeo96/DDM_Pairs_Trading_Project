@@ -938,6 +938,7 @@ Perché: le istruzioni del professore chiedono metriche adatte su train e test, 
 - Curva della strategia con capitale fisso di 300.000 dollari, senza reinvestimento; SPY capitalizzato. Tutte partono da 100 alla chiusura del giorno prima del periodo.
 - Rendimento annualizzato composto per tutti; tasso privo di rischio 0, dichiarato; costo 0 e 5 punti base.
 - Anche i controlli per il punto bonus "market-neutral": beta, correlazione con SPY, rendimento nei giorni in cui SPY scende.
+- E per il punto bonus "rendimento corretto per il rischio superiore": sul test Sharpe più alto e drawdown più basso di SPY, con la differenza di Sharpe sostenuta da un test statistico.
 
 #### Cosa abbiamo fatto
 
@@ -973,19 +974,30 @@ Dipendenza dal mercato sul test:
 
 Sul train il beta è 0,01 e la correlazione 0,07-0,08 per tutte e tre.
 
-File: `Results/curva_capitale_100.png` (train), `Results/test/curva_capitale_100.png` (test), `Results/metriche_train_test.csv`, `Results/neutralita_mercato.csv`.
+Test statistico sullo Sharpe (sezione 5 del notebook). Scelte di Bea, prese prima di calcolare: bootstrap della differenza di Sharpe tra strategia e SPY, solo sul test, costo 0, A, B e C. Si estraggono 32 giorni del test con reinserimento, gli stessi per la strategia e per SPY, 10.000 volte con seed 0. Regola scritta prima: la differenza è sostenuta se l'intervallo al 95% non contiene lo zero.
+
+| | A | B | C |
+| --- | --- | --- | --- |
+| Sharpe strategia meno Sharpe SPY | +4,6 | +4,4 | +2,4 |
+| intervallo al 95% | da -4,6 a +12,5 | da -4,8 a +12,4 | da -7,3 a +10,6 |
+| quota di estrazioni con strategia sotto SPY | 15% | 16% | 31% |
+| massimo drawdown (SPY -3,0%) | -0,17% | -0,19% | -0,21% |
+
+File: `Results/curva_capitale_100.png` (train), `Results/test/curva_capitale_100.png` (test), `Results/metriche_train_test.csv`, `Results/neutralita_mercato.csv`, `Results/test/sharpe_contro_spy.csv`.
 
 #### Cosa ci dicono i risultati
 
 - L'agente non migliora la strategia nemmeno con queste metriche: la B sta poco sotto la A (blocca solo 7 trade sul test), la C più sotto. Sul test la C rende meno anche di SPY (+0,41% contro +0,47%), pur con molto meno rischio.
 - A costo 0 tutte e tre hanno molto meno rischio di SPY (volatilità 1,1-1,3% contro 11-12%, drawdown sotto lo 0,25% contro il 3%); con costi realistici perdono. La volatilità è bassissima perché il capitale è investito solo di giorno e in pochi trade: lo Sharpe alto non è confrontabile con quello di un fondo.
 - Beta vicino a zero e guadagni medi positivi nei giorni in cui SPY scende vanno a favore del bonus "market-neutral"; la correlazione negativa sul test e i rendimenti piccoli in assoluto no.
+- Bonus "rendimento corretto per il rischio superiore": il drawdown è più basso di SPY per tutte e tre, ma la differenza di Sharpe non è sostenuta dal test (l'intervallo contiene lo zero), quindi il bonus non si può reclamare. In 32 giorni lo Sharpe di SPY è molto incerto; il professore chiede un test lungo e impegnativo, e il nostro non lo è.
 
 #### Limiti da dichiarare nel report
 
 - Periodi brevi (64 e 32 giorni) e un solo tipo di mercato: SPY quasi fermo in tutti e due.
 - Annualizzare poche settimane è poco affidabile.
-- Tasso privo di rischio 0; nessun test statistico sulla differenza di Sharpe con SPY.
+- Tasso privo di rischio 0.
+- Il bootstrap sullo Sharpe estrae i giorni uno per uno: non tiene conto che giorni vicini possono somigliarsi.
 - Rendimenti piccoli in assoluto (+0,8% in sei settimane sul test).
 
 ### Passaggio 8. Report e presentazione
