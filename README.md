@@ -6,7 +6,7 @@ Pairs trading bets on two similar companies. When their prices drift apart by mo
 
 On the training period (train, 16 June - 16 September 2026) the group compared 21 variants of the agent and chose `finbert_episode`. The test period (17 September - 30 October 2026) was used only once, on 14 November, for that variant, with the rules written beforehand in [docs/Test.md](docs/Test.md). B (the agent blocks) earns 189 dollars less than A, and C (the agent follows the news) earns 1,242 dollars less. With this agent, the news do not improve the strategy.
 
-The train and test results, explained also for readers who don't know finance, are in [Results/REPORT.md](Results/REPORT.md). The group's log, with the decisions of each step, and the summary of the research question and of how the project meets the course instructions (including the pitfall analysis) are in [Old files/docs/](Old%20files/docs/) (`Programma.md`, `Sintesi.md`, in Italian).
+The train and test results, explained also for readers who don't know finance, are in [Old files/docs/REPORT.md](Old files/docs/REPORT.md). The group's log, with the decisions of each step, and the summary of the research question and of how the project meets the course instructions (including the pitfall analysis) are in [Old files/docs/](Old%20files/docs/) (`Programma.md`, `Sintesi.md`, in Italian).
 
 ## Getting started
 
@@ -27,7 +27,7 @@ The results can be read without any data: tables, trades, decisions and charts a
 | Where | What's in it |
 |---|---|
 | [src/](src/README.md) | The pipeline code, in execution order |
-| [Results/](Results/REPORT.md) | Backtest results, tracked in git: tables, trades for each version, agent decisions, equity curves and the report |
+| [Results/](Old files/docs/REPORT.md) | Backtest results, tracked in git: tables, trades for each version, agent decisions, equity curves and the report |
 | [Results/test/](Results/test/version_comparison.csv) | Test results for `finbert_episode`: signals, decisions, trades for A, B and C, tables of the criteria and of robustness |
 | [src/agent_variants/](src/agent_variants/README.md) | All the variants of the news agent (Giulio, Orfeo, Beatrice): code, commands and rules; their results are in `Results/agent_variants/` |
 | [docs/Test.md](docs/Test.md) | The test rules, written before looking at the test: variant, main criterion, checks |
@@ -48,7 +48,7 @@ The project was written in Italian and translated to English on 17 November 2026
 | `07_robustezza`, `07_test_robustezza`, `08_segnale`, `09_curve_metriche` | `07_robustness`, `07_test_robustness`, `08_signal`, `09_curves_metrics` |
 | `test_dati.py`, `test_finale.py` | `test_data.py`, `test_final.py` |
 | `confronto.py`, `comune.py`, `episodio.py`, `ritardo.py`, `c_fresca.py`, `ma_regole.py`, `REGISTRO.md` | `comparison.py`, `common.py`, `episode.py`, `delay.py`, `c_fresh.py`, `ma_rules.py`, `LOG.md` |
-| `Results/RESOCONTO.md`, `Results/robustezza/` | `Results/REPORT.md`, `Results/robustness/` |
+| `Results/RESOCONTO.md`, `Results/robustezza/` | `Old files/docs/REPORT.md`, `Results/robustness/` |
 | variants `finbert_episodio`, `finbert_seduta`, `lessico`, `c_fresca`, `ma_regole`, `dimensione`, `ritardo`, `B_esagerazione`, `mano` | `finbert_episode`, `finbert_session`, `lexicon`, `c_fresh`, `ma_rules`, `size`, `delay`, `B_exaggeration`, `manual` |
 | decisions `entra`, `blocca`, `segui` | `enter`, `block`, `follow` |
 | exit reasons `rientro`, `tempo`, `fine_giornata` | `reversion`, `time`, `end_of_day` |

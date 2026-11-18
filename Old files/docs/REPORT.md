@@ -1,6 +1,6 @@
 # Report: the strategy and the news agent put to the backtest
 
-This report explains what we tried and what came out, without taking any knowledge of finance for granted. The numbers of sections 1-9 come from [src/06_backtest.ipynb](../src/06_backtest.ipynb) and concern the **training period** (train, from 16 June to 16 September 2026, 64 trading days). Section 10 concerns the **test period** (from 17 September to 30 October 2026, 32 trading days), used only once: the numbers come from [src/06_test_backtest.ipynb](../src/06_test_backtest.ipynb) and [src/07_test_robustness.ipynb](../src/07_test_robustness.ipynb). The tables are in this folder and in [test/](test/). The summary of research question, results and the professor's requests is in [Sintesi.md](../Old%20files/docs/Sintesi.md) (in Italian).
+This report explains what we tried and what came out. The numbers of sections 1-9 come from [src/06_backtest.ipynb](../src/06_backtest.ipynb) and concern the **training period** (train, from 16 June to 16 September 2026, 64 trading days). Section 10 concerns the **test period** (from 17 September to 30 October 2026, 32 trading days), used only once: the numbers come from [src/06_test_backtest.ipynb](../src/06_test_backtest.ipynb) and [src/07_test_robustness.ipynb](../src/07_test_robustness.ipynb). The tables are in this folder and in [test/](test/). The summary of research question, results and the professor's requests is in [Sintesi.md](../Old%20files/docs/Sintesi.md) (in Italian).
 
 ## In short
 
