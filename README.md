@@ -10,13 +10,15 @@ The train and test results, explained also for readers who don't know finance, a
 
 ## Getting started
 
+**All the information needed to run the code (required data, order of execution, inputs, outputs, time and memory) is in [src/README.md](src/README.md).** The steps below only cover the environment setup.
+
 1. Install [uv](https://docs.astral.sh/uv/) following [docs/setup.md](docs/setup.md). You don't need to install Python: uv does it.
 2. From the project folder, create the environment:
 
    ```bash
    uv sync    # creates .venv/ with Python and the library versions pinned in uv.lock
    ```
-3. Follow [src/README.md](src/README.md): it says which data you need and, step by step, what to run, what it reads, what it writes, and how much time and memory it takes.
+3. To run the code, go to [src/README.md](src/README.md): it says which data you need and, step by step, what to run, what it reads, what it writes, and how much time and memory it takes.
 
 The results can be read without any data: tables, trades, decisions and charts are in `Results/`, and every notebook in `src/` is saved with its outputs.
 
