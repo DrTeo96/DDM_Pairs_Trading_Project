@@ -1,0 +1,3 @@
+period,variant,reference,follow,news_right,gross_mean_C,gross_median_C,gross_mean_ref_same
+test,finbert_episode,A,21,0.23809523809523808,-25.048411138914503,-23.09391927822757,25.048411138914503
+train,finbert_episode,A,20,0.55,-8.921919658376842,5.815821889421091,8.921919658376845

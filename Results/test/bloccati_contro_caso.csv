@@ -1,3 +1,0 @@
-periodo,variante,riferimento,bloccati,rientro_bloccati,rientro_tenuti,p_fisher,lordo_medio_bloccati,lordo_mediano_bloccati,lordo_medio_tenuti,p_caso
-test,finbert_episodio,A,7,0.42857142857142855,0.48884381338742394,1.0,26.98038061169868,37.4773506230458,4.631962145700571,0.8964
-train,finbert_episodio,A,5,0.0,0.4793388429752066,0.0631935022785895,56.984794405022534,-8.972257829473751,7.184405653662334,0.9746

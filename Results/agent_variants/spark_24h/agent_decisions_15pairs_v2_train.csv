@@ -1,0 +1,974 @@
+signal_id,decision,size,decision_C,follow_side,ticker,category,reason,news_direction,news_id,structural_on_moved_leg,n_news,n_lists,outcome,model,answered_at,hours,reasoning,anonymized
+0,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:12:20,24,False,True
+1,enter,0.5,enter,,none,noise,"noise only: list 1, other 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:12:24,24,False,True
+2,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+3,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:12:20,24,False,True
+4,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:50:48,24,False,True
+5,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+6,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+7,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+8,block,1.0,block,,CRM,structural,"L'annuncio di un'acquisizione di un'azienda AI di 3,6 miliardi di dollari è un fatto strutturale che può mantenere aperta una gap tra le due aziende.",positive,53205445.0,True,4,0,valid answer,spark-x2.6-4b,2026-11-11T21:51:03,24,False,True
+9,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+10,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+11,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+12,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+13,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+14,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+15,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+16,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+17,block,1.0,block,,MS,structural,"L'item descrive un acquisto di una società di gestione di Company B, quindi è un fatto strutturale che potrebbe mantenere aperta la gap tra le due aziende.",negative,53230587.0,True,5,2,valid answer,spark-x2.6-4b,2026-11-11T21:51:19,24,False,True
+18,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:51:28,24,False,True
+19,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+20,block,1.0,block,,MS,structural,"L'item descrive un acquisto di una società di gestione di Company B, quindi è un fatto strutturale che potrebbe mantenere aperta la gap tra le due aziende.",negative,53230587.0,True,5,2,valid answer,spark-x2.6-4b,2026-11-11T21:51:19,24,False,True
+21,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+22,enter,0.5,enter,,none,noise,"noise only: deal_product 1, analysts 1, other 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T21:51:32,24,False,True
+23,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:51:28,24,False,True
+24,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+25,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:51:41,24,False,True
+26,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+27,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+28,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:51:41,24,False,True
+29,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+30,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+31,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+32,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:51:45,24,False,True
+33,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+34,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+35,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:51:45,24,False,True
+36,enter,0.5,enter,,none,noise,"noise only: deal_product 1, analysts 1, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T21:51:54,24,False,True
+37,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+38,enter,1.0,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:51:59,24,False,True
+39,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:52:03,24,False,True
+40,enter,1.0,enter,,none,noise,"noise only: sector_macro 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:51:59,24,False,True
+41,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+42,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+43,enter,0.5,enter,,none,noise,"noise only: other 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:52:11,24,False,True
+44,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+45,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+46,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+47,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+48,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+49,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+50,block,1.0,block,,PYPL,structural,"L'item descrive la chiusura di un gruppo d'investimento interno di Company A, un fatto strutturale che modifica la struttura aziendale.",uncertain,53261980.0,False,3,1,valid answer,spark-x2.6-4b,2026-11-11T21:52:19,24,False,True
+51,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:52:27,24,False,True
+52,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+53,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+54,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+55,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+56,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+57,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+58,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+59,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:52:33,24,False,True
+60,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+61,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+62,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+63,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+64,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T21:52:43,24,False,True
+65,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+66,enter,0.5,enter,,none,noise,"noise only: deal_product 1, results 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:52:55,24,False,True
+67,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:53:00,24,False,True
+68,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+69,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+70,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+71,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+72,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+73,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+74,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+75,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:53:08,24,False,True
+76,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+77,enter,0.5,enter,,none,noise,"noise only: analysts 2, results 1, list 1",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T21:53:19,24,False,True
+78,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+79,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+80,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:53:25,24,False,True
+81,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+82,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+83,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:53:32,24,False,True
+84,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+85,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+86,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+87,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:53:38,24,False,True
+88,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+89,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+90,enter,0.5,enter,,none,noise,"noise only: analysts 2, other 1, list 1",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T21:53:58,24,False,True
+91,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+92,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+93,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+94,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+95,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+96,enter,0.5,enter,,none,noise,"noise only: results 3, deal_product 2, list 2",,,,7,2,valid answer,spark-x2.6-4b,2026-11-11T21:54:30,24,False,True
+97,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:54:36,24,False,True
+98,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+99,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+100,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:54:36,24,False,True
+101,block,1.0,block,,JPM,structural,"La notizia riguarda l'annuncio di due co-CEOs per Company A, un evento di natura strutturale che può influenzare la direzione del prezzo.",uncertain,60094051.0,True,7,1,valid answer,spark-x2.6-4b,2026-11-11T21:55:13,24,False,True
+102,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+103,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+104,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+105,block,1.0,block,,JPM,structural,"La notizia riguarda l'annuncio di due co-CEOs per Company A, un evento di natura strutturale che può influenzare la direzione del prezzo.",uncertain,60094051.0,False,7,1,valid answer,spark-x2.6-4b,2026-11-11T21:55:24,24,False,True
+106,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+107,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+108,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:55:35,24,False,True
+109,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:55:41,24,False,True
+110,enter,0.5,enter,,none,noise,"noise only: list 1, deal_product 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T21:55:47,24,False,True
+111,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+112,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+113,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+114,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+115,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+116,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+117,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+118,block,1.0,block,,JPM,structural,"Il testo descrive un agito di leadership in Company A e la possibilità di sostituzione del CEO, con l'esecutivo atteso di rimanere al posto fino a tre anni.",uncertain,60120090.0,False,6,1,valid answer,spark-x2.6-4b,2026-11-11T21:56:13,24,False,True
+119,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+120,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+121,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:56:27,24,False,True
+122,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:55:41,24,False,True
+123,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+124,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+125,enter,0.5,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:56:33,24,False,True
+126,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+127,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+128,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+129,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+130,enter,0.5,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:56:33,24,False,True
+131,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+132,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+133,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:56:43,24,False,True
+134,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+135,enter,0.5,enter,,none,noise,"noise only: analysts 3, sector_macro 1, other 1",,,,5,0,valid answer,spark-x2.6-4b,2026-11-11T21:57:08,24,False,True
+136,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+137,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:57:25,24,False,True
+138,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+139,enter,0.5,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:57:32,24,False,True
+140,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+141,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:57:41,24,False,True
+142,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+143,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:57:25,24,False,True
+144,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+145,enter,0.5,enter,,none,noise,"noise only: list 3, analysts 3, sector_macro 1",,,,7,2,valid answer,spark-x2.6-4b,2026-11-11T21:58:06,24,False,True
+146,enter,0.5,enter,,none,noise,"noise only: analysts 2, results 1, list 1",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T21:58:22,24,False,True
+147,enter,0.5,enter,,none,noise,"noise only: other 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:58:32,24,False,True
+148,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+149,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:58:41,24,False,True
+150,enter,0.5,enter,,none,noise,"noise only: list 4, analysts 2",,,,6,4,valid answer,spark-x2.6-4b,2026-11-11T21:58:50,24,False,True
+151,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:58:56,24,False,True
+152,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+153,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+154,enter,0.5,enter,,none,noise,"noise only: list 3, analysts 1",,,,4,3,valid answer,spark-x2.6-4b,2026-11-11T21:58:06,24,False,True
+155,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:59:02,24,False,True
+156,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:57:41,24,False,True
+157,enter,0.5,enter,,none,noise,"noise only: analysts 2, other 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T21:59:07,24,False,True
+158,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+159,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:59:13,24,False,True
+160,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:59:13,24,False,True
+161,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+162,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+163,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+164,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1, results 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T21:59:22,24,False,True
+165,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+166,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+167,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+168,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:59:29,24,False,True
+169,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T21:59:39,24,False,True
+170,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+171,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T21:59:45,24,False,True
+172,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+173,enter,0.5,enter,,none,noise,"noise only: list 2, results 2, deal_product 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T21:59:58,24,False,True
+174,enter,0.5,enter,,none,noise,"noise only: results 2, deal_product 2, list 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T22:00:05,24,False,True
+175,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+176,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+177,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+178,enter,0.5,enter,,none,noise,"noise only: other 1, sector_macro 1, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:00:15,24,False,True
+179,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+180,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+181,enter,0.5,enter,,none,noise,"noise only: other 2, analysts 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:00:32,24,False,True
+182,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+183,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+184,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:00:37,24,False,True
+185,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:00:43,24,False,True
+186,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+187,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+188,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+189,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+190,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+191,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+192,block,1.0,block,,ELV,structural,"L'azienda ha presentato una causa legale contro HHS/CMS per un trattamento non equo delle classifiche Medicare, con conseguenza di penalità economiche future, il che suggerisce un evento durativo e non solo di natura noiosa.",negative,60279642.0,True,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:01:02,24,False,True
+193,enter,0.5,enter,,none,noise,"noise only: results 1, list 1, other 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:01:23,24,False,True
+194,enter,0.5,enter,,none,noise,noise only: deal_product 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:01:37,24,False,True
+195,enter,0.5,enter,,none,noise,"noise only: analysts 7, other 1",,,,8,0,valid answer,spark-x2.6-4b,2026-11-11T22:02:22,24,False,True
+196,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:02:33,24,False,True
+197,enter,0.5,enter,,none,noise,"noise only: analysts 3, list 1, other 1, deal_product 1",,,,6,1,valid answer,spark-x2.6-4b,2026-11-11T22:03:02,24,False,True
+198,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+199,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+200,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:03:10,24,False,True
+201,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:03:16,24,False,True
+202,enter,0.5,enter,,none,noise,"noise only: analysts 5, list 2, deal_product 2, other 1, sector_macro 1, results 1",,,,12,2,valid answer,spark-x2.6-4b,2026-11-11T22:04:16,24,False,True
+203,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+204,enter,0.5,enter,,none,noise,"noise only: analysts 2, deal_product 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:04:40,24,False,True
+205,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:04:50,24,False,True
+206,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:03:16,24,False,True
+207,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:04:57,24,False,True
+208,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:01:23,24,False,True
+209,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:03:16,24,False,True
+210,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:05:04,24,False,True
+211,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+212,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+213,block,1.0,follow,long JPM / short WFC,JPM,structural,"L'azienda ha annunciato un piano di acquisizioni mirate a piccole aziende, indicando una tendenza strategica di acquisizioni.",positive,60330350.0,False,6,0,valid answer,spark-x2.6-4b,2026-11-11T22:05:22,24,False,True
+214,enter,0.5,enter,,none,noise,"noise only: list 1, sector_macro 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:05:35,24,False,True
+215,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+216,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+217,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+218,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+219,block,1.0,follow,long JPM / short WFC,JPM,structural,"L'azienda ha annunciato un piano di acquisizioni mirate a piccole aziende, indicando una tendenza strategica di acquisizioni.",positive,60330350.0,False,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:05:22,24,False,True
+220,enter,1.0,enter,,none,noise,"noise only: list 1, deal_product 1, other 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:05:48,24,False,True
+221,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+222,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:05:54,24,False,True
+223,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:05:04,24,False,True
+224,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+225,block,1.0,block,,JPM,structural,"L'azienda ha annunciato un piano di acquisizioni mirate a piccole aziende, indicando una tendenza strategica di acquisizioni.",positive,60330350.0,False,4,1,valid answer,spark-x2.6-4b,2026-11-11T22:05:22,24,False,True
+226,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+227,enter,0.5,enter,,none,noise,"noise only: analysts 2, sector_macro 1, list 1",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T22:06:13,24,False,True
+228,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:06:27,24,False,True
+229,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+230,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+231,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+232,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+233,enter,0.5,enter,,none,noise,"noise only: list 1, other 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:06:35,24,False,True
+234,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+235,block,1.0,follow,long BAC / short C,C,structural,"L'item riguarda una possibile acquisizione di Company B, che potrebbe alterare la struttura aziendale e generare un gap tra le due aziende.",negative,60343044.0,False,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:06:59,24,False,True
+236,enter,0.5,enter,,none,noise,"noise only: list 2, other 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:07:09,24,False,True
+237,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:07:14,24,False,True
+238,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+239,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:07:24,24,False,True
+240,enter,0.5,enter,,none,noise,"noise only: analysts 5, list 2, other 1, sector_macro 1, results 1",,,,10,2,valid answer,spark-x2.6-4b,2026-11-11T22:08:33,24,False,True
+241,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:08:43,24,False,True
+242,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+243,enter,0.5,enter,,none,noise,"noise only: list 3, other 1, deal_product 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T22:09:09,24,False,True
+244,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+245,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+246,block,1.0,block,,MS,structural,"L'azienda ha annunciato un acquisto di maggioranza del capitale di una società per azioni, il che genera un cambio strutturale nel settore.",positive,60376640.0,True,6,1,valid answer,spark-x2.6-4b,2026-11-11T22:09:35,24,False,True
+247,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:09:44,24,False,True
+248,enter,0.5,enter,,none,noise,"noise only: list 1, results 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:09:52,24,False,True
+249,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 2",,,,4,2,valid answer,spark-x2.6-4b,2026-11-11T22:09:59,24,False,True
+250,enter,0.5,enter,,none,noise,"noise only: list 2, analysts 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:10:08,24,False,True
+251,enter,0.5,enter,,none,noise,"noise only: list 4, analysts 1, results 1",,,,6,3,valid answer,spark-x2.6-4b,2026-11-11T22:10:24,24,False,True
+252,enter,1.0,enter,,none,noise,noise only: list 4,,,,4,4,lists only,spark-x2.6-4b,,24,False,True
+253,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+254,enter,0.5,enter,,none,noise,"noise only: list 4, analysts 1, results 1",,,,6,3,valid answer,spark-x2.6-4b,2026-11-11T22:10:24,24,False,True
+255,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+256,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:10:31,24,False,True
+257,enter,0.5,enter,,none,noise,"noise only: results 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:10:37,24,False,True
+258,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+259,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+260,block,1.0,block,,MA,structural,"L'azienda ha iniziato a valutare la vendita di una sua filiale britannica, il Vocalink, il che introduce un evento strutturale di acquisizione o vendita.",uncertain,60406695.0,True,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:10:43,24,False,True
+261,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+262,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+263,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+264,enter,1.0,enter,,none,noise,noise only: list 5,,,,5,5,lists only,spark-x2.6-4b,,24,False,True
+265,enter,1.0,enter,,none,noise,noise only: list 5,,,,5,5,lists only,spark-x2.6-4b,,24,False,True
+266,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+267,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+268,enter,0.5,enter,,none,noise,"noise only: list 6, analysts 1, results 1, other 1",,,,9,5,valid answer,spark-x2.6-4b,2026-11-11T22:10:53,24,False,True
+269,block,1.0,block,,MA,structural,"L'azienda ha iniziato a valutare la vendita di una sua filiale britannica, il Vocalink, il che introduce un evento strutturale di acquisizione o vendita.",uncertain,60406695.0,False,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:10:43,24,False,True
+270,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+271,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:11:06,24,False,True
+272,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+273,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+274,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:10:31,24,False,True
+275,enter,0.5,enter,,none,noise,"noise only: results 6, list 5, sector_macro 2",,,,13,5,valid answer,spark-x2.6-4b,2026-11-11T22:11:52,24,False,True
+276,enter,0.5,enter,,none,noise,"noise only: other 2, list 1, analysts 1",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T22:12:08,24,False,True
+277,enter,0.5,enter,,none,noise,noise only: analysts 5,,,,5,0,valid answer,spark-x2.6-4b,2026-11-11T22:12:33,24,False,True
+278,enter,0.5,enter,,none,noise,"noise only: list 6, results 6, sector_macro 2, other 1, deal_product 1",,,,16,5,valid answer,spark-x2.6-4b,2026-11-11T22:13:29,24,False,True
+279,enter,0.5,enter,,none,noise,"noise only: list 1, deal_product 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:13:36,24,False,True
+280,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+281,block,1.0,block,,JPM,structural,"La notizia riguarda il CEO di Company A, che afferma che il percorso della successione è legato al consiglio di amministrazione, indicando una manovra interna alla gestione del company.",uncertain,60439928.0,True,18,7,valid answer,spark-x2.6-4b,2026-11-11T22:14:33,24,False,True
+282,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+283,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:14:53,24,False,True
+284,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:15:03,24,False,True
+285,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+286,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+287,enter,0.5,enter,,none,noise,"noise only: results 8, list 5, sector_macro 2, other 1",,,,16,5,valid answer,spark-x2.6-4b,2026-11-11T22:15:21,24,False,True
+288,enter,0.5,enter,,none,noise,"noise only: results 9, list 5, sector_macro 2, other 1",,,,17,5,valid answer,spark-x2.6-4b,2026-11-11T22:15:27,24,False,True
+289,enter,0.5,enter,,none,noise,"noise only: results 9, list 5, sector_macro 2, other 1",,,,17,5,valid answer,spark-x2.6-4b,2026-11-11T22:15:27,24,False,True
+290,enter,0.5,enter,,none,noise,"noise only: results 9, list 5, sector_macro 2, other 1",,,,17,5,valid answer,spark-x2.6-4b,2026-11-11T22:15:27,24,False,True
+291,enter,0.5,enter,,none,noise,"noise only: results 9, list 5, sector_macro 2, other 1",,,,17,5,valid answer,spark-x2.6-4b,2026-11-11T22:15:27,24,False,True
+292,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:15:39,24,False,True
+293,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:15:46,24,False,True
+294,enter,0.5,enter,,none,noise,noise only: analysts 5,,,,5,0,valid answer,spark-x2.6-4b,2026-11-11T22:15:55,24,False,True
+295,enter,0.5,enter,,none,noise,"noise only: results 5, analysts 2, list 2, other 1",,,,10,2,valid answer,spark-x2.6-4b,2026-11-11T22:16:27,24,False,True
+296,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+297,block,1.0,follow,long PYPL / short XYZ,PYPL,structural,"L'oggetto è una proposta di acquisto di $53 miliardi tra Stripe e Advent per Company A, che ha fatto salire il suo stock.",positive,60468069.0,False,6,1,valid answer,spark-x2.6-4b,2026-11-11T22:16:54,24,False,True
+298,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:17:16,24,False,True
+299,enter,0.5,enter,,none,noise,"noise only: list 2, results 1, deal_product 1",,,,4,2,valid answer,spark-x2.6-4b,2026-11-11T22:17:28,24,False,True
+300,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+301,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:15:46,24,False,True
+302,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:17:32,24,False,True
+303,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:17:39,24,False,True
+304,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:17:48,24,False,True
+305,enter,0.5,enter,,none,noise,"noise only: list 1, results 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:17:54,24,False,True
+306,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+307,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:18:05,24,False,True
+308,enter,0.5,enter,,none,noise,"noise only: results 7, list 4, analysts 4, sector_macro 2",,,,17,4,valid answer,spark-x2.6-4b,2026-11-11T22:19:09,24,False,True
+309,enter,0.5,enter,,none,noise,"noise only: list 2, analysts 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:19:13,24,False,True
+310,enter,0.5,enter,,none,noise,"noise only: analysts 5, list 4, other 3, sector_macro 1, deal_product 1",,,,14,4,valid answer,spark-x2.6-4b,2026-11-11T22:20:06,24,False,True
+311,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+312,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+313,enter,0.5,enter,,none,noise,"noise only: results 4, analysts 3, sector_macro 1, other 1, list 1",,,,10,1,valid answer,spark-x2.6-4b,2026-11-11T22:20:49,24,False,True
+314,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+315,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+316,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+317,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+318,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+319,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+320,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+321,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+322,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+323,block,1.0,block,,COP,structural,"L'item informa una acquisizione di un 42% del capitale di Company A nel gruppo BP Energy di Kirkuk, il che introduce un fattore strutturale e potenzialmente durativo per la quotazione di Company A.",positive,60519105.0,False,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:21:01,24,False,True
+324,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+325,enter,0.5,enter,,none,noise,"noise only: analysts 10, list 6, results 4, other 2",,,,22,4,valid answer,spark-x2.6-4b,2026-11-11T22:22:37,24,False,True
+326,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:22:47,24,False,True
+327,enter,0.5,enter,,none,noise,"noise only: other 2, list 2, analysts 1, results 1",,,,6,2,valid answer,spark-x2.6-4b,2026-11-11T22:23:07,24,False,True
+328,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+329,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+330,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+331,enter,0.5,enter,,none,noise,"noise only: analysts 7, list 1",,,,8,0,valid answer,spark-x2.6-4b,2026-11-11T22:23:44,24,False,True
+332,enter,0.5,enter,,none,noise,noise only: analysts 3,,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:23:59,24,False,True
+333,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:24:04,24,False,True
+334,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+335,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+336,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:24:14,24,False,True
+337,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:24:20,24,False,True
+338,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+339,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:24:25,24,False,True
+340,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:24:31,24,False,True
+341,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:24:36,24,False,True
+342,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+343,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+344,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:24:31,24,False,True
+345,enter,0.5,enter,,none,noise,"noise only: analysts 2, deal_product 1, list 1",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T22:24:54,24,False,True
+346,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+347,enter,0.5,enter,,none,noise,"noise only: deal_product 1, list 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:24:59,24,False,True
+348,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+349,enter,0.5,enter,,none,noise,"noise only: list 2, deal_product 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:24:59,24,False,True
+350,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:24:25,24,False,True
+351,enter,0.5,enter,,none,noise,"noise only: list 3, deal_product 1",,,,4,2,valid answer,spark-x2.6-4b,2026-11-11T22:25:10,24,False,True
+352,enter,0.5,enter,,none,noise,"noise only: list 4, results 4",,,,8,3,valid answer,spark-x2.6-4b,2026-11-11T22:25:35,24,False,True
+353,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:25:41,24,False,True
+354,enter,0.5,enter,,none,noise,"noise only: list 3, deal_product 1",,,,4,2,valid answer,spark-x2.6-4b,2026-11-11T22:25:52,24,False,True
+355,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+356,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:25:57,24,False,True
+357,enter,0.5,enter,,none,noise,"noise only: list 4, analysts 3",,,,7,2,valid answer,spark-x2.6-4b,2026-11-11T22:26:22,24,False,True
+358,enter,0.5,enter,,none,noise,"noise only: list 4, deal_product 3, other 2, analysts 1",,,,10,3,valid answer,spark-x2.6-4b,2026-11-11T22:26:59,24,False,True
+359,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:27:09,24,False,True
+360,enter,0.5,enter,,none,noise,"noise only: other 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:27:19,24,False,True
+361,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:27:36,24,False,True
+362,enter,0.5,enter,,none,noise,"noise only: list 3, analysts 3",,,,6,2,valid answer,spark-x2.6-4b,2026-11-11T22:27:42,24,False,True
+363,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+364,enter,0.5,enter,,none,noise,"noise only: other 2, results 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:27:59,24,False,True
+365,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:28:10,24,False,True
+366,enter,0.5,enter,,none,noise,"noise only: list 2, analysts 1, other 1",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T22:28:26,24,False,True
+367,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:27:36,24,False,True
+368,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:28:31,24,False,True
+369,block,1.0,follow,long GS / short MS,GS,structural,"L'item informa che Company A ha firmato un accordo di acquisizione con un fondo di private equity, il che introduce una trasformazione strutturale nel suo profilo.",positive,60603938.0,True,6,1,valid answer,spark-x2.6-4b,2026-11-11T22:28:51,24,False,True
+370,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+371,enter,0.5,enter,,none,noise,"noise only: list 4, analysts 1, results 1",,,,6,4,valid answer,spark-x2.6-4b,2026-11-11T22:29:06,24,False,True
+372,enter,1.0,enter,,none,noise,noise only: list 3,,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:29:12,24,False,True
+373,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:29:27,24,False,True
+374,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:29:32,24,False,True
+375,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+376,block,1.0,block,,GS,structural,"L'item informa che Company A ha firmato un accordo di acquisizione con un fondo di private equity, il che introduce una trasformazione strutturale nel suo profilo.",positive,60603938.0,True,6,1,valid answer,spark-x2.6-4b,2026-11-11T22:28:51,24,False,True
+377,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+378,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:29:37,24,False,True
+379,enter,0.5,enter,,none,noise,"noise only: list 2, other 2",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T22:29:43,24,False,True
+380,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+381,block,1.0,follow,long GS / short MS,GS,structural,"L'item informa che Company A ha firmato un accordo di acquisizione con un fondo di private equity, il che introduce una trasformazione strutturale nel suo profilo.",positive,60603938.0,True,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:28:51,24,False,True
+382,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+383,enter,0.5,enter,,none,noise,noise only: analysts 5,,,,5,0,valid answer,spark-x2.6-4b,2026-11-11T22:30:07,24,False,True
+384,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:29:27,24,False,True
+385,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+386,enter,0.5,enter,,none,noise,"noise only: results 4, deal_product 2, list 1, analysts 1",,,,8,1,valid answer,spark-x2.6-4b,2026-11-11T22:30:41,24,False,True
+387,enter,0.5,enter,,none,noise,"noise only: analysts 5, results 3, list 2, other 1",,,,11,2,valid answer,spark-x2.6-4b,2026-11-11T22:31:03,24,False,True
+388,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:31:09,24,False,True
+389,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:31:15,24,False,True
+390,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+391,enter,0.5,enter,,none,noise,"noise only: results 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:31:23,24,False,True
+392,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+393,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:29:37,24,False,True
+394,enter,0.5,enter,,none,noise,"noise only: results 6, list 3, analysts 3",,,,12,3,valid answer,spark-x2.6-4b,2026-11-11T22:32:11,24,False,True
+395,enter,0.5,enter,,none,noise,"noise only: analysts 2, deal_product 2",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:32:32,24,False,True
+396,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+397,enter,0.5,enter,,none,noise,"noise only: other 2, list 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:32:42,24,False,True
+398,enter,0.5,enter,,none,noise,"noise only: analysts 2, deal_product 2",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:32:32,24,False,True
+399,enter,0.5,enter,,none,noise,"noise only: other 3, list 1",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:33:04,24,False,True
+400,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+401,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+402,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+403,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+404,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+405,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+406,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+407,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:33:26,24,False,True
+408,enter,0.5,enter,,none,noise,"noise only: sector_macro 1, other 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:33:37,24,False,True
+409,enter,1.0,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:33:43,24,False,True
+410,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+411,enter,0.5,enter,,none,noise,"noise only: list 2, results 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:33:49,24,False,True
+412,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+413,enter,0.5,enter,,none,noise,"noise only: list 1, sector_macro 1, deal_product 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:34:00,24,False,True
+414,enter,0.5,enter,,none,noise,"noise only: analysts 10, list 1",,,,11,1,valid answer,spark-x2.6-4b,2026-11-11T22:34:47,24,False,True
+415,enter,0.5,enter,,none,noise,"noise only: list 1, sector_macro 1, deal_product 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:34:00,24,False,True
+416,enter,0.5,enter,,none,noise,"noise only: other 2, analysts 2, list 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T22:35:08,24,False,True
+417,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+418,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:35:19,24,False,True
+419,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:33:26,24,False,True
+420,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 2, other 1",,,,5,2,valid answer,spark-x2.6-4b,2026-11-11T22:35:08,24,False,True
+421,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+422,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:35:24,24,False,True
+423,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+424,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+425,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:35:30,24,False,True
+426,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+427,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+428,enter,0.5,enter,,none,noise,"noise only: other 1, results 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:35:42,24,False,True
+429,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:35:30,24,False,True
+430,enter,1.0,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:35:52,24,False,True
+431,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:35:57,24,False,True
+432,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+433,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+434,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:36:05,24,False,True
+435,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:35:57,24,False,True
+436,enter,0.5,enter,,none,noise,"noise only: other 1, results 1, analysts 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:36:11,24,False,True
+437,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+438,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+439,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:36:21,24,False,True
+440,enter,0.5,enter,,none,noise,"noise only: other 1, sector_macro 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:36:33,24,False,True
+441,block,1.0,block,,KO,structural,"L'item riferisce a un annuncio del CFO di Company A che ha influito sul comportamento del mercato e sulle costi, ma non indica una variazione strutturale o un evento significativo che possa mantenere aperta una gap tra le due aziende.",uncertain,60720750.0,False,9,1,valid answer,spark-x2.6-4b,2026-11-11T22:37:12,24,False,True
+442,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+443,enter,1.0,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:37:23,24,False,True
+444,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:37:28,24,False,True
+445,enter,0.5,enter,,none,noise,"noise only: deal_product 3, results 3, analysts 1, list 1",,,,8,1,valid answer,spark-x2.6-4b,2026-11-11T22:38:09,24,False,True
+446,enter,0.5,enter,,none,noise,"noise only: list 2, deal_product 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:38:14,24,False,True
+447,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+448,enter,0.5,enter,,none,noise,"noise only: other 1, sector_macro 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:36:33,24,False,True
+449,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+450,enter,1.0,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:37:23,24,False,True
+451,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+452,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+453,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+454,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+455,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+456,enter,0.5,enter,,none,noise,"noise only: list 1, other 1, analysts 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:38:25,24,False,True
+457,enter,0.5,enter,,none,noise,"noise only: list 2, results 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:38:31,24,False,True
+458,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+459,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+460,enter,0.5,enter,,none,noise,"noise only: results 4, analysts 2",,,,6,0,valid answer,spark-x2.6-4b,2026-11-11T22:39:02,24,False,True
+461,enter,0.5,enter,,none,noise,"noise only: analysts 4, list 3, deal_product 1",,,,8,3,valid answer,spark-x2.6-4b,2026-11-11T22:39:26,24,False,True
+462,enter,0.5,enter,,none,noise,"noise only: list 1, sector_macro 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:39:33,24,False,True
+463,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+464,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+465,enter,0.5,enter,,none,noise,"noise only: results 1, sector_macro 1, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:39:43,24,False,True
+466,enter,0.5,enter,,none,noise,"noise only: results 1, sector_macro 1, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:39:43,24,False,True
+467,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+468,enter,0.5,enter,,none,noise,"noise only: results 1, sector_macro 1, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:39:43,24,False,True
+469,enter,0.5,enter,,none,noise,"noise only: analysts 11, results 5, list 3, other 1",,,,20,2,valid answer,spark-x2.6-4b,2026-11-11T22:41:14,24,False,True
+470,enter,0.5,enter,,none,noise,"noise only: analysts 11, list 2",,,,13,2,valid answer,spark-x2.6-4b,2026-11-11T22:41:49,24,False,True
+471,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+472,enter,0.5,enter,,none,noise,"noise only: sector_macro 1, list 1, analysts 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:41:54,24,False,True
+473,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+474,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+475,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:41:59,24,False,True
+476,enter,0.5,enter,,none,noise,"noise only: list 2, deal_product 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:42:05,24,False,True
+477,enter,0.5,enter,,none,noise,"noise only: analysts 6, results 2, list 2, other 1, deal_product 1",,,,12,2,valid answer,spark-x2.6-4b,2026-11-11T22:42:16,24,False,True
+478,enter,0.5,enter,,none,noise,noise only: analysts 3,,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:42:31,24,False,True
+479,enter,0.5,enter,,none,noise,noise only: analysts 9,,,,9,0,valid answer,spark-x2.6-4b,2026-11-11T22:42:41,24,False,True
+480,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+481,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+482,enter,0.5,enter,,none,noise,"noise only: analysts 7, other 1, list 1",,,,9,1,valid answer,spark-x2.6-4b,2026-11-11T22:43:23,24,False,True
+483,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+484,enter,0.5,enter,,none,noise,"noise only: analysts 6, other 1, list 1",,,,8,1,valid answer,spark-x2.6-4b,2026-11-11T22:43:23,24,False,True
+485,enter,0.5,enter,,none,noise,noise only: results 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:43:29,24,False,True
+486,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:41:54,24,False,True
+487,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+488,enter,0.5,enter,,none,noise,"noise only: analysts 3, results 2, list 1, sector_macro 1",,,,7,0,valid answer,spark-x2.6-4b,2026-11-11T22:44:05,24,False,True
+489,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:44:10,24,False,True
+490,enter,0.5,enter,,none,noise,"noise only: analysts 3, results 3, list 1",,,,7,1,valid answer,spark-x2.6-4b,2026-11-11T22:44:46,24,False,True
+491,enter,0.5,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:44:52,24,False,True
+492,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+493,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:44:57,24,False,True
+494,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+495,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+496,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+497,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+498,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+499,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+500,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+501,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+502,enter,0.5,enter,,none,noise,"noise only: analysts 3, results 3, list 1, sector_macro 1",,,,8,0,valid answer,spark-x2.6-4b,2026-11-11T22:45:04,24,False,True
+503,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:45:10,24,False,True
+504,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+505,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:45:14,24,False,True
+506,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+507,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+508,block,1.0,block,,V,structural,"L'annuncio di una acquisizione in contanti di $2.4B di un'azienda di intelligence anti-fraud, con prevista chiusura entro fine del secondo trimestre del 2027, è un fatto strutturale che introduce un acquisto diretto da parte di Company B.",positive,60870319.0,False,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:45:37,24,False,True
+509,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+510,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+511,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+512,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+513,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+514,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+515,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:45:49,24,False,True
+516,block,1.0,block,,V,structural,"L'annuncio di una acquisizione in contanti di $2.4B di un'azienda di intelligence anti-fraud, con prevista chiusura entro fine del secondo trimestre del 2027, è un fatto strutturale che introduce un acquisto diretto da parte di Company B.",positive,60870319.0,False,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:45:37,24,False,True
+517,enter,0.5,enter,,none,noise,"noise only: deal_product 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:45:56,24,False,True
+518,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:46:02,24,False,True
+519,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:46:08,24,False,True
+520,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+521,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+522,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 1, deal_product 1",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:46:23,24,False,True
+523,block,1.0,follow,short MA / long V,V,structural,"L'item descrive un acquisto di un'azienda tecnologica da parte di Company B, che introduce una nuova capacità di cybersicurezza basata su AI.",positive,60882480.0,True,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:46:34,24,False,True
+524,enter,0.5,enter,,none,noise,noise only: results 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:46:44,24,False,True
+525,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+526,block,1.0,block,,DHR,structural,L'annuncio di nomina di Julie Sawyer Montgomery come presidente e CEO di Company A è un evento di natura manageriale che può influenzare la percezione del valore della società.,uncertain,60890344.0,True,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:46:50,24,False,True
+527,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:47:00,24,False,True
+528,block,1.0,block,,DHR,structural,L'annuncio di nomina di Julie Sawyer Montgomery come presidente e CEO di Company A è un evento di natura manageriale che può influenzare la percezione del valore della società.,uncertain,60890344.0,True,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:46:50,24,False,True
+529,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+530,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:47:06,24,False,True
+531,enter,0.5,enter,,none,noise,"noise only: deal_product 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:47:12,24,False,True
+532,enter,0.5,enter,,none,noise,"noise only: results 1, list 1, other 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:47:32,24,False,True
+533,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:47:44,24,False,True
+534,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+535,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+536,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+537,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:47:06,24,False,True
+538,block,1.0,block,,PG,structural,"L'item informa una acquisizione di Company B, il che introduce un fattore strutturale duraturo potenzialmente a lungo termine.",uncertain,60920182.0,False,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:47:55,24,False,True
+539,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+540,enter,0.5,enter,,none,noise,"noise only: other 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:48:09,24,False,True
+541,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+542,enter,0.5,enter,,none,noise,"noise only: deal_product 3, list 2, sector_macro 1",,,,6,2,valid answer,spark-x2.6-4b,2026-11-11T22:48:32,24,False,True
+543,enter,0.5,enter,,none,noise,noise only: results 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:48:38,24,False,True
+544,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+545,enter,0.5,enter,,none,noise,noise only: results 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:48:38,24,False,True
+546,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+547,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:48:44,24,False,True
+548,block,1.0,block,,CRM,structural,"L'item informa di un cambio di direzione aziendale con la promozione di un nuovo chief operating officer, il che è un evento di natura management.",uncertain,60975846.0,False,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:48:48,24,False,True
+549,enter,0.5,enter,,none,noise,noise only: other 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:49:04,24,False,True
+550,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+551,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+552,enter,0.5,enter,,none,noise,"noise only: analysts 5, results 4, deal_product 2",,,,11,0,valid answer,spark-x2.6-4b,2026-11-11T22:50:04,24,False,True
+553,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+554,enter,0.5,enter,,none,noise,"noise only: analysts 3, results 1",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:50:25,24,False,True
+555,enter,0.5,enter,,none,noise,"noise only: analysts 3, results 1",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:50:25,24,False,True
+556,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+557,enter,0.5,enter,,none,noise,"noise only: analysts 3, other 1",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:50:30,24,False,True
+558,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+559,enter,0.5,enter,,none,noise,"noise only: analysts 1, other 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:50:30,24,False,True
+560,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+561,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+562,enter,1.0,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:50:36,24,False,True
+563,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+564,enter,0.5,enter,,none,noise,"noise only: analysts 2, results 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:50:51,24,False,True
+565,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+566,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+567,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:50:57,24,False,True
+568,enter,1.0,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:51:03,24,False,True
+569,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+570,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:51:10,24,False,True
+571,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:50:30,24,False,True
+572,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+573,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+574,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+575,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+576,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+577,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+578,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+579,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+580,enter,0.5,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:51:16,24,False,True
+581,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+582,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+583,enter,0.5,enter,,none,noise,"noise only: sector_macro 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:51:29,24,False,True
+584,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+585,enter,0.5,enter,,none,noise,"noise only: sector_macro 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:51:29,24,False,True
+586,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+587,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:51:35,24,False,True
+588,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+589,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+590,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:51:41,24,False,True
+591,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+592,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+593,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+594,enter,0.5,enter,,none,noise,"noise only: analysts 2, sector_macro 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:51:56,24,False,True
+595,enter,0.5,enter,,none,noise,"noise only: list 3, sector_macro 1, deal_product 1",,,,5,3,valid answer,spark-x2.6-4b,2026-11-11T22:52:09,24,False,True
+596,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+597,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:52:15,24,False,True
+598,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+599,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:52:15,24,False,True
+600,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:52:25,24,False,True
+601,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:52:25,24,False,True
+602,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+603,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+604,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:52:30,24,False,True
+605,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+606,enter,0.5,enter,,none,noise,"noise only: list 2, deal_product 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:52:09,24,False,True
+607,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+608,enter,0.5,enter,,none,noise,noise only: analysts 3,,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:52:46,24,False,True
+609,enter,0.5,enter,,none,noise,"noise only: deal_product 1, list 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:52:57,24,False,True
+610,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:53:02,24,False,True
+611,block,1.0,block,,GS,structural,"L'azienda ha annunciato un acquisto di un provider di ETF, il che introduce una novità strutturale significativa per la sua attività.",positive,61138420.0,False,4,1,valid answer,spark-x2.6-4b,2026-11-11T22:53:18,24,False,True
+612,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+613,block,1.0,block,,GS,structural,"L'azienda ha annunciato un acquisto di un provider di ETF, il che introduce una novità strutturale significativa per la sua attività.",positive,61138420.0,True,4,1,valid answer,spark-x2.6-4b,2026-11-11T22:53:18,24,False,True
+614,block,1.0,block,,HD,structural,"La notizia riguarda un cambio temporaneo del CEO di Company A, con il suo ritorno previsto entro pochi mesi e la nomina di due ex esecutivi per supervisionare l'ufficio del CEO.",uncertain,61140928.0,True,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:53:38,24,False,True
+615,enter,0.5,enter,,none,noise,"noise only: list 2, other 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:53:55,24,False,True
+616,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+617,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+618,block,1.0,block,,HD,structural,"La notizia riguarda un cambio temporaneo del CEO di Company A, con il suo ritorno previsto entro pochi mesi e la nomina di due ex esecutivi per supervisionare l'ufficio del CEO.",uncertain,61140928.0,False,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:53:38,24,False,True
+619,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+620,block,1.0,block,,COP,structural,"La notizia riguarda il sostituzione del CEO di Company A da Andy O'Brien, con l'assegnazione al ruolo di Executive Chair.",uncertain,61128095.0,True,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:54:09,24,False,True
+621,enter,0.5,enter,,none,noise,"noise only: list 2, analysts 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T22:53:02,24,False,True
+622,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+623,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:54:19,24,False,True
+624,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+625,block,1.0,block,,BAC,structural,L'annuncio di un acquisto di una parte significativa del capitale di Jio Credit da parte di Company A introduce un fattore strutturale che potrebbe mantenere aperta la gap tra le due aziende.,positive,61147809.0,True,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:54:36,24,False,True
+626,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+627,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+628,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+629,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+630,block,1.0,block,,BAC,structural,L'annuncio di un acquisto di una parte significativa del capitale di Jio Credit da parte di Company A introduce un fattore strutturale che potrebbe mantenere aperta la gap tra le due aziende.,positive,61147809.0,False,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:54:36,24,False,True
+631,block,1.0,follow,short HD / long LOW,HD,structural,"Il titolo e la sintesi indicano che il crollo del prezzo di Company A è legato a un cambio di leadership (il CEO prende licenza medica) prima degli earnings, quindi una notizia di tipo management.",negative,61152864.0,False,5,2,valid answer,spark-x2.6-4b,2026-11-11T22:54:58,24,False,True
+632,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:55:06,24,False,True
+633,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:55:12,24,False,True
+634,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+635,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:55:17,24,False,True
+636,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+637,block,1.0,follow,short CRM / long WDAY,WDAY,structural,"L'item informa che Company B è in trattativa per essere acquistata da Silver Lake, il che rappresenta un evento di acquisizione.",positive,61188849.0,True,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:55:22,24,False,True
+638,block,1.0,follow,short CRM / long WDAY,WDAY,structural,"L'item informa che Company B è in trattativa per essere acquistata da Silver Lake, il che rappresenta un evento di acquisizione.",positive,61188849.0,True,4,2,valid answer,spark-x2.6-4b,2026-11-11T22:55:31,24,False,True
+639,block,1.0,follow,short CRM / long WDAY,WDAY,structural,"L'item informa che Company B è in trattativa per essere acquistata da Silver Lake, il che rappresenta un evento di acquisizione.",positive,61188849.0,True,4,2,valid answer,spark-x2.6-4b,2026-11-11T22:55:31,24,False,True
+640,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+641,enter,1.0,enter,,none,noise,noise only: list 3,,,,3,3,lists only,spark-x2.6-4b,,24,False,True
+642,enter,1.0,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:55:37,24,False,True
+643,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+644,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+645,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:55:41,24,False,True
+646,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+647,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+648,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+649,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+650,enter,0.5,enter,,none,noise,"noise only: other 2, deal_product 1, analysts 1",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:56:04,24,False,True
+651,enter,0.5,enter,,none,noise,"noise only: other 2, deal_product 1, analysts 1",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T22:56:04,24,False,True
+652,block,1.0,follow,long ELV / short UNH,UNH,structural,"L'item riguarda un caso penale federale che coinvolge il CEO di Company B, con una condanna probabile che potrebbe avere effetti negativi sulla sua reputazione e sul prezzo dell'acquisto.",negative,61201762.0,True,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:56:23,24,False,True
+653,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+654,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+655,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:56:44,24,False,True
+656,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+657,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+658,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T22:56:44,24,False,True
+659,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+660,enter,0.5,enter,,none,noise,noise only: results 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:56:50,24,False,True
+661,enter,0.5,enter,,none,noise,"noise only: sector_macro 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:56:56,24,False,True
+662,enter,0.5,enter,,none,noise,"noise only: list 5, analysts 2, deal_product 1",,,,8,5,valid answer,spark-x2.6-4b,2026-11-11T22:57:13,24,False,True
+663,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+664,enter,0.5,enter,,none,noise,"noise only: sector_macro 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:57:19,24,False,True
+665,enter,0.5,enter,,none,noise,"noise only: list 2, sector_macro 1, results 1",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T22:57:29,24,False,True
+666,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+667,enter,0.5,enter,,none,noise,"noise only: other 1, results 1, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T22:57:41,24,False,True
+668,enter,0.5,enter,,none,noise,noise only: results 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:56:50,24,False,True
+669,enter,0.5,enter,,none,noise,"noise only: sector_macro 3, analysts 1, deal_product 1",,,,5,0,valid answer,spark-x2.6-4b,2026-11-11T22:58:11,24,False,True
+670,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+671,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+672,enter,0.5,enter,,none,noise,"noise only: analysts 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:58:16,24,False,True
+673,enter,0.5,enter,,none,noise,noise only: results 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:56:50,24,False,True
+674,enter,0.5,enter,,none,noise,"noise only: results 1, list 1, deal_product 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T22:58:22,24,False,True
+675,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+676,enter,0.5,enter,,none,noise,"noise only: results 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T22:57:41,24,False,True
+677,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:58:28,24,False,True
+678,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+679,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T22:58:33,24,False,True
+680,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+681,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+682,enter,0.5,enter,,none,noise,"noise only: list 9, results 7, other 3, sector_macro 2",,,,21,7,valid answer,spark-x2.6-4b,2026-11-11T22:59:53,24,False,True
+683,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+684,enter,0.5,enter,,none,noise,"noise only: deal_product 1, sector_macro 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:00:10,24,False,True
+685,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:00:16,24,False,True
+686,block,1.0,follow,short GS / long MS,MS,structural,"L'approvazione europea per l'acquisizione di Nicollin SAS, SMN, NHE, Nicollin Eau e MP3D Groupe riguarda Company B, con un effetto positivo sul prezzo dell'auto.",positive,61296425.0,False,5,1,valid answer,spark-x2.6-4b,2026-11-11T23:00:40,24,False,True
+687,enter,0.5,enter,,none,noise,"noise only: deal_product 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:00:55,24,False,True
+688,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+689,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+690,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+691,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+692,enter,0.5,enter,,none,noise,"noise only: other 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:01:06,24,False,True
+693,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:01:13,24,False,True
+694,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:00:16,24,False,True
+695,enter,0.5,enter,,none,noise,"noise only: other 1, sector_macro 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:01:24,24,False,True
+696,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:01:30,24,False,True
+697,enter,0.5,enter,,none,noise,"noise only: results 11, analysts 8, list 4, other 1",,,,24,4,valid answer,spark-x2.6-4b,2026-11-11T23:03:21,24,False,True
+698,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:03:31,24,False,True
+699,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+700,enter,1.0,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:03:38,24,False,True
+701,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+702,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1, other 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:03:48,24,False,True
+703,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:03:55,24,False,True
+704,enter,0.5,enter,,none,noise,"noise only: analysts 10, results 3, list 3",,,,16,3,valid answer,spark-x2.6-4b,2026-11-11T23:04:12,24,False,True
+705,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+706,enter,1.0,enter,,none,noise,"noise only: other 2, list 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T23:04:24,24,False,True
+707,enter,1.0,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:04:31,24,False,True
+708,enter,0.5,enter,,none,noise,"noise only: analysts 3, list 1, deal_product 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T23:04:53,24,False,True
+709,enter,0.5,enter,,none,noise,"noise only: list 2, deal_product 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:05:05,24,False,True
+710,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+711,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+712,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+713,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+714,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+715,enter,1.0,enter,,none,noise,noise only: other 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:04:24,24,False,True
+716,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+717,enter,0.5,enter,,none,noise,"noise only: analysts 9, list 1, results 1",,,,11,1,valid answer,spark-x2.6-4b,2026-11-11T23:05:42,24,False,True
+718,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:05:49,24,False,True
+719,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:05:55,24,False,True
+720,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+721,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:05:49,24,False,True
+722,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:06:01,24,False,True
+723,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:06:08,24,False,True
+724,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+725,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+726,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+727,enter,1.0,enter,,none,noise,noise only: list 3,,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T23:06:14,24,False,True
+728,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+729,enter,0.5,enter,,none,noise,"noise only: list 2, other 2, results 1, analysts 1",,,,6,1,valid answer,spark-x2.6-4b,2026-11-11T23:06:41,24,False,True
+730,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+731,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+732,enter,0.5,enter,,none,noise,"noise only: list 2, other 2, results 1, analysts 1",,,,6,1,valid answer,spark-x2.6-4b,2026-11-11T23:06:41,24,False,True
+733,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+734,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+735,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:06:47,24,False,True
+736,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+737,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+738,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+739,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+740,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+741,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+742,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+743,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+744,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+745,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+746,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+747,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+748,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+749,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+750,enter,0.5,enter,,none,noise,"noise only: list 2, analysts 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:06:59,24,False,True
+751,enter,0.5,enter,,none,noise,"noise only: analysts 3, results 1, list 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T23:07:21,24,False,True
+752,enter,0.5,enter,,none,noise,"noise only: other 2, list 2, analysts 1, results 1",,,,6,1,valid answer,spark-x2.6-4b,2026-11-11T23:07:51,24,False,True
+753,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:07:57,24,False,True
+754,enter,1.0,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:08:03,24,False,True
+755,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+756,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+757,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+758,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+759,enter,0.5,enter,,none,noise,"noise only: list 2, analysts 2, other 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T23:08:14,24,False,True
+760,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+761,enter,0.5,enter,,none,noise,"noise only: results 4, list 2",,,,6,2,valid answer,spark-x2.6-4b,2026-11-11T23:08:38,24,False,True
+762,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+763,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:08:44,24,False,True
+764,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:08:51,24,False,True
+765,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+766,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+767,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:08:14,24,False,True
+768,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:08:56,24,False,True
+769,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+770,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+771,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:09:07,24,False,True
+772,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:09:14,24,False,True
+773,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+774,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:09:07,24,False,True
+775,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:08:51,24,False,True
+776,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+777,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+778,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:09:20,24,False,True
+779,enter,0.5,enter,,none,noise,"noise only: results 11, list 8, analysts 8, deal_product 2, other 2",,,,31,6,valid answer,spark-x2.6-4b,2026-11-11T23:11:40,24,False,True
+780,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+781,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:11:44,24,False,True
+782,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+783,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+784,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+785,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+786,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:11:51,24,False,True
+787,enter,1.0,enter,,none,noise,"noise only: list 1, sector_macro 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:11:56,24,False,True
+788,enter,0.5,enter,,none,noise,"noise only: list 1, sector_macro 1, deal_product 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:12:03,24,False,True
+789,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:12:09,24,False,True
+790,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+791,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:12:15,24,False,True
+792,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:11:51,24,False,True
+793,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+794,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+795,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+796,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+797,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+798,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+799,enter,0.5,enter,,none,noise,"noise only: results 1, sector_macro 1, deal_product 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T23:12:36,24,False,True
+800,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:12:03,24,False,True
+801,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:12:42,24,False,True
+802,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+803,enter,0.5,enter,,none,noise,"noise only: results 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:12:49,24,False,True
+804,enter,0.5,enter,,none,noise,"noise only: results 1, sector_macro 1, deal_product 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T23:12:36,24,False,True
+805,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+806,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+807,enter,0.5,enter,,none,noise,"noise only: results 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:12:49,24,False,True
+808,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:12:15,24,False,True
+809,enter,0.5,enter,,none,noise,"noise only: results 1, sector_macro 1, deal_product 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T23:12:36,24,False,True
+810,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+811,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+812,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+813,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+814,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+815,enter,0.5,enter,,none,noise,"noise only: list 1, sector_macro 1, analysts 1, other 1",,,,4,0,valid answer,spark-x2.6-4b,2026-11-11T23:13:12,24,False,True
+816,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+817,enter,1.0,enter,,none,noise,"noise only: list 1, other 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:13:19,24,False,True
+818,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+819,enter,0.5,enter,,none,noise,"noise only: results 1, list 1, sector_macro 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:13:30,24,False,True
+820,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+821,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+822,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+823,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+824,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:13:41,24,False,True
+825,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+826,enter,0.5,enter,,none,noise,noise only: analysts 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:13:51,24,False,True
+827,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+828,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+829,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+830,enter,0.5,enter,,none,noise,"noise only: sector_macro 5, list 2, other 1",,,,8,2,valid answer,spark-x2.6-4b,2026-11-11T23:14:19,24,False,True
+831,enter,0.5,enter,,none,noise,"noise only: analysts 2, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:14:29,24,False,True
+832,enter,1.0,enter,,none,noise,noise only: list 3,,,,3,3,lists only,spark-x2.6-4b,,24,False,True
+833,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+834,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+835,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+836,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+837,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+838,enter,0.5,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:14:35,24,False,True
+839,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+840,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+841,enter,0.5,enter,,none,noise,"noise only: sector_macro 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:14:35,24,False,True
+842,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+843,enter,0.5,enter,,none,noise,"noise only: list 1, other 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:14:42,24,False,True
+844,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+845,enter,0.5,enter,,none,noise,"noise only: analysts 3, list 2",,,,5,2,valid answer,spark-x2.6-4b,2026-11-11T23:14:57,24,False,True
+846,block,1.0,block,,C,structural,"L'ufficio di sanzioni finanziarie del Regno Unito ha multato Company B per aver processato pagamenti per conti restituiti, il che rappresenta una misura regulatoria durativa.",negative,61572042.0,True,4,1,valid answer,spark-x2.6-4b,2026-11-11T23:15:14,24,False,True
+847,enter,0.5,enter,,none,noise,"noise only: deal_product 2, list 2, other 1",,,,5,2,valid answer,spark-x2.6-4b,2026-11-11T23:15:36,24,False,True
+848,enter,0.5,enter,,none,noise,noise only: deal_product 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:15:49,24,False,True
+849,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+850,enter,0.5,enter,,none,noise,"noise only: list 3, analysts 1, other 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T23:16:13,24,False,True
+851,enter,0.5,enter,,none,noise,"noise only: list 1, sector_macro 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:16:20,24,False,True
+852,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+853,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+854,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+855,block,1.0,block,,C,structural,"L'ufficio di sanzioni finanziarie del Regno Unito ha multato Company B per aver processato pagamenti per conti restituiti, il che rappresenta una misura regulatoria durativa.",negative,61572042.0,True,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:15:14,24,False,True
+856,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+857,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+858,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+859,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+860,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+861,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+862,enter,0.5,enter,,none,noise,"noise only: analysts 1, other 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:16:32,24,False,True
+863,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+864,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:16:38,24,False,True
+865,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+866,enter,0.5,enter,,none,noise,"noise only: list 1, other 1, sector_macro 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T23:16:56,24,False,True
+867,enter,0.5,enter,,none,noise,"noise only: analysts 1, other 1, list 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:16:32,24,False,True
+868,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+869,enter,0.5,enter,,none,noise,"noise only: list 1, other 1, results 1",,,,3,1,valid answer,spark-x2.6-4b,2026-11-11T23:17:09,24,False,True
+870,enter,0.5,enter,,none,noise,"noise only: other 1, list 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:17:22,24,False,True
+871,enter,0.5,enter,,none,noise,"noise only: other 2, list 1, results 1",,,,4,1,valid answer,spark-x2.6-4b,2026-11-11T23:17:28,24,False,True
+872,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:17:33,24,False,True
+873,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+874,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+875,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:17:22,24,False,True
+876,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+877,enter,0.5,enter,,none,noise,"noise only: list 1, deal_product 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:17:39,24,False,True
+878,enter,0.5,enter,,none,noise,"noise only: results 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:17:44,24,False,True
+879,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+880,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+881,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+882,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:17:49,24,False,True
+883,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+884,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+885,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:17:49,24,False,True
+886,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:17:49,24,False,True
+887,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+888,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+889,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+890,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+891,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+892,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+893,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+894,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:17:54,24,False,True
+895,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+896,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+897,enter,0.5,enter,,none,noise,noise only: sector_macro 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:00,24,False,True
+898,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+899,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+900,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+901,block,1.0,block,,XYZ,structural,"L'azienda ha presentato una richiesta all'Office of the Comptroller of Currency per istituirsi banca, il che è un fatto strutturale che potrebbe alterare la sua natura aziendale e quindi la sua valutazione.",uncertain,61673307.0,True,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:07,24,False,True
+902,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:17,24,False,True
+903,enter,0.5,enter,,none,noise,"noise only: deal_product 1, other 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:28,24,False,True
+904,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+905,enter,0.5,enter,,none,noise,"noise only: deal_product 1, other 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:28,24,False,True
+906,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+907,enter,0.5,enter,,none,noise,"noise only: list 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:39,24,False,True
+908,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:17,24,False,True
+909,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:17,24,False,True
+910,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+911,enter,0.5,enter,,none,noise,noise only: deal_product 3,,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:58,24,False,True
+912,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:58,24,False,True
+913,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+914,block,1.0,block,,XYZ,structural,"L'azienda ha presentato una richiesta all'Office of the Comptroller of Currency per istituirsi banca, il che è un fatto strutturale che potrebbe alterare la sua natura aziendale e quindi la sua valutazione.",uncertain,61673307.0,True,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:18:07,24,False,True
+915,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+916,enter,0.5,enter,,none,noise,noise only: results 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:19:04,24,False,True
+917,enter,0.5,enter,,none,noise,noise only: results 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:19:15,24,False,True
+918,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:19:20,24,False,True
+919,block,1.0,block,,JPM,structural,"L'item riferisce a un possibile acquisto di una società di software di pagamenti sanitari da parte di Company A, il che potrebbe avere effetti positivi sul prezzo delle azzioni di Company A.",positive,61699934.0,True,5,0,valid answer,spark-x2.6-4b,2026-11-11T23:19:49,24,False,True
+920,enter,1.0,enter,,none,noise,"noise only: other 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:20:06,24,False,True
+921,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:20:16,24,False,True
+922,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+923,enter,0.5,enter,,none,noise,"noise only: analysts 3, other 1, results 1",,,,5,0,valid answer,spark-x2.6-4b,2026-11-11T23:20:43,24,False,True
+924,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:19:20,24,False,True
+925,enter,0.5,enter,,none,noise,noise only: results 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:19:04,24,False,True
+926,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:19:20,24,False,True
+927,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+928,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+929,enter,0.5,enter,,none,noise,"noise only: deal_product 2, analysts 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T23:21:03,24,False,True
+930,enter,0.5,enter,,none,noise,"noise only: analysts 1, results 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:20:43,24,False,True
+931,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+932,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+933,enter,0.5,enter,,none,noise,"noise only: deal_product 2, other 2, list 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T23:21:30,24,False,True
+934,enter,0.5,enter,,none,noise,"noise only: other 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:21:37,24,False,True
+935,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+936,enter,0.5,enter,,none,noise,"noise only: list 2, results 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T23:21:43,24,False,True
+937,block,1.0,block,,CL,structural,"L'azienda sta valutando la vendita di alcune marche di prodotti per il cibo e cura personale, il che potrebbe alterare la struttura operativa e le prospettive del business.",uncertain,61739944.0,True,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:21:55,24,False,True
+938,enter,0.5,enter,,none,noise,"noise only: deal_product 2, other 2, list 1",,,,5,1,valid answer,spark-x2.6-4b,2026-11-11T23:21:30,24,False,True
+939,enter,0.5,enter,,none,noise,"noise only: other 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:22:07,24,False,True
+940,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+941,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+942,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True
+943,enter,0.5,enter,,none,noise,"noise only: deal_product 2, other 1",,,,3,0,valid answer,spark-x2.6-4b,2026-11-11T23:22:25,24,False,True
+944,enter,0.5,enter,,none,noise,"noise only: other 1, list 1",,,,2,1,valid answer,spark-x2.6-4b,2026-11-11T23:22:07,24,False,True
+945,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+946,enter,0.5,enter,,none,noise,noise only: other 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:22:31,24,False,True
+947,enter,1.0,enter,,none,noise,noise only: list 2,,,,2,2,lists only,spark-x2.6-4b,,24,False,True
+948,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+949,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+950,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+951,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+952,enter,0.5,enter,,none,noise,"noise only: other 1, analysts 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:22:37,24,False,True
+953,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+954,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+955,enter,0.5,enter,,none,noise,"noise only: list 2, results 1",,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T23:22:44,24,False,True
+956,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:22:50,24,False,True
+957,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+958,enter,0.5,enter,,none,noise,"noise only: results 4, analysts 1, sector_macro 1, deal_product 1",,,,7,0,valid answer,spark-x2.6-4b,2026-11-11T23:23:26,24,False,True
+959,enter,0.5,enter,,none,noise,"noise only: list 1, deal_product 1",,,,2,0,valid answer,spark-x2.6-4b,2026-11-11T23:23:32,24,False,True
+960,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+961,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+962,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+963,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+964,enter,0.5,enter,,none,noise,"noise only: results 5, sector_macro 2, deal_product 2",,,,9,0,valid answer,spark-x2.6-4b,2026-11-11T23:23:52,24,False,True
+965,enter,0.5,enter,,none,noise,noise only: analysts 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:23:57,24,False,True
+966,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+967,enter,0.5,enter,,none,noise,noise only: deal_product 1,,,,1,0,valid answer,spark-x2.6-4b,2026-11-11T23:24:03,24,False,True
+968,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+969,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+970,enter,1.0,enter,,none,no_news,no news in the window before the signal,,,,0,0,no news,spark-x2.6-4b,,24,False,True
+971,enter,1.0,enter,,none,noise,noise only: list 3,,,,3,2,valid answer,spark-x2.6-4b,2026-11-11T23:24:09,24,False,True
+972,enter,1.0,enter,,none,noise,noise only: list 1,,,,1,1,lists only,spark-x2.6-4b,,24,False,True

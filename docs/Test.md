@@ -1,79 +1,81 @@
-# Il test: regole scritte prima di guardarlo
+# The test: rules written before looking at it
 
-Questo file fissa che cosa si fa sul periodo di test e come si giudica il risultato. È scritto il 14 novembre 2026, prima di scaricare le notizie del test e prima di calcolare qualsiasi segnale o trade del test. Le regole non si cambiano dopo aver visto i risultati.
+This file fixes what is done on the test period and how the result is judged. It was written on 14 November 2026, before downloading the test news and before computing any signal or trade of the test. The rules are not changed after seeing the results.
 
-## Che cosa si prova
+*Translated from Italian on 17 November 2026, with the file and variant names of the English version of the code (for example `finbert_episodio` became `finbert_episode`). The rules are unchanged; the original Italian text is in the git history.*
 
-Sul train (16 giugno - 16 settembre 2026) il gruppo ha confrontato 21 varianti dell'agente di notizie e ha scelto `finbert_episodio`. La scelta e il criterio sono spiegati in [src/06_backtest.ipynb](../src/06_backtest.ipynb) e [src/07_robustezza.ipynb](../src/07_robustezza.ipynb).
+## What is tested
 
-Sul test si portano solo tre versioni, con le regole del train:
+On the train (16 June - 16 September 2026) the group compared 21 variants of the news agent and chose `finbert_episode`. The choice and the criterion are explained in [src/06_backtest.ipynb](../src/06_backtest.ipynb) and [src/07_robustness.ipynb](../src/07_robustness.ipynb).
 
-| Versione | Cosa fa |
+Only three versions go to the test, with the rules of the train:
+
+| Version | What it does |
 |---|---|
-| **A** | Entra a ogni segnale, senza agente. È il riferimento |
-| **B** | `finbert_episodio` può bloccare il trade |
-| **C** | `finbert_episodio` può bloccare o seguire la notizia (entrare nel verso opposto alla A) |
+| **A** | Enters at every signal, without the agent. It is the reference |
+| **B** | `finbert_episode` can block the trade |
+| **C** | `finbert_episode` can block or follow the news (enter in the direction opposite to A) |
 
-Nessun'altra variante va sul test.
+No other variant goes to the test.
 
-## Il periodo e i dati
+## The period and the data
 
-- **Test:** dal 17 settembre al 30 ottobre 2026, l'ultimo giorno con prezzi intraday. Sono 32 giorni di borsa; 5 coppie (CSX-UNP, HD-LOW, DHR-TMO, GS-MS, ISRG-SYK) hanno i prezzi dal 18 settembre, quindi 31 giorni, come nel train avevano 60 giorni invece di 64.
-- **Prezzi:** i file di `pairs_intraday_v2/`, gli stessi del train, che arrivano già al 30 ottobre.
-- **Notizie:** Alpaca (Benzinga), scaricate solo dal 17 settembre al 30 ottobre, in un file separato da quello del train. Gli episodi "dalla notte" del 17 settembre partono dalle 16:00 del 16: le notizie di quelle ore sono già nell'archivio del train e si usano da lì, con i punteggi FinBERT già calcolati.
-- **Sentiment:** FinBERT (`ProsusAI/finbert`) su titolo e sommario di ogni notizia nuova, come nel train.
-- **Mercato:** SPY giornaliero da Alpaca, aggiustato per i dividendi, dal 16 settembre (serve la chiusura del giorno prima per il rendimento del 17) al 30 ottobre.
+- **Test:** from 17 September to 30 October 2026, the last day with intraday prices. That is 32 trading days; 5 pairs (CSX-UNP, HD-LOW, DHR-TMO, GS-MS, ISRG-SYK) have prices from 18 September, so 31 days, just as in the train they had 60 days instead of 64.
+- **Prices:** the files of `pairs_intraday_v2/`, the same as the train, which already run to 30 October.
+- **News:** Alpaca (Benzinga), downloaded only from 17 September to 30 October, in a file separate from the train one. The "overnight" episodes of 17 September start at 16:00 of the 16th: the news of those hours are already in the train archive and are used from there, with the FinBERT scores already computed.
+- **Sentiment:** FinBERT (`ProsusAI/finbert`) on headline and summary of each new news item, as in the train.
+- **Market:** daily SPY from Alpaca, adjusted for dividends, from 16 September (the close of the day before is needed for the return of the 17th) to 30 October.
 
-## Le regole, bloccate
+## The rules, frozen
 
-**Segnale** (come in `03_segnali.ipynb` e [src/signals.py](../src/signals.py)): spread logaritmico con beta 1, z-score con EMA continua e emivita di 60 minuti, ingresso a |z| ≥ 2, uscita a |z| ≤ 0, stop a |z| ≥ 3,5, tempo massimo 90 minuti, niente ingressi nei primi 15 e negli ultimi 30 minuti, niente ingresso se una gamba ha la barra riempita, esecuzione all'apertura della barra dopo. La EMA continua dal train: lo z-score del 17 settembre usa i prezzi passati, mai quelli futuri.
+**Signal** (as in `03_signals.ipynb` and [src/signals.py](../src/signals.py)): log spread with beta 1, z-score with a continuous EMA and a 60-minute half-life, entry at |z| ≥ 2, exit at |z| ≤ 0, stop at |z| ≥ 3.5, maximum time 90 minutes, no entries in the first 15 and in the last 30 minutes, no entry if a leg has a filled bar, execution at the open of the next bar. The EMA runs on from the train: the z-score of 17 September uses past prices, never future ones.
 
-**`finbert_episodio`** (come in [src/varianti_agente/episodio.py](../src/varianti_agente/episodio.py)):
-- inizio dell'episodio: andando indietro dal segnale, la prima barra di fila con z oltre 1 dello stesso segno, meno 5 minuti; se l'episodio arriva alla prima barra della giornata, dalle 16:00 del giorno di borsa prima;
-- fine della finestra: la chiusura della barra del segnale;
-- notizia mirata: cita una sola delle due aziende e ha al massimo 3 ticker; notizia forte: la classe vincente di FinBERT ha probabilità di almeno 0,8;
-- **B:** blocca se c'è almeno una notizia mirata forte, tutte le forti riguardano la stessa azienda e almeno una contiene una parola dell'evento (la stessa lista del train). Altrimenti entra;
-- **C:** segue se la differenza dei punteggi medi (azienda A meno azienda B) ha modulo almeno 0,5 e lo stesso segno del movimento relativo dei 30 minuti prima; altrimenti decide come la B. Il trade seguito esce al primo tra rientro dello spread, 90 minuti e fine giornata, senza stop.
+**`finbert_episode`** (as in [src/agent_variants/episode.py](../src/agent_variants/episode.py)):
+- start of the episode: going back from the signal, the first bar in a row with z beyond 1 with the same sign, minus 5 minutes; if the episode reaches the first bar of the day, from 16:00 of the previous trading day;
+- end of the window: the close of the signal bar;
+- targeted news item: it tags only one of the two companies and has at most 3 tickers; strong news item: the winning FinBERT class has probability of at least 0.8;
+- **B:** blocks if there is at least one strong targeted news item, all the strong ones are about the same company and at least one contains an event word (the same list as the train). Otherwise it enters;
+- **C:** follows if the difference of the mean scores (company A minus company B) has absolute value at least 0.5 and the same sign as the relative move of the 30 minutes before; otherwise it decides as B. The followed trade exits at the first of spread reversion, 90 minutes and end of the day, without stop.
 
-**Backtest** (come in [src/backtest.py](../src/backtest.py)): 10.000 dollari per gamba, senza leva, tutto chiuso a fine giornata; capitale di 20.000 dollari per coppia, 300.000 in tutto; un trade ha 4 operazioni.
+**Backtest** (as in [src/backtest.py](../src/backtest.py)): 10,000 dollars per leg, no leverage, everything closed at the end of the day; capital of 20,000 dollars per pair, 300,000 in total; a trade has 4 operations.
 
-**Costi:** 0 punti base per operazione (scenario principale, indicazione del docente) e 5 per confronto.
+**Costs:** 0 basis points per operation (main scenario, the professor's indication) and 5 as a comparison.
 
-## Come si giudica
+## How it is judged
 
-**Criterio principale:** la differenza in dollari tra la B e la A, e tra la C e la A, a costo 0. È lo stesso criterio con cui `finbert_episodio` è stata scelta sul train.
+**Main criterion:** the dollar difference between B and A, and between C and A, at cost 0. It is the same criterion with which `finbert_episode` was chosen on the train.
 
-**Controlli** (gli stessi del train, calcolati anche sul test):
-1. intervallo di confidenza al 95% della differenza, ricampionando i giorni con reinserimento (10.000 volte): dice se la differenza è distinguibile da zero;
-2. solo B: guadagno dei trade bloccati contro 5.000 blocchi a caso dello stesso numero (`p_caso`);
-3. solo B: quota di rientro dei trade bloccati contro quella dei tenuti, con il test esatto di Fisher;
-4. solo C: quota dei trade seguiti in guadagno ("notizia giusta") e loro guadagno medio;
-5. per A, B e C: guadagno netto per trade, win rate, profit factor, Sharpe, drawdown. Lo Sharpe su 32 giorni è poco affidabile e va riportato così;
-6. gli stessi risultati a costo 5;
-7. differenza dalla A per coppia, per settore e senza PYPL-XYZ;
-8. beta e alpha rispetto a SPY;
-9. coerenza con il train: la differenza dalla A ha lo stesso segno che sul train (B −285 $, C −651 $)?
+**Checks** (the same as the train, computed also on the test):
+1. 95% confidence interval of the difference, resampling the days with replacement (10,000 times): it says whether the difference can be told apart from zero;
+2. B only: profit of the blocked trades against 5,000 random blocks of the same number (`p_random`);
+3. B only: reversion share of the blocked trades against that of the kept ones, with Fisher's exact test;
+4. C only: share of the followed trades in profit ("news right") and their mean profit;
+5. for A, B and C: net profit per trade, win rate, profit factor, Sharpe, drawdown. The Sharpe over 32 days is not very reliable and is reported as such;
+6. the same results at cost 5;
+7. difference from A per pair, per sector and without PYPL-XYZ;
+8. beta and alpha against SPY;
+9. consistency with the train: does the difference from A have the same sign as on the train (B −285 $, C −651 $)?
 
-**Non si fanno** il confronto tra le due metà del periodo né il controllo "senza 13 agosto", che è un giorno del train.
+The comparison between the two halves of the period and the "without 13 August" check, which is a train day, **are not done**.
 
-**Se l'agente non blocca o non segue niente.** Se sul test l'agente non blocca nessun trade, la B coincide con la A e il test non dice nulla sui blocchi; lo stesso per la C se non segue nessuna notizia. Lo si riporta così, senza cambiare le regole.
+**If the agent blocks or follows nothing.** If on the test the agent blocks no trade, B coincides with A and the test says nothing about the blocks; the same for C if it follows no news. It is reported as such, without changing the rules.
 
-## Una volta sola
+## Only once
 
-Il test è stato fatto una volta, il 14 novembre 2026, e **non si rifà**: rifarlo dopo aver visto i risultati toglierebbe valore al test.
+The test was done once, on 14 November 2026, and **is not redone**: redoing it after seeing the results would take value away from the test.
 
-- Prima del test, gli stessi script hanno rifatto il train e hanno ritrovato esattamente i 973 segnali di `03_segnali.ipynb` e le decisioni e i trade di `finbert_episodio` salvati in `Results/varianti_agente/finbert_episodio/`. Se non avessero coinciso, il test non sarebbe partito.
-- [src/test_finale.py](../src/test_finale.py) ha calcolato segnali, decisioni e trade del test e li ha salvati in `Results/test/`.
-- I notebook [src/06_test_backtest.ipynb](../src/06_test_backtest.ipynb) e [src/07_test_robustezza.ipynb](../src/07_test_robustezza.ipynb) leggono solo i file salvati in `Results/test/`: si possono rieseguire quante volte serve senza rifare il test.
+- Before the test, the same scripts redid the train and found exactly the 973 signals of `03_signals.ipynb` and the decisions and trades of `finbert_episode` saved in `Results/agent_variants/finbert_episode/`. Had they not matched, the test would not have started.
+- [src/test_final.py](../src/test_final.py) computed signals, decisions and trades of the test and saved them in `Results/test/`.
+- The notebooks [src/06_test_backtest.ipynb](../src/06_test_backtest.ipynb) and [src/07_test_robustness.ipynb](../src/07_test_robustness.ipynb) read only the files saved in `Results/test/`: they can be rerun as many times as needed without redoing the test.
 
-## Come è stato fatto
+## How it was done
 
-Dalla cartella del progetto, in quest'ordine. I comandi sono qui per documentare il lavoro: non vanno rilanciati.
+From the project folder, in this order. The commands are here to document the work: they must not be run again. (On 14 November the scripts had their Italian names, `test_dati` and `test_finale`; `uv run python -m src.test_final --check-only` repeats only the check on the train and reads nothing of the test.)
 
 ```bash
-uv run python -m src.test_dati                                              # notizie e SPY del test, con le chiavi Alpaca in .env
-uv run --with torch --with transformers python -m src.test_finbert          # FinBERT sulle notizie del test
-uv run python -m src.test_finale                                            # il test
+uv run python -m src.test_data                                              # news and SPY of the test, with the Alpaca keys in .env
+uv run --with torch --with transformers python -m src.test_finbert          # FinBERT on the test news
+uv run python -m src.test_final                                             # the test
 ```
 
-Poi si eseguono `06_test_backtest.ipynb` e `07_test_robustezza.ipynb`.
+Then `06_test_backtest.ipynb` and `07_test_robustness.ipynb` are run.

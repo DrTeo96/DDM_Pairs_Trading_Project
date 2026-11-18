@@ -1,18 +1,18 @@
-"""Segnali di pairs trading: spread, z-score con EMA, regole di ingresso e uscita.
+"""Pairs-trading signals: spread, z-score with an EMA, entry and exit rules.
 
-In un notebook:
+In a notebook:
     from src.signals import list_pairs, load_pair, zscore, run_rules
     d = load_pair("KO-PEP")
     z = zscore(d.S, hl=120)
     trades, blocked = run_rules(d, z, entry=2.0, exit_=0.0)
 
-Le regole:
-- spread logaritmico con beta = 1: S = ln(prezzo A) - ln(prezzo B), perché gli importi sulle due gambe sono uguali
-- z-score = (S - EMA(S)) / deviazione standard esponenziale; EMA continua su tutta la serie (la notte conta come una barra)
-- ingresso alla chiusura della barra t se |z| >= soglia, esecuzione all'apertura della barra t+1 (niente lookahead)
-- non si apre se una delle due gambe ha la barra t riempita (nessuno scambio in quel minuto: prezzo vecchio)
-- uscita al primo tra: rientro (|z| <= soglia di uscita), stop (|z| >= ingresso + STOP_EXTRA), tempo (MAX_HOLD minuti), fine giornata
-- guadagno lordo in punti base sull'importo di una gamba: senza costi (i costi sono in backtest.py)
+The rules:
+- log spread with beta = 1: S = ln(price A) - ln(price B), because the amounts on the two legs are equal
+- z-score = (S - EMA(S)) / exponential standard deviation; the EMA runs continuously over the whole series (the night counts as one bar)
+- entry at the close of bar t if |z| >= threshold, execution at the open of bar t+1 (no lookahead)
+- no entry if one of the two legs has a filled bar t (no trade in that minute: stale price)
+- exit at the first of: reversion (|z| <= exit threshold), stop (|z| >= entry + STOP_EXTRA), time (MAX_HOLD minutes), end of the day
+- gross profit in basis points of the amount of one leg: without costs (costs are in backtest.py)
 """
 from dataclasses import dataclass
 
@@ -21,17 +21,17 @@ import pandas as pd
 
 from src.config import PAIRS_DIR, SELECTED, TRAIN_END, read_parquet
 
-N_MINUTES = 390            # barre da 1 minuto nella seduta: 09:30-15:59
-EMA_MIN_PERIODS = 60       # barre di storia necessarie prima di fidarsi di media e deviazione standard della EMA
-OPEN_SKIP = 15             # niente nuovi ingressi nei primi 15 minuti
-CLOSE_SKIP = 30            # niente nuovi ingressi negli ultimi 30 minuti
-MAX_HOLD = 90              # tempo massimo di permanenza, in minuti
-STOP_EXTRA = 1.5           # stop-loss: ingresso + 1.5 in unità di z
-LOOKBACK = 30              # minuti usati solo per la colonna descrittiva "titolo più mosso"
+N_MINUTES = 390            # 1-minute bars in the session: 09:30-15:59
+EMA_MIN_PERIODS = 60       # bars of history needed before trusting the EMA mean and standard deviation
+OPEN_SKIP = 15             # no new entries in the first 15 minutes
+CLOSE_SKIP = 30            # no new entries in the last 30 minutes
+MAX_HOLD = 90              # maximum holding time, in minutes
+STOP_EXTRA = 1.5           # stop-loss: entry + 1.5 in units of z
+LOOKBACK = 30              # minutes used only for the descriptive column "most moved leg"
 
 
 def list_pairs() -> pd.DataFrame:
-    """Le coppie con i ticker Bloomberg (colonne pair, A, B) e i ticker brevi (sym_A, sym_B)."""
+    """The pairs with the Bloomberg tickers (columns pair, A, B) and the short tickers (sym_A, sym_B)."""
     sel = pd.read_csv(SELECTED)[["pair", "A", "B"]]
     sel["sym_A"] = sel["A"].str.split().str[0]
     sel["sym_B"] = sel["B"].str.split().str[0]
@@ -44,28 +44,28 @@ class PairData:
     sym_A: str
     sym_B: str
     ts: pd.DatetimeIndex
-    S: pd.Series              # spread logaritmico, indicizzato per orario
-    day_id: np.ndarray        # numero del giorno di seduta, 0, 1, 2...
-    minute: np.ndarray        # minuti dall'apertura: 0 = barra delle 09:30, 389 = barra delle 15:59
-    last_of_day: np.ndarray   # True sull'ultima barra di ogni giorno
-    day_start: np.ndarray     # indice della prima barra della giornata di ogni barra
-    oA: np.ndarray            # prezzi di apertura e di chiusura dei due titoli
+    S: pd.Series              # log spread, indexed by time
+    day_id: np.ndarray        # number of the trading day, 0, 1, 2...
+    minute: np.ndarray        # minutes from the open: 0 = the 09:30 bar, 389 = the 15:59 bar
+    last_of_day: np.ndarray   # True on the last bar of each day
+    day_start: np.ndarray     # index of the first bar of the day, for each bar
+    oA: np.ndarray            # open and close prices of the two stocks
     oB: np.ndarray
     cA: np.ndarray
     cB: np.ndarray
-    stale: np.ndarray         # True se almeno una delle due gambe ha la barra riempita
+    stale: np.ndarray         # True if at least one of the two legs has a filled bar
     filled_A: np.ndarray
     filled_B: np.ndarray
-    is_train: np.ndarray      # True per le barre dei giorni fino a TRAIN_END
+    is_train: np.ndarray      # True for the bars of the days up to TRAIN_END
 
 
 def load_pair(pair: str) -> PairData:
-    """Legge il file pulito a 1 minuto di una coppia (02_intraday.ipynb) e prepara gli array usati dal motore."""
+    """Reads the clean 1-minute file of a pair (02_intraday.ipynb) and prepares the arrays used by the engine."""
     row = list_pairs().set_index("pair").loc[pair]
     raw = read_parquet(PAIRS_DIR / f"{pair}_1min.parquet")
     wide = lambda col: raw.pivot(index="ts", columns="ticker", values=col).sort_index()
     close, open_, filled = wide("close"), wide("open"), wide("filled")
-    assert close.isna().sum().sum() == 0, f"{pair}: ci sono prezzi mancanti"
+    assert close.isna().sum().sum() == 0, f"{pair}: there are missing prices"
     ts = close.index
     day = ts.normalize()
     n = len(ts)
@@ -84,9 +84,9 @@ def load_pair(pair: str) -> PairData:
 
 
 def zscore(S: pd.Series, hl: float, reset_daily: bool = False) -> np.ndarray:
-    """Z-score di S con media e deviazione standard esponenziali. hl = emivita in barre da 1 minuto.
-    reset_daily=False: EMA continua su tutta la serie (scelta del gruppo). reset_daily=True: la EMA riparte ogni mattina (confronto).
-    Causale: il valore di una barra usa solo barre passate e la barra stessa."""
+    """Z-score of S with exponential mean and standard deviation. hl = half-life in 1-minute bars.
+    reset_daily=False: continuous EMA over the whole series (the group's choice). reset_daily=True: the EMA restarts every morning (comparison).
+    Causal: the value of a bar uses only past bars and the bar itself."""
     if reset_daily:
         g = S.groupby(S.index.normalize())
         mean = g.transform(lambda x: x.ewm(halflife=hl, min_periods=30).mean())
@@ -98,8 +98,8 @@ def zscore(S: pd.Series, hl: float, reset_daily: bool = False) -> np.ndarray:
 
 
 def run_rules(d: PairData, z: np.ndarray, entry: float, exit_: float, stop: float | None = None, active: np.ndarray | None = None):
-    """Applica le regole alla serie di z-score, barra per barra, in ordine cronologico, solo sulle barre `active` (di default il train).
-    Restituisce (tabella dei trade, numero di barre candidate scartate perché una gamba era riempita)."""
+    """Applies the rules to the z-score series, bar by bar, in chronological order, only on the `active` bars (the train by default).
+    Returns (trade table, number of candidate bars discarded because one leg was filled)."""
     stop = entry + STOP_EXTRA if stop is None else stop
     active = d.is_train if active is None else active
     n, ts = len(d.ts), d.ts
@@ -112,25 +112,25 @@ def run_rules(d: PairData, z: np.ndarray, entry: float, exit_: float, stop: floa
         if not candidate:
             i += 1
             continue
-        if d.stale[i]:                     # una gamba ha il prezzo vecchio: non si apre
+        if d.stale[i]:                     # one leg has a stale price: no entry
             blocked += 1
             i += 1
             continue
-        side = np.sign(z[i])               # +1: spread alto (short A, long B); -1: spread basso (long A, short B)
-        e = i + 1                          # esecuzione alla barra successiva
+        side = np.sign(z[i])               # +1: high spread (short A, long B); -1: low spread (long A, short B)
+        e = i + 1                          # execution at the next bar
         s_in = np.log(d.oA[e] / d.oB[e])
         k = e
         while True:
             reason = None
             if d.last_of_day[k]:
-                reason, a_out, b_out = "fine_giornata", d.cA[k], d.cB[k]
+                reason, a_out, b_out = "end_of_day", d.cA[k], d.cB[k]
                 break
             zk = side * z[k]
-            if zk <= exit_: reason = "rientro"
+            if zk <= exit_: reason = "reversion"
             elif zk >= stop: reason = "stop"
-            elif k - e + 1 >= MAX_HOLD: reason = "tempo"
+            elif k - e + 1 >= MAX_HOLD: reason = "time"
             if reason:
-                k += 1                     # l'uscita si esegue all'apertura della barra successiva
+                k += 1                     # the exit is executed at the open of the next bar
                 a_out, b_out = d.oA[k], d.oB[k]
                 break
             k += 1
@@ -142,11 +142,11 @@ def run_rules(d: PairData, z: np.ndarray, entry: float, exit_: float, stop: floa
             ret_A_30m=np.log(d.cA[i] / d.oA[start]), ret_B_30m=np.log(d.cB[i] / d.oB[start]),
             gross_bps=-side * (s_out - s_in) * 1e4,
         ))
-        i = k + 1                          # una barra di pausa dopo ogni uscita
+        i = k + 1                          # one bar of pause after every exit
     out = pd.DataFrame(trades)
     if len(out):
         out["ticker_A"], out["ticker_B"] = d.sym_A, d.sym_B
-        out["leg_piu_mosso"] = np.where(out.ret_A_30m.abs() >= out.ret_B_30m.abs(), d.sym_A, d.sym_B)
+        out["most_moved_leg"] = np.where(out.ret_A_30m.abs() >= out.ret_B_30m.abs(), d.sym_A, d.sym_B)
         out["direction"] = np.where(out.side > 0, f"long {d.sym_A} / short {d.sym_B}", f"short {d.sym_A} / long {d.sym_B}")
         out["minutes_in_trade"] = (out.t_exit - out.t_entry).dt.total_seconds() / 60
         out["minute_of_day"] = (out.t_entry.dt.hour * 60 + out.t_entry.dt.minute) - (9 * 60 + 30)

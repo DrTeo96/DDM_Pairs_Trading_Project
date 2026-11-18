@@ -1,37 +1,60 @@
-# Pairs trading intraday sull'S&P 500 con un agente di notizie
+# Intraday pairs trading on the S&P 500 with a news agent
 
-Progetto d'esame (LUISS). Il testo del progetto è in [resources/instructions.pdf](resources/instructions.pdf).
+Exam project (LUISS, Data-Driven Models for Investment 2026-27). The project brief is in [resources/instructions.pdf](resources/instructions.pdf).
 
-Il pairs trading scommette su due aziende simili: quando i loro prezzi si allontanano più del solito, si compra il titolo rimasto indietro e si vende quello andato avanti, aspettando che la distanza rientri. Qui la distanza (lo spread) si misura minuto per minuto su 15 coppie di titoli dell'S&P 500, con dati Bloomberg. Un agente legge le notizie uscite prima di ogni segnale e blocca il trade quando l'allontanamento ha una causa vera in una sola delle due aziende. Il progetto confronta tre versioni: A senza agente, B con l'agente che può bloccare, C con l'agente che può anche seguire la notizia. Le decisioni sulle notizie vengono da più fonti messe a confronto: l'agente con due finestre di notizie (24 e 6 ore), una baseline a lessico senza modello e, su un campione, il ragionamento acceso e la classificazione a mano del gruppo.
+Pairs trading bets on two similar companies. When their prices drift apart by more than usual, you buy the stock that lagged behind and sell the one that ran ahead, waiting for the gap to close. Here the gap (the spread) is measured minute by minute on 15 pairs of S&P 500 stocks, using Bloomberg data. An agent reads the news published before each signal and blocks the trade when the divergence has a real cause in only one of the two companies. The project compares three versions: A with no agent, B with the agent that can block, and C with the agent that can also follow the news. The news decisions come from several sources compared against each other: the agent with two news windows (24 and 6 hours), a lexicon baseline with no model, FinBERT, and, on a sample, reasoning switched on and the group's hand classification.
 
-Sul periodo di addestramento (train) il gruppo ha confrontato 21 varianti dell'agente e ha scelto `finbert_episodio`. Il periodo di test (17 settembre - 30 ottobre 2026) è stato usato una volta sola, il 14 novembre, per quella variante, con le regole scritte prima in [docs/Test.md](docs/Test.md): la B (l'agente blocca) guadagna 189 dollari meno della A, la C (l'agente segue la notizia) 1.242 dollari meno. Le notizie, con questo agente, non migliorano la strategia.
+On the training period (train, 16 June - 16 September 2026) the group compared 21 variants of the agent and chose `finbert_episode`. The test period (17 September - 30 October 2026) was used only once, on 14 November, for that variant, with the rules written beforehand in [docs/Test.md](docs/Test.md). B (the agent blocks) earns 189 dollars less than A, and C (the agent follows the news) earns 1,242 dollars less. With this agent, the news do not improve the strategy.
 
-La sintesi della domanda di ricerca, dei risultati e di come il progetto risponde alle istruzioni del corso (compresa l'analisi dei pitfall) è in [docs/Sintesi.md](docs/Sintesi.md). I risultati di train e test, spiegati anche per chi non conosce la finanza, sono in [Results/RESOCONTO.md](Results/RESOCONTO.md).
+The train and test results, explained also for readers who don't know finance, are in [Results/REPORT.md](Results/REPORT.md). The group's log, with the decisions of each step, and the summary of the research question and of how the project meets the course instructions (including the pitfall analysis) are in [Old files/docs/](Old%20files/docs/) (`Programma.md`, `Sintesi.md`, in Italian).
 
-## Per iniziare
+## Getting started
 
-1. Installa [uv](https://docs.astral.sh/uv/) seguendo [docs/setup.md](docs/setup.md). Non serve installare Python: ci pensa uv.
-2. Dalla cartella del progetto crea l'ambiente:
+1. Install [uv](https://docs.astral.sh/uv/) following [docs/setup.md](docs/setup.md). You don't need to install Python: uv does it.
+2. From the project folder, create the environment:
 
    ```bash
-   uv sync    # crea .venv/ con Python e le versioni delle librerie scritte in uv.lock
+   uv sync    # creates .venv/ with Python and the library versions pinned in uv.lock
    ```
+3. Follow [src/README.md](src/README.md): it says which data you need and, step by step, what to run, what it reads, what it writes, and how much time and memory it takes.
 
-3. Segui [src/README.md](src/README.md): dice quali dati servono e, passo per passo, cosa eseguire, cosa legge, cosa scrive e quanto tempo e memoria richiede.
+The results can be read without any data: tables, trades, decisions and charts are in `Results/`, and every notebook in `src/` is saved with its outputs.
 
-## Dove sono le cose
+## Where things are
 
-| Dove | Cosa c'è |
+| Where | What's in it |
 |---|---|
-| [src/](src/README.md) | Il codice della pipeline, nell'ordine di esecuzione |
-| [Results/](Results/RESOCONTO.md) | Risultati del backtest, su git: tabelle, trade di ogni versione, decisioni dell'agente, curve di capitale e il resoconto |
-| [Results/test/](Results/test/confronto_versioni.csv) | Risultati del test di `finbert_episodio`: segnali, decisioni, trade di A, B e C, tabelle dei criteri e della robustezza |
-| [src/varianti_agente/](src/varianti_agente/README.md) | Tutte le varianti dell'agente di notizie (Giulio, Orfeo, Beatrice): codice, comandi e regole; i loro risultati sono in `Results/varianti_agente/` |
-| [docs/Programma.md](docs/Programma.md) | Il diario del gruppo: decisioni, risultati e limiti di ogni passaggio |
-| [docs/Sintesi.md](docs/Sintesi.md) | La sintesi: domanda di ricerca e risposta, risultati, richieste del professore una per una, pitfall, limiti |
-| [docs/Test.md](docs/Test.md) | Le regole del test, scritte prima di guardarlo: variante, criterio principale, controlli |
-| [docs/setup.md](docs/setup.md) | Uso di uv: installare, eseguire, aggiungere librerie |
-| `data/` | Dati grezzi e file prodotti dalla pipeline. Non è su git: ognuno tiene la sua copia |
-| `resources/` | Testo del progetto, modello della presentazione, nomi dei titoli |
-| `Old files/` | Ciò che non fa più parte della pipeline, conservato com'era |
-| `.env.example` | Modello del file `.env` con chiavi e indirizzi personali, che git ignora |
+| [src/](src/README.md) | The pipeline code, in execution order |
+| [Results/](Results/REPORT.md) | Backtest results, tracked in git: tables, trades for each version, agent decisions, equity curves and the report |
+| [Results/test/](Results/test/version_comparison.csv) | Test results for `finbert_episode`: signals, decisions, trades for A, B and C, tables of the criteria and of robustness |
+| [src/agent_variants/](src/agent_variants/README.md) | All the variants of the news agent (Giulio, Orfeo, Beatrice): code, commands and rules; their results are in `Results/agent_variants/` |
+| [docs/Test.md](docs/Test.md) | The test rules, written before looking at the test: variant, main criterion, checks |
+| [docs/setup.md](docs/setup.md) | Using uv: install, run, add libraries |
+| `data/` | Raw data and files produced by the pipeline. Not in git: everyone keeps their own copy |
+| `resources/` | Project brief, stock names |
+| `Old files/` | Whatever is no longer part of the pipeline, kept as it was (in Italian), including the group's log and the summary |
+| `.env.example` | Template for the `.env` file with personal keys and addresses, which git ignores |
+
+## Naming
+
+The project was written in Italian and translated to English on 17 November 2026, before submission. Code, notebooks, documentation, file names, column names and values were translated; the numbers did not change (every result table was checked against the Italian one after the translation). `Old files/` and the git history before that date use the Italian names. The main correspondences:
+
+| Italian name | English name |
+|---|---|
+| `src/varianti_agente/` | `src/agent_variants/` |
+| `00_esplorazione`, `01_coppie`, `03_segnali`, `04_notizie` | `00_exploration`, `01_pairs`, `03_signals`, `04_news` |
+| `07_robustezza`, `07_test_robustezza`, `08_segnale`, `09_curve_metriche` | `07_robustness`, `07_test_robustness`, `08_signal`, `09_curves_metrics` |
+| `test_dati.py`, `test_finale.py` | `test_data.py`, `test_final.py` |
+| `confronto.py`, `comune.py`, `episodio.py`, `ritardo.py`, `c_fresca.py`, `ma_regole.py`, `REGISTRO.md` | `comparison.py`, `common.py`, `episode.py`, `delay.py`, `c_fresh.py`, `ma_rules.py`, `LOG.md` |
+| `Results/RESOCONTO.md`, `Results/robustezza/` | `Results/REPORT.md`, `Results/robustness/` |
+| variants `finbert_episodio`, `finbert_seduta`, `lessico`, `c_fresca`, `ma_regole`, `dimensione`, `ritardo`, `B_esagerazione`, `mano` | `finbert_episode`, `finbert_session`, `lexicon`, `c_fresh`, `ma_rules`, `size`, `delay`, `B_exaggeration`, `manual` |
+| decisions `entra`, `blocca`, `segui` | `enter`, `block`, `follow` |
+| exit reasons `rientro`, `tempo`, `fine_giornata` | `reversion`, `time`, `end_of_day` |
+| columns `variante`, `versione`, `riferimento`, `leg_piu_mosso`, `mano_*` | `variant`, `version`, `reference`, `most_moved_leg`, `manual_*` |
+
+Two things were deliberately left in Italian:
+
+- **The prompts of the language models** (`src/agent_variants/agent.py`, `agent_3b.py`). They are kept exactly as they were when the decisions were produced: translating them would change the questions asked to the model, and the saved answers (whose cache key is a hash of the prompt) would no longer match. The code translates the model's answers to English as soon as it reads them.
+- **The free-text reasons written by the models** (`reason`, `rationale`, `verification_rationale` columns in the agent's tables): the prompts asked for them in Italian, and they are data, kept as written.
+
+GICS sector names come from a Bloomberg export made in Italian (`data/gics.csv`); [src/gics.py](src/gics.py) translates them to the official English names when it reads the file.

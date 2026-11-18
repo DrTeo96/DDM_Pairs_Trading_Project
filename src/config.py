@@ -1,8 +1,8 @@
-"""Percorsi, date e nomi dei file della pipeline: l'unico posto in cui sono scritti.
+"""Paths, dates and file names of the pipeline: the only place where they are written.
 
     from src.config import PROCESSED, TRAIN_END, read_parquet
 
-I percorsi partono dalla posizione di questo file, non dalla cartella da cui si lancia il codice.
+Paths start from the location of this file, not from the folder the code is launched from.
 """
 import os
 from pathlib import Path
@@ -14,59 +14,59 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data/raw"
 PROCESSED = ROOT / "data/processed"
 
-# Taglio train/test, in date di calendario e uguale per tutte le coppie. Il test (dal 17 settembre) si usa una volta sola,
-# alla fine, con regole e parametri bloccati: se un file di segnali, notizie o decisioni contiene giorni successivi,
-# il backtest non vale più niente.
+# Train/test split, in calendar dates and the same for every pair. The test (from 17 September) is used only once,
+# at the end, with frozen rules and parameters: if a file of signals, news or decisions contains later days,
+# the backtest is worthless.
 TRAIN_END = "2026-09-16"
-# Le notizie partono due settimane prima dei prezzi intraday (16 giugno), perché l'agente guarda indietro dal segnale.
+# News start two weeks before the intraday prices (16 June), because the agent looks back from the signal.
 NEWS_START = "2026-06-01"
 
-GICS = ROOT / "data/gics.csv"                                               # classificazione GICS, esportata da Bloomberg
-SELECTED = PROCESSED / "selected_pairs_2.csv"                               # le 15 coppie (01_coppie.ipynb)
-PAIRS_DIR = PROCESSED / "pairs_intraday_v2"                                 # prezzi puliti per coppia (02_intraday.ipynb)
-SIGNALS = PROCESSED / "signals_15pairs_v2_train.csv"                        # segnali del train (03_segnali.ipynb)
-NEWS_SET = "ALL15_V2"                                                       # i 30 titoli delle 15 coppie, scaricati insieme
-NEWS = PROCESSED / f"news_{NEWS_SET}_train.parquet"                         # notizie (python -m src.news)
-NEWS_FOR_SIGNALS = PROCESSED / "news_for_signals_15pairs_v2_train.csv"      # notizie prima di ogni segnale (04_notizie.ipynb)
-AGENT_RAW = RAW / "agent"                                                   # risposte grezze del modello (python -m src.varianti_agente.agent)
-AGENT_DECISIONS = PROCESSED / "agent_decisions_15pairs_v2_train.csv"        # decisione dell'agente per ogni segnale
-AGENT_MANUAL = PROCESSED / "agent_manual_15pairs_v2_train.csv"              # campione classificato a mano dal gruppo (python -m src.varianti_agente.agent --sample)
+GICS = ROOT / "data/gics.csv"                                               # GICS classification, exported from Bloomberg (names in Italian)
+SELECTED = PROCESSED / "selected_pairs_2.csv"                               # the 15 pairs (01_pairs.ipynb)
+PAIRS_DIR = PROCESSED / "pairs_intraday_v2"                                 # clean prices per pair (02_intraday.ipynb)
+SIGNALS = PROCESSED / "signals_15pairs_v2_train.csv"                        # train signals (03_signals.ipynb)
+NEWS_SET = "ALL15_V2"                                                       # the 30 stocks of the 15 pairs, downloaded together
+NEWS = PROCESSED / f"news_{NEWS_SET}_train.parquet"                         # news (python -m src.news)
+NEWS_FOR_SIGNALS = PROCESSED / "news_for_signals_15pairs_v2_train.csv"      # news before each signal (04_news.ipynb)
+AGENT_RAW = RAW / "agent"                                                   # raw model answers (python -m src.agent_variants.agent)
+AGENT_DECISIONS = PROCESSED / "agent_decisions_15pairs_v2_train.csv"        # the agent's decision for each signal
+AGENT_MANUAL = PROCESSED / "agent_manual_15pairs_v2_train.csv"              # sample classified by hand by the group (python -m src.agent_variants.agent --sample)
 
-# Le versioni di risultati che il backtest confronta (06_backtest.ipynb). Ogni giro dell'agente ha la sua cartella in AGENT_RAW.
+# The result versions compared by the backtest (06_backtest.ipynb). Every agent run has its own folder in AGENT_RAW.
 AGENT_RUN_DIR = AGENT_RAW / "spark-x2.6-4b"
-RUN_24H = AGENT_RUN_DIR / "h24_diretto_anonimo/decisions.csv"               # finestra 24 ore, ragionamento spento: la versione principale
-RUN_6H = AGENT_RUN_DIR / "h6_diretto_anonimo/decisions.csv"                 # finestra 6 ore, ragionamento spento
-RUN_24H_REASONING = AGENT_RUN_DIR / "h24_ragiona_anonimo/accordo_segnali.csv"  # ragionamento acceso, solo sui 40 segnali del campione a mano
-MANUAL_DECISIONS = AGENT_RUN_DIR / "h24_diretto_anonimo/accordo_segnali.csv"  # decisioni ricavate dalla classificazione a mano (colonne mano_*)
-BASELINE_LEXICON = PROCESSED / "baseline_lexicon_decisions_15pairs_v2_train.csv"  # baseline senza modello: lessico Loughran-McDonald
-RESULTS = ROOT / "Results"                                                  # tabelle e trade del backtest, su git
-DAILY = PROCESSED / "daily_all.parquet"                                     # prezzi giornalieri (python -m src.data): calendario dei giorni di borsa
-SPY_DAILY = PROCESSED / "spy_daily_train.parquet"                           # prezzi giornalieri di SPY da Alpaca (python -m src.spy)
+RUN_24H = AGENT_RUN_DIR / "h24_direct_anon/decisions.csv"                   # 24-hour window, reasoning off: the main version
+RUN_6H = AGENT_RUN_DIR / "h6_direct_anon/decisions.csv"                     # 6-hour window, reasoning off
+RUN_24H_REASONING = AGENT_RUN_DIR / "h24_reasoning_anon/signal_agreement.csv"  # reasoning on, only on the 40 signals of the hand sample
+MANUAL_DECISIONS = AGENT_RUN_DIR / "h24_direct_anon/signal_agreement.csv"   # decisions derived from the hand classification (manual_* columns)
+BASELINE_LEXICON = PROCESSED / "baseline_lexicon_decisions_15pairs_v2_train.csv"  # baseline without a model: Loughran-McDonald lexicon
+RESULTS = ROOT / "Results"                                                  # backtest tables and trades, on git
+DAILY = PROCESSED / "daily_all.parquet"                                     # daily prices (python -m src.data): calendar of trading days
+SPY_DAILY = PROCESSED / "spy_daily_train.parquet"                           # SPY daily prices from Alpaca (python -m src.spy)
 
-# Le varianti dell'agente: codice in src/varianti_agente/, una cartella di risultati per variante in Results/varianti_agente/ (su git).
-# Le decisioni stanno nella cartella della variante, così chi non ha fatto girare il modello rifà il backtest lo stesso.
-VARIANTI = RESULTS / "varianti_agente"
-AGENT_DECISIONS_COPY = VARIANTI / "spark_24h" / AGENT_DECISIONS.name       # copia su git delle decisioni dell'agente principale
-FINBERT_SCORES = VARIANTI / "finbert_seduta/news_finbert.parquet"           # sentiment FinBERT di ogni notizia (score_finbert.py)
-DEC_3B_6H = VARIANTI / "3b_6h/decisioni.csv"                                # Llama 3.2 3B, 6 ore, prompt completo (agent_3b.py)
-DEC_FINBERT_SEDUTA = VARIANTI / "finbert_seduta/decisioni.csv"              # FinBERT, finestra legata alla seduta (agent_finbert.py)
-DEC_C_FRESCA = VARIANTI / "c_fresca/decisioni.csv"                          # C solo su notizie fresche e forti (c_fresca.py)
-DEC_FINBERT_EPISODIO = VARIANTI / "finbert_episodio/decisioni.csv"          # FinBERT, finestra dell'episodio (episodio.py)
+# The agent variants: code in src/agent_variants/, one results folder per variant in Results/agent_variants/ (on git).
+# The decisions live in the variant's folder, so whoever did not run the model can still redo the backtest.
+VARIANTS = RESULTS / "agent_variants"
+AGENT_DECISIONS_COPY = VARIANTS / "spark_24h" / AGENT_DECISIONS.name       # copy on git of the main agent's decisions
+FINBERT_SCORES = VARIANTS / "finbert_session/news_finbert.parquet"         # FinBERT sentiment of every news item (score_finbert.py)
+DEC_3B_6H = VARIANTS / "3b_6h/decisions.csv"                                # Llama 3.2 3B, 6 hours, full prompt (agent_3b.py)
+DEC_FINBERT_SESSION = VARIANTS / "finbert_session/decisions.csv"            # FinBERT, window tied to the session (agent_finbert.py)
+DEC_C_FRESH = VARIANTS / "c_fresh/decisions.csv"                            # C only on fresh and strong news (c_fresh.py)
+DEC_FINBERT_EPISODE = VARIANTS / "finbert_episode/decisions.csv"            # FinBERT, episode window (episode.py)
 
-# Il test: si usa una volta sola, per la variante scelta sul train (finbert_episodio), con le regole scritte in docs/Test.md.
-# Gli script del test sono separati da quelli del train: test_dati.py, test_finbert.py, test_finale.py; i notebook 06_test_backtest e
-# 07_test_robustezza leggono i risultati. Il test è stato fatto una volta, il 14 novembre 2026: non si rifà.
-TEST_START = "2026-09-17"                                                   # primo giorno del test
-TEST_END = "2026-10-30"                                                     # ultimo giorno con prezzi intraday
-NEWS_TEST = PROCESSED / f"news_{NEWS_SET}_test.parquet"                     # notizie del test (python -m src.test_dati)
-SPY_TEST = PROCESSED / "spy_daily_test.parquet"                             # SPY dal 16 settembre (serve la chiusura del giorno prima) a TEST_END
-RESULTS_TEST = RESULTS / "test"                                             # risultati del test, su git
-FINBERT_SCORES_TEST = RESULTS_TEST / "news_finbert_test.parquet"            # sentiment FinBERT delle notizie del test (python -m src.test_finbert)
+# The test: used only once, for the variant chosen on the train (finbert_episode), with the rules written in docs/Test.md.
+# The test scripts are separate from the train ones: test_data.py, test_finbert.py, test_final.py; the notebooks 06_test_backtest and
+# 07_test_robustness read the results. The test was done once, on 14 November 2026: it is not redone.
+TEST_START = "2026-09-17"                                                   # first day of the test
+TEST_END = "2026-10-30"                                                     # last day with intraday prices
+NEWS_TEST = PROCESSED / f"news_{NEWS_SET}_test.parquet"                     # test news (python -m src.test_data)
+SPY_TEST = PROCESSED / "spy_daily_test.parquet"                             # SPY from 16 September (the previous close is needed) to TEST_END
+RESULTS_TEST = RESULTS / "test"                                             # test results, on git
+FINBERT_SCORES_TEST = RESULTS_TEST / "news_finbert_test.parquet"            # FinBERT sentiment of the test news (python -m src.test_finbert)
 
 
 def env(name: str, default: str = "") -> str:
-    """Una impostazione personale (chiave, indirizzo): dalle variabili d'ambiente, altrimenti dal file .env nella cartella
-    del progetto (righe NOME=valore), che git ignora. Il valore non viene mai stampato."""
+    """A personal setting (key, address): from the environment variables, otherwise from the .env file in the project
+    folder (lines NAME=value), which git ignores. The value is never printed."""
     if os.environ.get(name):
         return os.environ[name]
     env_file = ROOT / ".env"
@@ -81,5 +81,5 @@ def env(name: str, default: str = "") -> str:
 
 
 def read_parquet(path: Path) -> pd.DataFrame:
-    """Un file parquet in pandas, letto con duckdb come in tutta la pipeline (stessi tipi delle colonne ovunque)."""
+    """A parquet file in pandas, read with duckdb as everywhere in the pipeline (same column types everywhere)."""
     return duckdb.sql(f"SELECT * FROM '{Path(path).as_posix()}'").df()

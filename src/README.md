@@ -1,249 +1,316 @@
-# La pipeline, dall'inizio alla fine
+# The pipeline, from start to finish
 
-Questa cartella contiene tutto il codice della strategia, nell'ordine in cui va eseguito: dai file Bloomberg ai segnali, alle decisioni dell'agente di notizie, al backtest. Seguendo i passi qui sotto si ottengono sul proprio computer gli stessi file e gli stessi numeri del gruppo.
+This folder holds all the code of the strategy, in the order in which it runs: from the Bloomberg files to the signals, the news agent's decisions, the backtest, the robustness checks, the test and the final metrics. By following the steps below you get the same files and the same numbers as the group on your own computer.
 
-La pipeline lavora sulle 15 coppie scelte in `01_coppie.ipynb`. I passi 0-7 usano solo il periodo di addestramento (train), che finisce il 16 settembre 2026. Il test (17 settembre - 30 ottobre) è stato usato una volta sola, il 14 novembre 2026, per la variante scelta sul train: vedi [Il test](#il-test-una-volta-sola). Le decisioni del gruppo e i risultati commentati sono in [docs/Programma.md](../docs/Programma.md).
+The pipeline works on the 15 pairs chosen in `01_pairs.ipynb`. Steps 0-7 use only the training period (train), which ends on 16 September 2026. The test (17 September - 30 October) was used only once, on 14 November 2026, for the variant chosen on the train: see [The test](#the-test-once-only). Steps 8 and 9 read both periods, but only from saved files. The group's decisions and commented results, step by step, are in the group's log, [Programma.md](../Old%20files/docs/Programma.md) (in Italian, kept in `Old files/`).
 
-## Prima di iniziare
+## Run order at a glance
 
-1. **Ambiente.** Installa uv seguendo [docs/setup.md](../docs/setup.md), poi dalla cartella del progetto:
+Most of the work is no longer a single line of notebooks: there are the base pipeline (steps 0-4), the agent and its variants (steps 5 and 5b), the evaluation notebooks (6-9) and the test (already done). The order below is the one to follow when you rebuild everything from scratch.
+
+| Order | What                                                                                                       | Where it is described                                 | Needs                                                                              |
+| ----- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 1     | Steps 0-3: datasets, pairs, intraday prices, signals                                                       | [The steps](#the-steps)                                | Bloomberg files                                                                    |
+| 2     | Step 4: news, plus `src.spy` for SPY                                                                     | [Step 4](#step-4-news) and [Step 7](#step-7-robustness) | Alpaca keys in `.env`                                                            |
+| 3     | Step 5: the agent of Giulio (`agent.py`)                                                                 | [Step 5](#step-5-news-agent)                           | A local model server, **or** the folder `data/raw/agent/` from a colleague |
+| 4     | Step 5b: the other variants                                                                                | [Step 5b](#step-5b-the-other-agent-variants)           | Nothing for most of them: decisions and FinBERT scores are on git                  |
+| 5     | Step 6: `06_backtest.ipynb`                                                                              | [Step 6](#step-6-backtest)                             | Steps 3, 5 and 5b                                                                  |
+| 6     | Step 7: `07_robustness.ipynb`                                                                            | [Step 7](#step-7-robustness)                           | Step 6 and `spy_daily_train.parquet`                                             |
+| 7     | The test: **do not rerun**; read it with `06_test_backtest.ipynb` and `07_test_robustness.ipynb` | [The test](#the-test-once-only)                        | Files in `Results/test/`, `spy_daily_test.parquet`                             |
+| 8     | Step 8: `08_signal.ipynb`                                                                               | [Step 8](#step-8-the-signal-1--0---1)                  | Steps 6 and 7 of train and test                                                    |
+| 9     | Step 9: `09_curves_metrics.ipynb`                                                                        | [Step 9](#step-9-equity-curves-and-metrics)            | Step 8 and SPY of train and test                                                   |
+
+Dependencies you must not break: `episode.py` runs before `delay.py`; `06_backtest.ipynb` runs before `08_signal.ipynb` (it writes the trades of `finbert_episode` that step 8 reads); `08_signal.ipynb` runs before `09_curves_metrics.ipynb`.
+
+## Before you start
+
+1. **Environment.** Install uv following [docs/setup.md](../docs/setup.md), then from the project folder:
 
    ```bash
    uv sync
    ```
-2. **Dati Bloomberg.** Non sono su git: vanno copiati in `data/` da chi li ha scaricati.
 
-   | Dove                      | Contenuto                                                                                                              |
-   | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-   | `data/raw/daily/`       | un file per titolo (`AAPL_UW_Equity.parquet`): `PX_LAST`, `PX_VOLUME`, `TOT_RETURN_INDEX_GROSS_DVDS`, dal 2006 |
-   | `data/raw/intraday_1m/` | un file per titolo: barre da 1 minuto in UTC, dal 16 giugno al 30 ottobre 2026                                         |
-   | `data/raw/sentiment/`   | numero di notizie e sentiment giornaliero per titolo, dal 2006                                                         |
-   | `data/gics.csv`         | classificazione GICS dei titoli                                                                                        |
-3. **File `.env`.** Serve dal passo 4. Copia il modello e compila i valori, senza spazi e senza virgolette:
+   Two libraries are **not** in the project environment and are passed on the command line only when needed: `torch` and `transformers` (FinBERT scores). The commands that need them already include `--with torch --with transformers`.
+2. **Bloomberg data.** They are not on git: whoever downloaded them copies them into `data/`.
+
+   | Where                     | Content                                                                                                                 |
+   | ------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+   | `data/raw/daily/`       | one file per stock (`AAPL_UW_Equity.parquet`): `PX_LAST`, `PX_VOLUME`, `TOT_RETURN_INDEX_GROSS_DVDS`, from 2006 |
+   | `data/raw/intraday_1m/` | one file per stock: 1-minute bars in UTC, from 16 June to 30 October 2026                                               |
+   | `data/raw/sentiment/`   | number of news items and daily sentiment per stock, from 2006                                                           |
+   | `data/gics.csv`         | GICS classification of the stocks                                                                                       |
+3. **`.env` file.** Needed from step 4. Copy the template and fill in the values, without spaces and without quotes:
 
    ```bash
    cp .env.example .env
    ```
 
-   Il file `.env` resta sul tuo computer: git lo ignora. Le chiavi non si condividono e non si incollano in chat, nei notebook o nei commit.
+   The `.env` file stays on your computer: git ignores it. Keys are not shared and not pasted in chats, notebooks or commits.
+4. **Files that are not on git and that you need beyond Bloomberg.** `data/processed/spy_daily_test.parquet` (SPY for the test) and the folder `data/raw/agent/` (raw answers of the model) exist only on the computer of whoever produced them. Ask them for a copy if you need steps 5 or 9 from scratch. Everything else a colleague needs to read the results is in `Results/`, on git.
+5. **A copy of `data/` made before the English renaming** (17 November 2026) still has Italian folder names and Italian values in the agent's tables. Rerun steps 0-4 (seconds), and move out of `data/` the folder `data/raw/agent/` and the files `data/processed/agent_decisions_15pairs_v2_train.csv`, `agent_manual_15pairs_v2_train.csv` and `baseline_lexicon_decisions_15pairs_v2_train.csv`: without them the backtest reads the English copies on git in `Results/agent_variants/`. The naming table is in the [main README](../README.md#naming).
 
-## Come si esegue un passo
+## How to run a step
 
-Tutti i comandi si lanciano **dalla cartella del progetto** (quella che contiene `pyproject.toml`). Se compare `No module named 'src'`, il terminale è in un'altra cartella.
+All commands are launched **from the project folder** (the one containing `pyproject.toml`). If `No module named 'src'` appears, the terminal is in another folder.
 
-Un notebook si esegue in uno di questi due modi:
+A notebook runs in one of two ways:
 
-- in VS Code: aprilo, scegli il kernel del progetto (*Select Kernel → Python Environments → .venv*) e premi *Run All*;
-- dal terminale, per esempio per il passo 1:
+- in VS Code: open it, choose the project kernel (*Select Kernel → Python Environments → .venv*) and press *Run All*;
+- from the terminal, for example for step 1:
 
   ```bash
-  uv run --with nbconvert jupyter nbconvert --to notebook --execute --inplace src/01_coppie.ipynb
+  uv run --with nbconvert jupyter nbconvert --to notebook --execute --inplace src/01_pairs.ipynb
   ```
 
-## I passi
+## The steps
 
-Tempo e memoria sono misurati su un Mac con 16 GB (processore M4). La memoria è il picco del passo: è quanta RAM libera serve perché giri senza rallentare.
+Time and memory were measured on a Mac with 16 GB (M4 processor). Memory is the peak of the step: how much free RAM you need for it to run without slowing down. "Not measured" means the step was added or changed after the measurements were made.
 
-| Passo          | Cosa si esegue                                                           | Legge                                                                                    | Scrive in `data/processed/`                                                               | Tempo                  | Memoria    |
-| -------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------- | ---------- |
-| 0              | `uv run python -m src.data`                                            | `data/raw/daily`, `intraday_1m`, `sentiment`                                       | `daily_all.parquet`, `intraday_1m_all.parquet`, `sentiment_all.parquet`               | 15 s                   | 4,0 GB     |
-| 0, facoltativo | `00_esplorazione.ipynb`                                                | i tre file del passo 0                                                                   | niente (grafici)                                                                            | 5 s                    | 4,1 GB     |
-| 1              | `01_coppie.ipynb`                                                      | `daily_all.parquet`, `data/gics.csv`                                                 | `selected_pairs_2.csv`                                                                    | 3 s                    | 0,9 GB     |
-| 2              | `02_intraday.ipynb`                                                    | `selected_pairs_2.csv`, `intraday_1m_all.parquet`, `daily_all.parquet`             | `pairs_intraday_v2/` (60 file e `quality_summary.csv`)                                  | 6 s                    | 0,9 GB     |
-| 3              | `03_segnali.ipynb`                                                     | `selected_pairs_2.csv`, `pairs_intraday_v2/`                                         | `signals_15pairs_v2_train.csv`                                                            | 4 s                    | 0,3 GB     |
-| 4              | `uv run python -m src.news --probe`, poi `uv run python -m src.news` | Alpaca (chiavi in `.env`), `selected_pairs_2.csv`                                    | `news_ALL15_V2_train.parquet`; pagine grezze in `data/raw/news/alpaca/`                 | circa 1 minuto (stima) | 0,1 GB     |
-| 4              | `04_notizie.ipynb`                                                     | `news_ALL15_V2_train.parquet`, `signals_15pairs_v2_train.csv`                        | `news_for_signals_15pairs_v2_train.csv`                                                   | 1 s                    | 0,2 GB     |
-| 5              | `uv run python -m src.varianti_agente.agent`                                           | `signals_15pairs_v2_train.csv`, `news_ALL15_V2_train.parquet`, il server del modello | `agent_decisions_15pairs_v2_train.csv`; risposte grezze e registri in `data/raw/agent/` | vedi sotto             | vedi sotto |
-| 6              | `06_backtest.ipynb`                                                    | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/`, le decisioni di ogni versione (vedi passo 6) | `Results/` (su git): tabelle, `curve_capitale.png`; trade e decisioni di ogni variante in `Results/varianti_agente/` | 10 s                   | 0,3 GB     |
-| 7              | `07_robustezza.ipynb`                                                  | come il passo 6, più `spy_daily_train.parquet` (`uv run python -m src.spy`) | `Results/robustezza/` (su git): tabella finale con bootstrap, beta e alpha; costi, coppie, settori, periodo | meno di 1 minuto       | non misurata |
-| Test, già fatto | `src.test_dati`, `src.test_finbert`, `src.test_finale`: **non si rilanciano** | Alpaca, i file del train, `pairs_intraday_v2/` | `news_ALL15_V2_test.parquet`, `spy_daily_test.parquet`; `Results/test/` (su git) | pochi minuti in tutto | non misurata |
-| Test, lettura  | `06_test_backtest.ipynb`, `07_test_robustezza.ipynb`                   | `Results/test/`, `spy_daily_test.parquet`, le tabelle del train in `Results/`             | tabelle in `Results/test/` e `Results/test/robustezza/`, `curve_capitale.png`             | meno di 1 minuto       | non misurata |
-| 8              | `08_segnale.ipynb`                                                     | i trade di A, B e C di `finbert_episodio` (train e test) e `pairs_intraday_v2/`             | `Results/`: segnale +1/0/-1 per titolo e minuto (`segnale_*.parquet`), `rendimenti_segnale.csv`, `confronto_segnale_trade.csv`; lo stesso per il test in `Results/test/` | meno di 1 minuto | non misurata |
-| 9              | `09_curve_metriche.ipynb`                                              | `rendimenti_segnale.csv` e `segnale_*.parquet` (train e test), SPY del train e del test       | `Results/`: `curva_capitale_100.png`, `metriche_train_test.csv`, `neutralita_mercato.csv`; `Results/test/`: `curva_capitale_100.png`, `sharpe_contro_spy.csv` | meno di 1 minuto | non misurata |
+| Step          | What to run                                                                                                                    | Reads                                                                                                 | Writes in `data/processed/` (or where stated)                                                                                                                                                                                                                                                  | Time                                    | Memory       |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- | ------------ |
+| 0             | `uv run python -m src.data`                                                                                                  | `data/raw/daily`, `intraday_1m`, `sentiment`                                                    | `daily_all.parquet`, `intraday_1m_all.parquet`, `sentiment_all.parquet`                                                                                                                                                                                                                    | 15 s                                    | 4.0 GB       |
+| 0, optional   | `00_exploration.ipynb`                                                                                                      | the three files of step 0                                                                             | nothing (charts)                                                                                                                                                                                                                                                                                 | 5 s                                     | 4.1 GB       |
+| 1             | `01_pairs.ipynb`                                                                                                            | `daily_all.parquet`, `data/gics.csv`                                                              | `selected_pairs_2.csv`                                                                                                                                                                                                                                                                         | 3 s                                     | 0.9 GB       |
+| 2             | `02_intraday.ipynb`                                                                                                          | `selected_pairs_2.csv`, `intraday_1m_all.parquet`, `daily_all.parquet`                          | `pairs_intraday_v2/` (60 files and `quality_summary.csv`)                                                                                                                                                                                                                                    | 6 s                                     | 0.9 GB       |
+| 3             | `03_signals.ipynb`                                                                                                           | `selected_pairs_2.csv`, `pairs_intraday_v2/`                                                      | `signals_15pairs_v2_train.csv`                                                                                                                                                                                                                                                                 | 4 s                                     | 0.3 GB       |
+| 4             | `uv run python -m src.news --probe`, then `uv run python -m src.news`                                                      | Alpaca (keys in `.env`), `selected_pairs_2.csv`                                                   | `news_ALL15_V2_train.parquet`; raw pages in `data/raw/news/alpaca/`                                                                                                                                                                                                                          | about 1 minute (estimate)               | 0.1 GB       |
+| 4             | `04_news.ipynb`                                                                                                           | `news_ALL15_V2_train.parquet`, `signals_15pairs_v2_train.csv`                                     | `news_for_signals_15pairs_v2_train.csv`                                                                                                                                                                                                                                                        | 1 s                                     | 0.2 GB       |
+| 5             | `uv run python -m src.agent_variants.agent`                                                                                 | `signals_15pairs_v2_train.csv`, `news_ALL15_V2_train.parquet`, the model server                   | `agent_decisions_15pairs_v2_train.csv`; raw answers and logs in `data/raw/agent/`                                                                                                                                                                                                            | see below                               | see below    |
+| 5b            | the scripts of [agent_variants/](agent_variants/README.md), in the order given in [Step 5b](#step-5b-the-other-agent-variants) | train signals, news, FinBERT scores, decisions of the other steps                                     | `Results/agent_variants/<variant>/` (on git): decisions and trades of each variant                                                                                                                                                                                                            | seconds to minutes; `agent_3b`: hours | not measured |
+| 6             | `06_backtest.ipynb`                                                                                                          | `signals_15pairs_v2_train.csv`, `pairs_intraday_v2/`, the decisions of every version (see step 6) | `Results/` (on git): tables, `equity_curves.png`; trades and decisions of each variant in `Results/agent_variants/`                                                                                                                                                                      | 10 s (before the extra variants)        | 0.3 GB       |
+| 7             | `uv run python -m src.spy`, then `07_robustness.ipynb`                                                                     | as step 6, plus `spy_daily_train.parquet`                                                           | `Results/robustness/` (on git): final table with bootstrap, beta and alpha; costs, pairs, sectors, periods                                                                                                                                                                                     | less than 1 minute                      | not measured |
+| Test, done    | `src.test_data`, `src.test_finbert`, `src.test_final`: **do not rerun**                                           | Alpaca, the train files, `pairs_intraday_v2/`                                                       | `news_ALL15_V2_test.parquet`, `spy_daily_test.parquet`; `Results/test/` (on git)                                                                                                                                                                                                           | a few minutes in total                  | not measured |
+| Test, reading | `06_test_backtest.ipynb`, `07_test_robustness.ipynb`                                                                       | `Results/test/`, `spy_daily_test.parquet`, the train tables in `Results/`                       | tables in `Results/test/` and `Results/test/robustness/`, `equity_curves.png`                                                                                                                                                                                                             | less than 1 minute                      | not measured |
+| 8             | `08_signal.ipynb`                                                                                                           | the A, B and C trades of `finbert_episode` (train and test) and `pairs_intraday_v2/`             | train: `Results/signal_A.parquet`, `Results/agent_variants/finbert_episode/signal_B.parquet` and `signal_C.parquet`, `Results/signal_returns.csv`, `Results/signal_vs_trade_comparison.csv`; test: `signal_A/B/C.parquet` and `signal_returns.csv` in `Results/test/` | less than 1 minute                      | not measured |
+| 9             | `09_curves_metrics.ipynb`                                                                                                    | `signal_returns.csv` and `signal_*.parquet` (train and test), SPY of train and test          | `Results/`: `equity_curve_100.png`, `metrics_train_test.csv`, `market_neutrality.csv`; `Results/test/`: `equity_curve_100.png`, `sharpe_vs_spy.csv`                                                                                                                      | less than 1 minute                      | not measured |
 
-Un passo si rifà solo quando cambiano i file che legge. Nel Programma i passi hanno un'altra numerazione: lì le notizie sono il Passaggio 3 e i segnali il Passaggio 4. Qui i segnali vengono prima, perché la tabella notizie-segnali ha bisogno dei segnali.
+A step is redone only when the files it reads change. In the group's log the steps are numbered differently: there the news are step 3 and the signals step 4 (the notebook titles keep that numbering). Here the signals come first, because the news-signals table needs the signals.
 
-### Passo 0. Dai file Bloomberg ai dataset
+### Step 0. From the Bloomberg files to the datasets
 
-Unisce i file grezzi in tre tabelle, converte gli orari dell'intraday all'ora di New York e stampa i controlli di qualità. Da sapere prima di usare i dati:
+It merges the raw files into three tables, converts the intraday times to New York time and prints the quality checks. What to know before using the data:
 
-- l'universo sono i titoli dell'indice di oggi: chi è uscito dall'indice manca (survivorship bias);
-- nel giornaliero `PX_LAST` è aggiustato per split e dividendi; alcune serie hanno buchi di anni, quindi per i rendimenti si usa la colonna `ret` di `load("daily")`;
-- nell'intraday i prezzi **non** sono aggiustati: uno split compare come un salto;
-- nel sentiment il valore -134217.7 è il segnaposto di Bloomberg per "dato mancante": `load("sentiment")` lo trasforma in NaN.
+- the universe is today's index constituents: whoever left the index is missing (survivorship bias);
+- in the daily data `PX_LAST` is adjusted for splits and dividends; some series have gaps of years, so returns use the `ret` column of `load("daily")`;
+- in the intraday data prices are **not** adjusted: a split appears as a jump;
+- in the sentiment data the value -134217.7 is Bloomberg's placeholder for "missing data": `load("sentiment")` turns it into NaN.
 
-### Passo 1. Selezione delle coppie
+### Step 1. Pair selection
 
-Sceglie 15 coppie della stessa sotto-industria con il metodo della distanza, usando solo prezzi giornalieri fino al 15 giugno 2026, il giorno prima dell'inizio dei dati intraday.
+It picks 15 pairs from the same sub-industry with the distance method, using only daily prices up to 15 June 2026, the day before the intraday data start.
 
-### Passo 2. Prezzi intraday per coppia
+### Step 2. Intraday prices per pair
 
-Per ogni coppia allinea i due titoli sugli stessi minuti (seduta 09:30-15:59), tiene i giorni in cui ci sono entrambi e riempie i minuti senza scambi con l'ultimo prezzo dello stesso giorno, segnandoli con `filled`. I file arrivano al 30 ottobre: contengono anche i prezzi del periodo di test, che i passi successivi non usano.
+For each pair it aligns the two stocks on the same minutes (session 09:30-15:59), keeps the days in which both are present and fills the minutes without trades with the last price of the same day, marking them with `filled`. The files run to 30 October: they also contain the prices of the test period, which the following steps do not use.
 
-### Passo 3. Segnali
+### Step 3. Signals
 
-Calcola spread e z-score e applica le regole di ingresso e uscita di [signals.py](signals.py), solo sul train. Ogni riga del file è un trade con orari, prezzi, motivo di uscita e guadagno lordo.
+It computes spread and z-score and applies the entry and exit rules of [signals.py](signals.py), on the train only. Each row of the file is a trade with times, prices, exit reason and gross profit.
 
-### Passo 4. Notizie
+### Step 4. News
 
-Le notizie vengono dall'API gratuita di Alpaca (fonte Benzinga). Ognuno crea le proprie chiavi:
+The news come from Alpaca's free API (source: Benzinga). Everyone creates their own keys:
 
-1. crea un account gratuito su [alpaca.markets](https://alpaca.markets); basta il conto Paper Trading;
-2. nella dashboard, in Paper Trading, riquadro API Keys, premi Generate New Keys: compaiono il Key ID e il Secret Key, che viene mostrato una volta sola;
-3. scrivi i due valori in `.env`, dopo `ALPACA_API_KEY_ID=` e `ALPACA_API_SECRET_KEY=`.
+1. create a free account at [alpaca.markets](https://alpaca.markets); the Paper Trading account is enough;
+2. in the dashboard, under Paper Trading, in the API Keys box, press Generate New Keys: the Key ID and the Secret Key appear, and the Secret Key is shown only once;
+3. write the two values in `.env`, after `ALPACA_API_KEY_ID=` and `ALPACA_API_SECRET_KEY=`.
 
 ```bash
-uv run python -m src.news --probe    # una sola chiamata: dice se le chiavi funzionano, non salva niente
-uv run python -m src.news            # scarica le notizie dei 30 titoli, dal 1 giugno al 16 settembre 2026
+uv run python -m src.news --probe    # a single call: tells you whether the keys work, saves nothing
+uv run python -m src.news            # downloads the news of the 30 stocks, from 1 June to 16 September 2026
 ```
 
-Lo scaricamento sostituisce l'archivio solo quando è finito: se si interrompe, quello di prima resta intero. Una data di fine successiva al 16 settembre viene rifiutata. Poi `04_notizie.ipynb` controlla la copertura e crea, per ogni segnale, l'elenco delle notizie uscite nelle 24 ore prima.
+The download replaces the archive only when it is finished: if it is interrupted, the previous one stays whole. An end date after 16 September is refused. Then `04_news.ipynb` checks the coverage and builds, for each signal, the list of the news published in the 24 hours before.
 
-### Passo 5. Agente di notizie
+### Step 5. News agent
 
-Questo passo descrive l'agente di Giulio, [varianti_agente/agent.py](varianti_agente/agent.py). Tutte le varianti dell'agente del gruppo (di Giulio, Orfeo e Beatrice), con il loro codice, i comandi e i risultati, sono elencate in [varianti_agente/README.md](varianti_agente/README.md).
+This step describes Giulio's agent, [agent_variants/agent.py](agent_variants/agent.py). All the group's agent variants (Giulio, Orfeo and Beatrice), with their code, commands and results, are listed in [agent_variants/README.md](agent_variants/README.md) and summarised in [Step 5b](#step-5b-the-other-agent-variants).
 
-L'agente è un grafo [LangGraph](https://langchain-ai.github.io/langgraph/) a passi fissi, uguale per ogni segnale: **cerca** le notizie sui due titoli nelle 24 ore prima del segnale, **classifica** ogni notizia, **verifica** i fatti strutturali, **decide** con una regola scritta nel codice e **registra** tutto. Il modello linguistico classifica e basta: non decide, non vede le soglie del segnale, non vede la data. Le regole complete sono nella docstring di [varianti_agente/agent.py](varianti_agente/agent.py).
+The agent is a fixed-step [LangGraph](https://langchain-ai.github.io/langgraph/) graph, the same for every signal: it **searches** the news about the two stocks in the 24 hours before the signal, **classifies** each news item, **verifies** the structural facts, **decides** with a rule written in code and **records** everything. The language model only classifies: it does not decide, does not see the signal thresholds, does not see the date. The complete rules are in the docstring of [agent_variants/agent.py](agent_variants/agent.py).
 
-- Nessuna notizia: `entra`, senza chiamare il modello.
-- Elenchi con più di 5 ticker: rumore per regola, senza chiamare il modello.
-- Fatto strutturale (acquisizione, indagine, frode, cambio del management) su uno solo dei due titoli: `blocca`. Per la versione C, `segui` se la direzione della notizia coincide con il movimento dei 30 minuti prima.
-- Verifica: quando il modello trova un fatto strutturale su un solo titolo, il codice controlla prima che titolo e sommario nominino davvero quell'azienda, poi il modello risponde a una seconda domanda: l'azienda è il compratore, il venditore, il bersaglio, l'indagato o quella che cambia capo? Se no, la notizia diventa rumore. Serve perché il modello confonde l'azienda a cui la notizia è collegata con quella di cui parla: sui casi provati ha corretto Yum! che vende Pizza Hut (collegata a PEP), Nvidia che compra Hugging Face (collegata a CRM), un'indagine del DOJ su tutte le banche USA e un'IPO in cui JPMorgan fa da consulente.
-- Solo rumore (risultati, analisti, accordi, prodotti, settore) o fatti su entrambi: `entra`, con una dimensione suggerita di 0,5 nella colonna `size`, che il backtest per ora non usa.
-- Ricerca fallita, server che non risponde, risposta non valida: `blocca`.
+- No news: `enter`, without calling the model.
+- Lists with more than 5 tickers: noise by rule, without calling the model.
+- Structural fact (acquisition, investigation, fraud, change of management) on only one of the two stocks: `block`. For version C, `follow` if the direction of the news matches the move of the 30 minutes before.
+- Verification: when the model finds a structural fact on only one stock, the code first checks that the headline and summary really name that company, then the model answers a second question: is the company the buyer, the seller, the target, the investigated party or the one changing its head? If not, the news becomes noise. This is needed because the model confuses the company the news is tagged to with the one it is about: on the cases tried it corrected Yum! selling Pizza Hut (tagged to PEP), Nvidia buying Hugging Face (tagged to CRM), a DOJ investigation of all US banks and an IPO in which JPMorgan acts as advisor.
+- Only noise (earnings, analysts, deals, products, sector) or facts on both: `enter`, with a suggested size of 0.5 in the `size` column, which the backtest does not use for now.
+- Failed search, server not answering, invalid answer: `block`.
 
-**Anonimizzazione.** Prima di arrivare al modello, nomi, ticker, marchi e dirigenti delle due aziende diventano "Company A" e "Company B". Serve a ridurre il lookahead del modello, cioè il rischio che riconosca l'azienda e sappia già come è andata a finire. Non lo elimina: cifre, altre aziende citate e sotto-industria possono ancora far riconoscere il caso. Va dichiarato nel report. Sulle 958 notizie del train che arrivano al modello non resta visibile nessuno dei nomi della tabella `ALIASES`. Le istruzioni dicono al modello che ogni azienda nominata con il suo nome è un'altra azienda, non A o B. Due controlli: `--real-names` (stesso modello, nomi in chiaro) e un modello con data di addestramento lontana (`--model google/gemma-3-4b`).
+**Anonymisation.** Before reaching the model, names, tickers, brands and executives of the two companies become "Company A" and "Company B". This reduces the model's lookahead, that is, the risk that it recognises the company and already knows how things went. It does not eliminate it: figures, other companies mentioned and sub-industry can still give the case away. It must be declared in the report. On the 958 train news items that reach the model, none of the names in the `ALIASES` table remains visible. The instructions tell the model that every company named with its own name is another company, not A or B. Two checks: `--real-names` (same model, names in clear) and a model with a distant training date (`--model google/gemma-3-4b`).
 
-Il modello gira in locale dietro un server che parla il protocollo dell'API di OpenAI. In `.env` si scrivono l'indirizzo del server e il nome del modello; se l'indirizzo non finisce con `/v1`, il codice lo aggiunge:
+The model runs locally behind a server that speaks the OpenAI API protocol. In `.env` you write the server address and the model name; if the address does not end with `/v1`, the code adds it:
 
 ```
 AGENT_BASE_URL=http://127.0.0.1:1234/v1
 AGENT_MODEL=spark-x2.6-4b
 ```
 
-| Server                                 | Come si avvia                                                                                                              | `AGENT_BASE_URL`                | Provato con questo codice                                |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------- |
-| LM Studio                              | scheda Developer, Start Server (oppure `lms server start`); nome del modello da `curl http://127.0.0.1:1234/v1/models` | `http://127.0.0.1:1234/v1`      | sì, con Spark X2.6 4B (GGUF Q4_K_M)                     |
-| Ollama                                 | `ollama serve`; nome del modello da `ollama list`                                                                      | `http://localhost:11434/v1`     | no                                                       |
-| mlx-lm (solo Mac con processore Apple) | `uv run --no-project --python 3.12 --with mlx-lm python -m mlx_lm.server --model <cartella del modello> --port 8089`     | `http://localhost:8089/v1`      | sì, con Gemma 3 4B e la versione precedente di agent.py |
-| un altro computer                      | uno dei server qui sopra, avviato là                                                                                      | `http://<indirizzo>:<porta>/v1` | no                                                       |
+| Server                                  | How to start it                                                                                                 | `AGENT_BASE_URL`             | Tried with this code                                                                                                              |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| LM Studio                               | Developer tab, Start Server (or `lms server start`); model name from `curl http://127.0.0.1:1234/v1/models` | `http://127.0.0.1:1234/v1`   | yes, with Spark X2.6 4B (GGUF Q4_K_M)                                                                                             |
+| Ollama                                  | `ollama serve`; model name from `ollama list`                                                               | `http://localhost:11434/v1`  | only `agent_3b.py` (Llama 3.2 3B), which calls `http://localhost:11434` directly and ignores `.env`; `agent.py` not tried |
+| mlx-lm (only Macs with Apple processor) | `uv run --no-project --python 3.12 --with mlx-lm python -m mlx_lm.server --model <model folder> --port 8089`  | `http://localhost:8089/v1`   | yes, with Gemma 3 4B and the previous version of agent.py                                                                         |
+| another computer                        | one of the servers above, started there                                                                         | `http://<address>:<port>/v1` | no                                                                                                                                |
 
 ```bash
-uv run python -m src.varianti_agente.agent --signals 0,1,2,3          # prova su pochi segnali: stampa le decisioni, non scrive la tabella
-uv run python -m src.varianti_agente.agent                            # tutti i 973 segnali: 586 hanno notizie, 958 notizie da classificare
-uv run python -m src.varianti_agente.agent --sample 40                # crea data/processed/agent_manual_15pairs_v2_train.csv da compilare a mano
-uv run python -m src.varianti_agente.agent --agreement                # accordo tra il gruppo e l'agente (aggiungi --reasoning on per l'altra modalità)
-uv run python -m src.varianti_agente.agent --hours 6                  # variante: finestra di 6 ore
+uv run python -m src.agent_variants.agent --signals 0,1,2,3          # test on a few signals: prints the decisions, does not write the table
+uv run python -m src.agent_variants.agent                            # all 973 signals: 586 have news, 958 news items to classify
+uv run python -m src.agent_variants.agent --sample 40                # creates data/processed/agent_manual_15pairs_v2_train.csv to fill in by hand
+uv run python -m src.agent_variants.agent --agreement                # agreement between the group and the agent (add --reasoning on for the other mode)
+uv run python -m src.agent_variants.agent --hours 6                  # variant: 6-hour window
 ```
 
-- **Ragionamento.** Spark X2.6 4B è un modello che ragiona prima di rispondere. Misurato su questo Mac: circa 70 s a notizia con il ragionamento acceso (una risposta su tre supera il tetto di 2000 token e va richiesta senza ragionamento), circa 4 s con il ragionamento spento. Un giro completo dura circa un'ora senza ragionamento e circa 20 ore con il ragionamento acceso, quindi il default è spento. Le due modalità danno risposte diverse sulla stessa notizia: si sceglie con l'accordo sul campione classificato a mano.
-- **Classificazione a mano.** `--sample 40` estrae 40 segnali con notizie, distribuiti sulle coppie, senza le risposte dell'agente: il gruppo non le vede prima di classificare. Per ogni notizia si compilano `mano_riguarda` (A, B, entrambi, nessuno), `mano_sottotipo`, `mano_direzione` e, se serve, `mano_note`. `--agreement` calcola la quota di accordo e il kappa di Cohen, per notizia e per decisione. La decisione del gruppo si ricava dalle sue etichette con la stessa regola dell'agente. Il comando rifiuta di sovrascrivere un campione già esistente.
-- **Quale modello.** Un modello addestrato dopo giugno 2026 può conoscere già gli eventi del periodo. La data di fine addestramento di Spark X2.6 4B va verificata e dichiarata nel report. Gemma 3 dichiara agosto 2024: è il controllo.
-- **Rieseguire è gratis.** Ogni risposta del modello è salvata in `data/raw/agent/<modello>/notizie/` con orario, richiesta e risposta grezza. Se la stessa domanda è già stata fatta, la risposta viene riletta senza chiamare il server; cambiare finestra non richiede le notizie già classificate. Gli errori di rete o del server non si salvano: alla esecuzione successiva la chiamata si ripete.
-- **Registri.** Ogni giro scrive in `data/raw/agent/<modello>/<impostazioni>/` un JSON per segnale (notizie trovate, testo mostrato al modello, classificazioni, decisione), più `decisions.csv` e `classifications.csv`.
-- **Stesse decisioni per tutto il gruppo.** Basta che una persona faccia il giro completo e passi agli altri la cartella `data/raw/agent/`: con quella, e con lo stesso nome del modello in `.env`, il comando ricrea la tabella senza server.
+- **Reasoning.** Spark X2.6 4B is a model that reasons before answering. Measured on this Mac: about 70 s per news item with reasoning on (one answer in three exceeds the 2000-token ceiling and has to be asked again without reasoning), about 4 s with reasoning off. A full run takes about one hour without reasoning and about 20 hours with reasoning on, so the default is off. The two modes give different answers on the same news item: the choice is made with the agreement on the hand-classified sample.
+- **Hand classification.** `--sample 40` draws 40 signals with news, spread across the pairs, without the agent's answers: the group does not see them before classifying. For each news item you fill in `manual_about` (A, B, both, none), `manual_subtype`, `manual_news_direction` and, if needed, `manual_notes`. `--agreement` computes the share of agreement and Cohen's kappa, per news item and per decision. The group's decision is derived from its labels with the same rule as the agent. The command refuses to overwrite an existing sample.
+- **Which model.** A model trained after June 2026 may already know the events of the period. The end-of-training date of Spark X2.6 4B must be checked and declared in the report. Gemma 3 declares August 2024: it is the check.
+- **Rerunning is free.** Every answer of the model is saved in `data/raw/agent/<model>/news/` with time, request and raw answer. If the same question was already asked, the answer is read again without calling the server; changing window does not require re-classifying the news already classified. Network or server errors are not saved: at the next run the call is repeated.
+- **Logs.** Each run writes in `data/raw/agent/<model>/<settings>/` one JSON per signal (news found, text shown to the model, classifications, decision), plus `decisions.csv` and `classifications.csv`.
+- **Same decisions for the whole group.** One person does the full run and passes the folder `data/raw/agent/` to the others: with that, and with the same model name in `.env`, the command recreates the table without a server.
 
-### Passo 6. Backtest
+### Step 5b. The other agent variants
 
-Applica costi e capitale ai trade del passo 3 e confronta tre versioni:
+Besides Giulio's agent, the group tried other ways of deciding on the news. Their code is in [agent_variants/](agent_variants/README.md), each variant writes to its own folder `Results/agent_variants/<variant>/` (on git) and all of them are compared **on the train only**. The rules of Beatrice's variants, written before each try, with their outcomes, are in [agent_variants/LOG.md](agent_variants/LOG.md). The test used only one of them, `finbert_episode`.
 
-- **A**: tutti i segnali entrano, senza agente;
-- **B**: l'agente può bloccare (colonna `decision`);
-- **C**: l'agente può anche seguire la notizia (colonna `decision_C` = `segui`, direzione in `follow_side`). Il trade che segue la notizia apre alla stessa barra della A, nella direzione opposta, e si rifà barra per barra sui prezzi di `pairs_intraday_v2/`: esce al primo tra rientro dello spread (z torna a 0), 90 minuti e fine giornata, senza stop.
+You do not need to run the models again: decisions and FinBERT scores are on git. The scripts below run in seconds or minutes, except `agent_3b`, which takes hours. Run them from the project folder, in this order:
 
-Le versioni girano su ogni **set di decisioni** elencato in `VERSIONS` ([backtest.py](backtest.py)); i percorsi sono in [config.py](config.py):
+```bash
+uv run python -m src.agent_variants.agent_3b           # Beatrice: needs Ollama with llama3.2:3b; hours of computation
+uv run --with torch --with transformers python -m src.agent_variants.score_finbert   # only if the news change
+uv run python -m src.agent_variants.agent_finbert      # finbert_session
+uv run python -m src.agent_variants.c_fresh           # C only, fresh and strong news
+uv run python -m src.agent_variants.ma_rules          # M&A rules: only a list of news, no trades
+uv run python -m src.agent_variants.episode            # finbert_episode, the variant chosen for the test. Before delay
+uv run python -m src.agent_variants.delay              # decision and entry 5 or 15 minutes after the signal
+uv run python -m src.agent_variants.backtest_size      # half size instead of blocking
+uv run python -m src.agent_variants.post_train         # Orfeo's B_exaggeration, chosen after seeing the train: optimistic numbers
+```
 
-| Nome            | File                                                              | Segnali |
-| --------------- | ----------------------------------------------------------------- | ------- |
-| `spark_24h`         | `data/raw/agent/spark-x2.6-4b/h24_diretto_anonimo/decisions.csv` (principale, uguale a `agent_decisions_15pairs_v2_train.csv`) | 973 |
-| `spark_6h`          | `data/raw/agent/spark-x2.6-4b/h6_diretto_anonimo/decisions.csv` (`--hours 6`) | 973 |
-| `lessico`           | `data/processed/baseline_lexicon_decisions_15pairs_v2_train.csv`: baseline senza modello, lessico Loughran-McDonald. Il codice che lo produce non è nel repo | 973 |
-| `spark_24h_ragiona` | `data/raw/agent/spark-x2.6-4b/h24_ragiona_anonimo/accordo_segnali.csv` (`--agreement --reasoning on`) | 40 |
-| `mano`              | colonne `mano_*` di `h24_diretto_anonimo/accordo_segnali.csv` (`--agreement`): solo B, perché manca la direzione da seguire | 40 |
-| `3b_6h`             | `Results/varianti_agente/3b_6h/decisioni.csv` (`varianti_agente/agent_3b.py`): solo B | 973 |
-| `finbert_seduta`    | `Results/varianti_agente/finbert_seduta/decisioni.csv` (`varianti_agente/agent_finbert.py`) | 973 |
-| `c_fresca`          | `Results/varianti_agente/c_fresca/decisioni.csv` (`varianti_agente/c_fresca.py`): solo C | 973 |
-| `finbert_episodio`  | `Results/varianti_agente/finbert_episodio/decisioni.csv` (`varianti_agente/episodio.py`) | 973 |
+| Variant              | Who      | Script                                     | What it does                                                                                                                       |
+| -------------------- | -------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `3b_6h`            | Beatrice | `agent_3b.py`                            | Llama 3.2 3B with Ollama, 6 hours, full prompt, a word of the event must appear in the text to block                               |
+| `finbert_session`   | Beatrice | `score_finbert.py`, `agent_finbert.py` | FinBERT on targeted news; window tied to the session                                                                               |
+| `c_fresh`         | Beatrice | `c_fresh.py`                            | C follows only fresh news (last 60 minutes of the session) with an event, strong sentiment and the same direction as the move      |
+| `finbert_episode` | Beatrice | `episode.py`                            | Rules of `finbert_session`, with the news published while the spread was moving away from the mean. **Chosen for the test** |
+| `ma_rules`        | Beatrice | `ma_rules.py`                           | Text rules for M&A news. On the train it finds no case: same as A, so no trades, only the list of news                             |
+| `size`       | Beatrice | `backtest_size.py`                       | Halve the size instead of blocking                                                                                                 |
+| `delay`          | Beatrice | `delay.py`                             | Decision and entry 5 or 15 minutes after the signal, against an A delayed by the same amount                                       |
+| `post_train`       | Orfeo    | `post_train.py`                          | `B_exaggeration`: enters when the news confirms the move. Chosen **after** seeing the train                                |
 
-Quando il file originale non c'è (le risposte grezze dell'agente stanno solo sul computer di chi l'ha fatto girare), `load_version` legge la copia su git in `Results/varianti_agente/<nome>/`. Le varianti che cambiano il backtest stesso (dimensione ridotta, ingresso ritardato, `B_esagerazione` di Orfeo) non sono set di decisioni: il notebook legge i loro trade da `Results/varianti_agente/`. Il notebook confronta tutto **solo sul train** (`Results/confronto_versioni.csv`), con le funzioni di [varianti_agente/confronto.py](varianti_agente/confronto.py).
+The shared functions are in [agent_variants/common.py](agent_variants/common.py) (trading days) and [agent_variants/comparison.py](agent_variants/comparison.py) (loads every variant with its reference and computes the differences, used by notebooks 06 and 07).
 
-I set da 40 segnali si confrontano solo sui segnali del campione classificato a mano. Per il lessico, `flat` vuol dire bloccare e `solo_A`/`solo_B` con `long`/`short` vuol dire seguire: la C si simula con la coppia coperta, come per l'agente.
+### Step 6. Backtest
+
+It applies costs and capital to the trades of step 3 and compares three versions:
+
+- **A**: every signal enters, without agent;
+- **B**: the agent can block (column `decision`);
+- **C**: the agent can also follow the news (column `decision_C` = `follow`, direction in `follow_side`). The trade that follows the news opens at the same bar as A, in the opposite direction, and is redone bar by bar on the prices of `pairs_intraday_v2/`: it exits at the first of spread reversion (z back to 0), 90 minutes and end of day, with no stop.
+
+The versions run on every **set of decisions** listed in `VERSIONS` ([backtest.py](backtest.py)); the paths are in [config.py](config.py):
+
+| Name                  | File                                                                                                                                                                  | Signals |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `spark_24h`         | `data/raw/agent/spark-x2.6-4b/h24_direct_anon/decisions.csv` (main, same as `agent_decisions_15pairs_v2_train.csv`)                                           | 973     |
+| `spark_6h`          | `data/raw/agent/spark-x2.6-4b/h6_direct_anon/decisions.csv` (`--hours 6`)                                                                                     | 973     |
+| `lexicon`           | `data/processed/baseline_lexicon_decisions_15pairs_v2_train.csv`: baseline without a model, Loughran-McDonald lexicon. The code that produces it is not in the repo | 973     |
+| `spark_24h_reasoning` | `data/raw/agent/spark-x2.6-4b/h24_reasoning_anon/signal_agreement.csv` (`--agreement --reasoning on`)                                                             | 40      |
+| `manual`              | `manual_*` columns of `h24_direct_anon/signal_agreement.csv` (`--agreement`): B only, because the direction to follow is missing                               | 40      |
+| `3b_6h`             | `Results/agent_variants/3b_6h/decisions.csv` (`agent_variants/agent_3b.py`): B only                                                                             | 973     |
+| `finbert_session`    | `Results/agent_variants/finbert_session/decisions.csv` (`agent_variants/agent_finbert.py`)                                                                       | 973     |
+| `c_fresh`          | `Results/agent_variants/c_fresh/decisions.csv` (`agent_variants/c_fresh.py`): C only                                                                          | 973     |
+| `finbert_episode`  | `Results/agent_variants/finbert_episode/decisions.csv` (`agent_variants/episode.py`)                                                                          | 973     |
+
+When the original file is not there (the raw answers of the agent are only on the computer of whoever ran it), `load_version` reads the copy on git in `Results/agent_variants/<name>/`. The variants that change the backtest itself (reduced size, delayed entry, Orfeo's `B_exaggeration`) are not decision sets: the notebook reads their trades from `Results/agent_variants/`. The notebook compares everything **on the train only** (`Results/version_comparison.csv`), with the functions of [agent_variants/comparison.py](agent_variants/comparison.py).
+
+The 40-signal sets are compared only on the signals of the hand-classified sample. For the lexicon, `flat` means block and `only_A`/`only_B` with `long`/`short` means follow: C is simulated with the hedged pair, as for the agent.
 
 ```python
 from src.backtest import load_trades, trading_days, load_version, apply_version
-from src.varianti_agente.confronto import riferimenti, tutte_le_varianti, confronto
+from src.agent_variants.comparison import references, all_variants, compare
 
 trades, days = load_trades(), trading_days()
-B = apply_version(trades, "B", load_version("spark_24h"))          # una variante sola
-cmp = confronto(tutte_le_varianti(trades), riferimenti(trades), days)   # tutte, ordinate per dollari a costo 0 rispetto al riferimento
+B = apply_version(trades, "B", load_version("spark_24h"))          # a single variant
+cmp = compare(all_variants(trades), references(trades), days)   # all of them, sorted by dollars at cost 0 against the reference
 ```
 
-Il notebook salva tabelle e grafico in `Results/` e i trade di ogni set di decisioni in `Results/varianti_agente/<nome>/`, tutto su git, così i risultati si leggono anche senza i dati. Il commento dei numeri per chi non conosce la finanza è in [Results/RESOCONTO.md](../Results/RESOCONTO.md). Per aggiungere un nuovo set di decisioni: il percorso in `config.py`, una riga in `VERSIONS`, poi si riesegue il notebook.
+The notebook saves tables and chart in `Results/` and the trades of each decision set in `Results/agent_variants/<name>/`, all on git, so the results can be read even without the data. The commentary on the numbers for people who do not know finance is in [Results/REPORT.md](../Results/REPORT.md). To add a new decision set: the path in `config.py`, a row in `VERSIONS`, then rerun the notebook.
 
-### Passo 7. Robustezza
+### Step 7. Robustness
 
-`07_robustezza.ipynb` controlla, per ogni variante e solo sul train, se la differenza dal riferimento è vera o fortuna:
-- tabella finale con le metriche complete, l'intervallo di confidenza al 95% della differenza (bootstrap sui giorni), beta e alpha rispetto al mercato;
-- sensibilità ai costi (0, 2, 5, 10 bps);
-- differenza per settore e senza la coppia che pesa di più;
-- le due metà del train e il train senza il 13 agosto.
+`07_robustness.ipynb` checks, for each variant and on the train only, whether the difference from the reference is real or luck:
 
-Il mercato è SPY: i prezzi giornalieri, aggiustati per i dividendi, si scaricano da Alpaca con le stesse chiavi delle notizie (`uv run python -m src.spy`, solo fino alla fine del train). Le tabelle vanno in `Results/robustezza/`.
+- final table with the full metrics, the 95% confidence interval of the difference (bootstrap over days), beta and alpha against the market;
+- sensitivity to costs (0, 2, 5, 10 bps);
+- difference by sector and without the pair that weighs most;
+- the two halves of the train and the train without 13 August.
 
-### Il test, una volta sola
+The market is SPY: the daily prices, adjusted for dividends, are downloaded from Alpaca with the same keys as the news (`uv run python -m src.spy`, only up to the end of the train). The tables go in `Results/robustness/`.
 
-Le regole del test sono in [docs/Test.md](../docs/Test.md), scritte prima di scaricare i dati del test: solo `finbert_episodio`, con le versioni A, B e C; criterio principale la differenza in dollari dalla A a costo 0; costo 5 per confronto; gli stessi controlli del train, più la coerenza con il train. Il test è stato fatto il 14 novembre 2026 con tre script separati da quelli del train:
+### The test, once only
 
-| Script | Cosa ha fatto |
-| --- | --- |
-| [test_dati.py](test_dati.py) | Ha scaricato da Alpaca le notizie dal 17 settembre al 30 ottobre (2.725) e SPY dal 16 settembre al 30 ottobre |
-| [test_finbert.py](test_finbert.py) | Ha calcolato FinBERT sulle notizie del test, dopo aver controllato che ridà i punteggi del train |
-| [test_finale.py](test_finale.py) | Ha rifatto il train controllando che segnali, decisioni e trade di `finbert_episodio` fossero identici a quelli salvati, poi ha calcolato segnali, decisioni e trade del test |
+The rules of the test are in [docs/Test.md](../docs/Test.md), written before downloading the test data: only `finbert_episode`, with versions A, B and C; main criterion the difference in dollars from A at cost 0; cost 5 as a comparison; the same checks as the train, plus consistency with the train. The test was run on 14 November 2026 with three scripts separate from those of the train:
 
-**Gli script del test non si rilanciano**: `test_finale.py` rifarebbe il test e sovrascriverebbe `Results/test/`. I risultati si leggono, quante volte serve, con [06_test_backtest.ipynb](06_test_backtest.ipynb) e [07_test_robustezza.ipynb](07_test_robustezza.ipynb), che usano solo i file salvati.
+| Script                            | What it did                                                                                                                                                                   |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [test_data.py](test_data.py)       | Downloaded from Alpaca the news from 17 September to 30 October (2,725) and SPY from 16 September to 30 October                                                               |
+| [test_finbert.py](test_finbert.py) | Computed FinBERT on the test news, after checking that it gives back the train scores                                                                                         |
+| [test_final.py](test_final.py)   | Redid the train checking that signals, decisions and trades of `finbert_episode` were identical to the saved ones, then computed signals, decisions and trades of the test |
 
-### Passo 8. Il segnale +1 / 0 / -1
+**The test scripts are not rerun**: `test_final.py` would redo the test and overwrite `Results/test/`. The results are read, as many times as needed, with [06_test_backtest.ipynb](06_test_backtest.ipynb) and [07_test_robustness.ipynb](07_test_robustness.ipynb), which use only saved files. `test_final.py --check-only` runs only the check on the train and reads nothing from the test.
 
-Le istruzioni del professore chiedono un segnale +1, 0 o -1 per ogni titolo e un rendimento uguale a segnale x rendimento del titolo. `08_segnale.ipynb` trasforma i trade già salvati di A, B e C (train e test) in questo segnale, minuto per minuto, e ricalcola il guadagno con quella formula. Elenca anche le ipotesi (esecuzione, importi, vendita allo scoperto). Non cambia nessuna regola e non rifà il test: legge solo file salvati. Il guadagno dal segnale coincide con quello dei trade a meno di pochi dollari.
+### Step 8. The signal +1 / 0 / -1
 
-### Passo 9. Curve di capitale e metriche
+The professor's instructions ask for a +1, 0 or -1 signal for each stock and a return equal to signal x return of the stock. `08_signal.ipynb` turns the already saved trades of A, B and C (train and test) into this signal, minute by minute, and recomputes the profit with that formula. It also lists the assumptions (execution, amounts, short selling). It changes no rule and does not redo the test: it reads only saved files. The profit from the signal matches that of the trades to within a few dollars.
 
-`09_curve_metriche.ipynb` fa la valutazione chiesta dal professore, su train e test, con i rendimenti dal segnale del passo 8: curva di capitale da 100 con SPY sullo stesso grafico; rendimento cumulato e annualizzato, volatilità annualizzata, Sharpe (tasso privo di rischio 0), massimo drawdown e profit factor per A, B, C e SPY, a costo 0 e 5; beta, correlazione e rendimento nei giorni in cui SPY scende. Spiega la scelta dei benchmark (SPY e la versione A) e le ipotesi di calcolo. Legge solo file salvati.
+### Step 9. Equity curves and metrics
 
-## Regole da non rompere
+`09_curves_metrics.ipynb` does the evaluation asked by the professor, on train and test, with the returns from the signal of step 8:
 
-- **Il taglio train/test.** Il train finisce il 16 settembre 2026 e la data è scritta in un posto solo, `TRAIN_END` in [config.py](config.py). Il test, dal 17 settembre, è stato usato una volta sola, il 14 novembre 2026, con regole e parametri bloccati: non si rifà, e nessuna regola si cambia guardando i suoi risultati. Segnali, notizie e decisioni dell'agente non contengono giorni di test: `load_trades` rifiuta una tabella che ne contiene e `news.py` rifiuta di scaricarli.
-- **I nomi dei file in `data/`.** Ogni collega ha la sua copia di `data/`: rinominare un file di uscita rompe le copie degli altri. I nomi sono in `config.py`.
-- **Niente percorsi nei notebook.** Percorsi e date si importano da `config.py`.
+- equity curve starting at 100 with SPY on the same chart;
+- cumulative and annualised return, annualised volatility, Sharpe (risk-free rate 0), maximum drawdown and profit factor for A, B, C and SPY, at cost 0 and 5;
+- beta, correlation and return on the days when SPY falls (market neutrality);
+- a statistical test (bootstrap over days) of whether the Sharpe of the strategy on the test is really higher than that of SPY, saved in `Results/test/sharpe_vs_spy.csv`.
 
-## Se qualcosa si rompe
+It explains the choice of benchmarks (SPY and version A) and the calculation assumptions. It reads only saved files.
 
-| Messaggio                                                          | Cosa fare                                                                                                                          |
-| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `No module named 'src'` dal terminale                            | Il terminale non è nella cartella del progetto: entra lì con `cd`                                                              |
-| `No module named 'src'` in un notebook                           | Il notebook è stato spostato fuori dal progetto, oppure la prima cella non è stata eseguita                                      |
-| `No module named ...` (un'altra libreria)                        | Il kernel non è `.venv`, oppure manca `uv sync`                                                                               |
-| `manca selected_pairs_2.csv`                                     | Esegui prima `01_coppie.ipynb`                                                                                                   |
-| `Mancano ALPACA_API_KEY_ID ...`                                  | Manca `.env` o è vuoto: vedi il passo 4                                                                                         |
-| `Alpaca ha risposto 401`                                         | Chiavi sbagliate: rigenerale sul sito di Alpaca                                                                                    |
-| `manca news_for_signals_15pairs_v2_train.csv`                    | Esegui prima `04_notizie.ipynb`                                                                                                  |
-| `Nessun server risponde a ...`                                   | Il server del modello è spento o `AGENT_BASE_URL` è sbagliato                                                                  |
-| `ServerError: Unexpected endpoint or method`                     | L'indirizzo del server è sbagliato: per LM Studio è `http://127.0.0.1:1234/v1`                                                 |
-| Da Claude Code l'agente non raggiunge il server, dal terminale sì | La sandbox di Claude Code blocca le connessioni locali: lancia il comando dal terminale                                            |
-| Molte righe `risposta non valida` nell'agente                    | Il modello non rispetta il formato: usa un server che impone lo schema della risposta (LM Studio, Ollama) o un modello più grande |
-| Il computer rallenta molto al passo 0                              | Chiudi le altre applicazioni: servono circa 4 GB liberi                                                                            |
+## Rules not to break
 
-## I moduli
+- **The train/test cut.** The train ends on 16 September 2026 and the date is written in one place only, `TRAIN_END` in [config.py](config.py). The test, from 17 September, was used only once, on 14 November 2026, with rules and parameters frozen: it is not redone, and no rule is changed by looking at its results. Signals, news and agent decisions do not contain test days: `load_trades` refuses a table that contains them and `news.py` refuses to download them.
+- **File names in `data/`.** Every colleague has their own copy of `data/`: renaming an output file breaks the others' copies. The names are in `config.py`.
+- **No paths in notebooks.** Paths and dates are imported from `config.py`.
+- **Variants.** Each variant is written down (rules, thresholds) before it is run and run once, as in [agent_variants/LOG.md](agent_variants/LOG.md). A variant born from looking at the train results (like `post_train`) is declared as such.
 
-| File                      | Cosa contiene                                                             |
-| ------------------------- | ------------------------------------------------------------------------- |
-| [config.py](config.py)     | Percorsi, `TRAIN_END`, nomi dei file, lettura di `.env` e dei parquet |
-| [data.py](data.py)         | Passo 0: costruzione dei dataset, `load()`, controlli di qualità       |
-| [signals.py](signals.py)   | Spread, z-score e regole di ingresso e uscita                             |
-| [news.py](news.py)         | Scaricamento e archivio delle notizie, notizie prima di ogni segnale      |
-| [spy.py](spy.py)           | Prezzi giornalieri di SPY da Alpaca, per beta e alpha (passo 7)           |
-| [varianti_agente/](varianti_agente/README.md) | Tutte le varianti dell'agente di notizie: l'agente di Giulio (`agent.py`), le varianti di Beatrice e di Orfeo |
-| [backtest.py](backtest.py) | Costi, versioni A, B e C, set di decisioni da confrontare, metriche, salvataggio in `Results/` |
-| [test_dati.py](test_dati.py), [test_finbert.py](test_finbert.py), [test_finale.py](test_finale.py) | Il test di `finbert_episodio`: dati, sentiment, segnali, decisioni e trade. Già eseguiti, non si rilanciano |
+## If something breaks
 
-Ciò che non fa più parte della pipeline è in `Old files/`, nella struttura di cartelle che aveva: i notebook delle prime 10 coppie, le prime prove su una coppia sola, la versione 2 del segnale (scartata) e i documenti del piano iniziale. Sono conservati come erano e non vengono aggiornati: usano percorsi e funzioni di allora.
+| Message                                                                         | What to do                                                                                                                        |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `No module named 'src'` from the terminal                                     | The terminal is not in the project folder: `cd` into it                                                                         |
+| `No module named 'src'` in a notebook                                         | The notebook was moved out of the project, or the first cell was not run                                                          |
+| `No module named ...` (another library)                                       | The kernel is not `.venv`, or `uv sync` is missing                                                                            |
+| `No module named 'torch'` or `'transformers'`                               | Run the script with `uv run --with torch --with transformers python -m ...`                                                     |
+| `selected_pairs_2.csv is missing`                                             | Run `01_pairs.ipynb` first                                                                                                     |
+| `ALPACA_API_KEY_ID ... missing`                                               | `.env` is missing or empty: see step 4                                                                                          |
+| `Alpaca answered 401`                                                         | Wrong keys: regenerate them on the Alpaca website                                                                                 |
+| `news_for_signals_15pairs_v2_train.csv` not found                             | Run `04_news.ipynb` first                                                                                                    |
+| `No server answers at ...`                                                    | The model server is off or `AGENT_BASE_URL` is wrong. For `agent_3b.py` start Ollama and run `ollama pull llama3.2:3b`      |
+| `ServerError: Unexpected endpoint or method`                                  | The server address is wrong: for LM Studio it is `http://127.0.0.1:1234/v1`                                                     |
+| From Claude Code the agent does not reach the server, from the terminal it does | The Claude Code sandbox blocks local connections: launch the command from the terminal                                            |
+| Many `invalid answer` rows in the agent                                       | The model does not respect the format: use a server that enforces the answer schema (LM Studio, Ollama) or a bigger model         |
+| `08_signal.ipynb` does not find the trades of `finbert_episode`           | Run `06_backtest.ipynb` first: it writes `trades_B.csv` and `trades_C.csv` in `Results/agent_variants/finbert_episode/` |
+| `09_curves_metrics.ipynb` does not find `spy_daily_test.parquet`            | The file is not on git: ask a colleague for their copy. Do not rerun the test scripts                                             |
+| The computer slows down a lot at step 0                                         | Close the other applications: about 4 GB free are needed                                                                          |
+
+## The modules
+
+| File                                                                                            | What it contains                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [config.py](config.py)                                                                           | Paths, `TRAIN_END`, test dates, file names, reading of `.env` and of the parquet files                                                                        |
+| [data.py](data.py)                                                                               | Step 0: building the datasets, `load()`, quality checks                                                                                                         |
+| [gics.py](gics.py)                                                                               | `load_gics()`: the GICS classification of `data/gics.csv` (a Bloomberg export in Italian) with the official English names                                       |
+| [signals.py](signals.py)                                                                         | Spread, z-score and entry and exit rules                                                                                                                          |
+| [news.py](news.py)                                                                               | Downloading and archive of the news, news before each signal                                                                                                      |
+| [spy.py](spy.py)                                                                                 | Daily SPY prices from Alpaca, for beta and alpha (step 7)                                                                                                         |
+| [agent_variants/](agent_variants/README.md)                                                    | All the variants of the news agent: Giulio's agent (`agent.py`), the variants of Beatrice and Orfeo, `comparison.py` and `common.py` shared by the notebooks |
+| [backtest.py](backtest.py)                                                                       | Costs, versions A, B and C, decision sets to compare, metrics, saving in `Results/`                                                                             |
+| [test_data.py](test_data.py), [test_finbert.py](test_finbert.py), [test_final.py](test_final.py) | The test of `finbert_episode`: data, sentiment, signals, decisions and trades. Already run, do not rerun                                                       |
+
+What is no longer part of the pipeline is in `Old files/`, in the folder structure it had: the notebooks of the first 10 pairs, the first tests on a single pair, version 2 of the signal (discarded) and the documents of the initial plan. They are kept as they were and are not updated: they use paths and functions of that time.

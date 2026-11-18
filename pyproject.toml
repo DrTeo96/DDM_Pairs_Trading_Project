@@ -1,7 +1,7 @@
 [project]
 name = "ddm-luiss-project"
 version = "0.1.0"
-description = "Pair trading sui titoli dell'S&P 500 con dati Bloomberg"
+description = "Pairs trading on S&P 500 stocks with Bloomberg data"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

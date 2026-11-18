@@ -1,11 +1,11 @@
-"""Prezzi giornalieri di SPY da Alpaca, per beta e alpha rispetto al mercato nel Passaggio 7 (07_robustezza.ipynb).
+"""SPY daily prices from Alpaca, for beta and alpha against the market in Step 7 (07_robustness.ipynb).
 
-Usa le stesse chiavi di Alpaca delle notizie (file .env, vedi .env.example). Dal terminale, nella cartella del progetto:
-    uv run python -m src.spy        scarica le barre giornaliere di SPY da NEWS_START a TRAIN_END e le salva in SPY_DAILY
+It uses the same Alpaca keys as the news (.env file, see .env.example). From the terminal, in the project folder:
+    uv run python -m src.spy        downloads the SPY daily bars from NEWS_START to TRAIN_END and saves them in SPY_DAILY
 
-Prezzi aggiustati per split e dividendi (adjustment=all), così il rendimento giornaliero comprende i dividendi, come il rendimento
-totale dei titoli Bloomberg. Le barre sono quelle consolidate di tutte le borse (feed sip). Come per le notizie, il test (dopo
-TRAIN_END) non si scarica.
+Prices adjusted for splits and dividends (adjustment=all), so the daily return includes dividends, like the total return
+of the Bloomberg stocks. The bars are the consolidated ones of all exchanges (sip feed). As for the news, the test (after
+TRAIN_END) is not downloaded.
 """
 import json
 import urllib.parse
@@ -20,9 +20,9 @@ URL = "https://data.alpaca.markets/v2/stocks/SPY/bars"
 
 
 def download(start: str = NEWS_START, end: str = TRAIN_END) -> pd.DataFrame:
-    """Barre giornaliere di SPY tra due date (comprese), una pagina alla volta."""
+    """SPY daily bars between two dates (included), one page at a time."""
     if pd.Timestamp(end) > pd.Timestamp(TRAIN_END):
-        raise ValueError(f"{end} è dopo la fine del train ({TRAIN_END}): i prezzi del test non si scaricano")
+        raise ValueError(f"{end} is after the end of the train ({TRAIN_END}): the test prices are not downloaded")
     keys = load_keys()
     params = {"timeframe": "1Day", "start": start, "end": end, "adjustment": "all", "feed": "sip", "limit": 10000}
     rows = []
@@ -36,9 +36,9 @@ def download(start: str = NEWS_START, end: str = TRAIN_END) -> pd.DataFrame:
             break
         params["page_token"] = data["next_page_token"]
     if not rows:
-        raise RuntimeError("Alpaca non ha restituito barre di SPY: controlla che le chiavi abbiano accesso ai dati di mercato")
+        raise RuntimeError("Alpaca returned no SPY bars: check that the keys have access to market data")
     d = pd.DataFrame(rows)
-    # t è l'inizio della giornata di New York espresso in UTC: la data giusta è quella di New York
+    # t is the start of the New York day expressed in UTC: the right date is the New York one
     d["date"] = pd.to_datetime(d.t).dt.tz_convert("America/New_York").dt.tz_localize(None).dt.normalize()
     return d.rename(columns={"o": "open", "h": "high", "l": "low", "c": "close", "v": "volume"})[["date", "open", "high", "low", "close", "volume"]]
 
@@ -47,4 +47,4 @@ if __name__ == "__main__":
     spy = download()
     SPY_DAILY.parent.mkdir(parents=True, exist_ok=True)
     spy.to_parquet(SPY_DAILY, index=False)
-    print(f"SPY: {len(spy)} giorni, dal {spy.date.min():%d/%m/%Y} al {spy.date.max():%d/%m/%Y}, salvato in {SPY_DAILY.name}")
+    print(f"SPY: {len(spy)} days, from {spy.date.min():%d/%m/%Y} to {spy.date.max():%d/%m/%Y}, saved in {SPY_DAILY.name}")
